@@ -7,9 +7,9 @@ const AdmZip = require('adm-zip');
 const postmanConverter = require('openapi-to-postmanv2');
 const args = process.argv.slice(2);
 const folder = `${args?.[0]}/reference`;
-const zip = new AdmZip();
-const { errorMessage, printMessage } = require('./utils/tools');
 
+const { errorMessage, printMessage } = require('./utils/tools');
+const postman_zip  = new AdmZip() , spec_zip = new AdmZip();
 const specZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_spec' : 'tennat_spec';
 const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postman' : 'tennat_postman';
 
@@ -48,16 +48,18 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
                 break;
               }
             }
-            if (check) {
-              const folder = dir.replace('../reference/', '');  
-              printMessage(`Sub Dir accessed ---${dir.replace('../reference/', '')}`);  
-              if (await generateSpecZipCollection(folder , zip , file , content )){
+            if (check) { 
+              const tenant_repo = getTenantRepoName(dir);
+              printMessage(`Sub Dir accessed ---${dir}`);  
+              printMessage(`Tenant files  :${tenant_repo}`);
+             
+              if (await generateSpecZipCollection(tenant_repo ,  file , content )){
                 printMessage(`Spec File : ${file.name} added to Zip`);
               }
-
+       
               const postmanFileName = file.name.includes('.yaml') ? file?.name.split('.yaml')[0].concat('-postman.json') : `${file.name}-postman.json`;
-              if (await generatePostmanCollection(folder , zip , postmanFileName , content )){
-                printMessage(`Postman Collection: ${postmanFileName} added to Zip`);
+              if (await generatePostmanCollection(tenant_repo , postmanFileName , content )){
+                printMessage(`Postman Collection: ${file?.name} added to Zip`);
               }
             }
           }
@@ -70,14 +72,29 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
     }
     };
 
-    const generateSpecZipCollection = async(folder , zip , file , content ) => { 
+    function getTenantRepoName(str) { 
+      const data = {}
+      const parts = str.split('/reference'); 
+      if (parts.length > 1) {   
+        const arr = parts[0].split('/');
+        const name = arr[arr.length - 2];  
+        const filePath = parts[1];
+        data.repo = name;
+        data.path = filePath;  
+        return data;
+      }
+      return null; 
+    }
+
+    const generateSpecZipCollection = async(folder , file , content ) => {  
       try{
+      
         if (folder === '../reference') {
-          zip.addFile(file.name, Buffer.from(content, 'utf8'), 'Adding folders');
+          spec_zip.addFile(file.name, Buffer.from(content, 'utf8'), 'Adding folders');
         } else {
-          zip.addFile(`${folder}/${file.name}`, Buffer.from(content, 'utf8'), 'Adding file');
+          spec_zip.addFile(`${folder?.repo}/${folder?.path}/${file.name}`, Buffer.from(content, 'utf8'), 'Adding file');
         }
-        await zip.writeZip(`${args}/assets/${specZipFile}.zip`);
+        spec_zip.writeZip(`${args}/assets/${specZipFile}.zip`);
        
       }catch(e){
         errorMessage('SPEC ZIP GENERATOR', e.message);
@@ -87,23 +104,24 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
     };
 
 
-    const generatePostmanCollection = async(folder , zip , postmanFileName , content ) => { 
-
+    const generatePostmanCollection = async(folder , postmanFileName , content ) => { 
+  
       try{
+
         postmanConverter.convert(
           { type: 'string', data: content },
           { requestParametersResolution: 'Example', folderStrategy: 'Tags' },
           (err, conversionResult) => {
             if (!conversionResult.result) {
               printMessage('Could not convert', conversionResult);
-            } else {  
-
+            } else {   
+ 
                 if (folder === '../reference') {
-                  zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
+                  postman_zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
                 } else {
-                  zip.addFile(`${folder}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
+                  postman_zip.addFile(`${folder?.repo}/${folder?.path}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
                 }
-                zip.writeZip(`${args}/assets/${postmanZipFile}.zip`); 
+                postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`); 
             }
           }
         );  
@@ -114,6 +132,8 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
       return true;
     
     }
+
+
 
 
     try {
