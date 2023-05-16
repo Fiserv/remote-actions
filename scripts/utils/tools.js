@@ -17,7 +17,7 @@ const processArgs = (args = []) => {
 };
 
 const errorMsg = (message) => { 
-  console.log( message ); 
+  console.log(`\x1b[31m ${message} \x1b[0m`  );
 };
 
 const errorMessage = (type , message) => {
