@@ -9,7 +9,7 @@ const ded_validator  = 'DED VALIDATOR';
 const pdl_validator  = 'Product Layout VALIDATOR'; 
 const tenant_config_validator = 'TENANT CONFIG VALIDATOR'; 
 let check = true;
-
+let dedFileExistence = true;
 const validateDir = async (dir) => { 
 
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -21,7 +21,8 @@ const validateDir = async (dir) => {
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8');
-        const apiJson = yaml.load(content);  
+        const apiJson = yaml.load(content); 
+        check = validateDocLinks(args?.[0] , apiJson);
       } catch (e) {
         errorMessage(ded_validator  ,e?.message);
         check = false;
@@ -68,15 +69,45 @@ const validateDir = async (dir) => {
     } 
   }
 }; 
+
+const validateDocLinks = (dir , arr) => { 
+  try{
+    arr.forEach(obj => {
+      if (obj?.link !== undefined) { 
+    
+        const file = `${dir}/${obj?.link}`;
+        if (!fs.existsSync(file)) {  
+          errorMsg(`${file} - Missing`);
+          dedFileExistence = false;
+        } 
+      }
+      if (obj?.sections) {
+        validateDocLinks(dir , obj?.sections);
+      }
+    });
+  }catch(e){ 
+    dedFileExistence = false;
+  }  
+  return dedFileExistence;
+}
+ 
   
 const validateSpecExistence = (dir , tenantData)=> {  
   let specExistence = true;
+  let MajorVersionCheck =0 , MajorVersion = 0;
+  let versions = [];
   
   if (tenantData?.apiVersions.length > 0){
     for (const item of tenantData.apiVersions) {  
-      const version = item.version ;  
-      const apiSpecFiles = item.apiSpecFileNames ; 
-        
+      const version = item?.version ;  
+      const versionType = item?.versionType; 
+      versions.push(version); 
+      if (versionType === 'major'){
+        MajorVersionCheck++;
+        MajorVersion = version;
+      }
+
+      const apiSpecFiles = item.apiSpecFileNames ;  
       if (apiSpecFiles.length > 0){
         for (const filePath of apiSpecFiles) {
           const file = `${dir}/reference/${version}/${filePath}.yaml`;
@@ -85,12 +116,39 @@ const validateSpecExistence = (dir , tenantData)=> {
             specExistence = false;
           }
         }
-      }  
-    }
-  } 
-    
+      }   
+    } 
+      // Checking only one Major version is published in tenant config file
+      if (MajorVersionCheck > 1){
+          errorMsg(`Multiple Major Versions found in TenantConfig file`);
+          specExistence = false;
+        } else{
+           // Checking Major version is the highest version available amoung all versions.  
+        const sortedVersions = sortVersionsDescending(versions); 
+        if (sortedVersions.length > 0 ) {
+          if (sortedVersions[0] != MajorVersion){
+            errorMsg(`Incorrect major version : ${MajorVersion} found suggested Major version: ${sortedVersions[0]}`);
+            specExistence = false;
+        }
+        } 
+      } 
+  }  
   return specExistence;
 };
+
+
+const sortVersionsDescending = (versions) => {
+  return versions.sort((a, b) => {
+    const aParts = a.split('.');
+    const bParts = b.split('.');
+    for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
+      if (parseInt(bParts[i] || 0) !== parseInt(aParts[i] || 0)) {
+        return parseInt(bParts[i] || 0) - parseInt(aParts[i] || 0);
+      }
+    }
+    return 0;
+  });
+}
 
 
 const main = async() => { 
@@ -102,10 +160,10 @@ const main = async() => {
         printMessage(`External Dir ---->>> ${folder}`); 
       }
     }else{
-      errorMessage('YAML VALIDATOR'  ,'No Path for reference dir. defined');
+      errorMessage('Tenant Config VALIDATOR'  ,'No Path for reference dir. defined');
     }
   } catch (e) {
-    errorMessage('YAML VALIDATOR'  ,e.message);
+    errorMessage('Tenant Config VALIDATOR'  ,e.message);
   }
 
 };
