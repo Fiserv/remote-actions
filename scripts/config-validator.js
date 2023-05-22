@@ -73,7 +73,7 @@ const validateDir = async (dir) => {
 const validateDocLinks = (dir , arr) => { 
   try{
     arr.forEach(obj => {
-      if (obj?.link !== undefined) { 
+      if (obj?.link !== undefined && obj.link !== null) { 
     
         const file = `${dir}/${obj?.link}`;
         if (!fs.existsSync(file)) {  
