@@ -75,6 +75,34 @@ jobs:
         run: |
           pwd
           ls -la
-      - name: Commited changes from action runner to remote branch
-        uses: stefanzweifel/git-auto-commit-action@v4
+          cd assets
+          ls -la 
+
+      - name: Pushing postman.zip file remotely into tenants-data repository.
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
+        with:
+          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip'
+          destination_repo: 'Fiserv/tenants-data'
+          destination_folder: 'assets'
+          destination_branch: '${{ github.ref_name }}'        
+          user_email: 'abhishek.singh3@fiserv.com'
+          user_name: ${{ inputs.username }}
+          commit_message: 'pushing zip file remotely'
+
+      - name: Pushing specs.zip file remotely into tenants-data repository.
+        uses: dmnemec/copy_file_to_another_repo_action@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
+        with:
+          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip'
+          destination_repo: 'Fiserv/tenants-data'
+          destination_folder: 'assets'
+          destination_branch: '${{ github.ref_name }}'        
+          user_email: 'abhishek.singh3@fiserv.com'
+          user_name: ${{ inputs.username }}
+          commit_message: 'pushing zip file remotely' 
+      # - name: Commited changes from action runner to remote branch
+      #   uses: stefanzweifel/git-auto-commit-action@v4
         

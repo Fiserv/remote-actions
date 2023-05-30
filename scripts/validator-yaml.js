@@ -35,27 +35,9 @@ const validateDir = async (dir) => {
             errorMessage('YAML VALIDATOR'  ,'No path provided!');
           }
           const parsedData = await SwaggerParser.validate(apiJson);
+
           if (parsedData){
-              for (const [path, obj] of Object.entries(apiJson.paths)) {
-                for (const [reqType, api] of Object.entries(obj)) {
-                  if (typeof api !== 'object' || api === null) { continue; }
-                    if( (api['x-group-name']) && api['x-proxy-name']){
-                      check = true;
-                    } else{ 
-                      if (!api.hasOwnProperty('x-proxy-name')){ 
-                        errorMessage('YAML VALIDATOR'  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`);
-                      } 
-                      // if (!api.hasOwnProperty('x-group-name')){ 
-                      //   errorMessage('YAML VALIDATOR'  ,`${fileName} - Missing 'x-group-name'`);
-                      // } 
-                      check = false;
-                      return;
-                    }
-                }
-              } 
-                if (check){
-                printMessage(`File: ${fileName} : PASSED`);
-                }
+            check = await parseAPIData(fileName , apiJson);
             }
         } catch (e) {
           errorMessage('YAML VALIDATOR'  ,`File : ${file.name} : FAILED`);
@@ -68,13 +50,55 @@ const validateDir = async (dir) => {
   });
 };
 
-try {
-  printMessage(`External Dir ---->>> ${folder}`);   
-  if ( args?.length > 0){ 
-  validateDir(folder);
- }else{
-  errorMessage('YAML VALIDATOR'  ,'No Path for reference dir. defined');
- }
-} catch (e) {
-  errorMessage('YAML VALIDATOR'  ,e.message);
+
+const parseAPIData = async (fileName , apiJson) => {
+  let check = false;
+  try{
+    for (const [path, obj] of Object.entries(apiJson.paths)) {
+
+      for (const [reqType, api] of Object.entries(obj)) {
+
+        if (typeof api !== 'object' || api === null) { 
+          continue; 
+        }
+
+          if( (api['x-group-name']) && api['x-proxy-name']){ 
+            check = true; 
+          } else{ 
+
+            if (!api.hasOwnProperty('x-proxy-name')){  
+              errorMessage('YAML VALIDATOR'  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`); 
+            } 
+            check = false; 
+            return;
+          }
+      }
+    } 
+      if (check){
+      printMessage(`File: ${fileName} : PASSED`);
+      }
+ 
+  } catch (err) {
+    console.log(err?.message);
+  }
+  return check;
+};
+
+
+const main = async() => {
+
+  try {
+    printMessage(`External Dir ---->>> ${folder}`);   
+    if ( args?.length > 0){ 
+    await validateDir(folder);
+   }else{
+    errorMessage('YAML VALIDATOR'  ,'No Path for reference dir. defined');
+   }
+  } catch (e) {
+    errorMessage('YAML VALIDATOR'  ,e.message);
+  }
+}
+
+if (require.main === module) {
+  main();
 }

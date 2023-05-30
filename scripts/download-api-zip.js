@@ -72,7 +72,7 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
     }
     };
 
-    function getTenantRepoName(str) { 
+    const getTenantRepoName = (str) => { 
       const data = {}
       const parts = str.split('/reference'); 
       if (parts.length > 1) {   
@@ -132,10 +132,7 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
       return true;
     
     }
-
-
-
-
+ 
     try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {

@@ -77,5 +77,3 @@ jobs:
         run: |
           pwd
           ls -la
-      # - name: Commited changes from action runner to remote branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
