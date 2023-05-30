@@ -21,23 +21,11 @@
   ],
   "apiVersions": [
     {
-      "version": "11.0.0",
+      "version": "1.0.0",
       "versionType": "major",
       "releaseNotesPath": "/release-notes/release-notes-11.0.0.md",
       "apiSpecFileNames": [
-        "Accountholder/AddrService",
-        "Accountholder/PartyService",
-        "Accountholder/PartyAcctRelService",
-        "Accountholder/PartyPartyRelService",
-        "Accountholder/ClientDefinedFieldService",
-        "Cards/CardService",
-        "Cards/CardAccountRelationshipService",
-        "Servicing/HostSystemService",
-        "Servicing/EnumTableService",
-        "Notification/NotificationsPreferencesService",
-        "Payments/CreditService",
-        "Payments/DebitService",
-        "Payments/TransferService"
+        "api-1.0.0"
       ]
     }
   ],
