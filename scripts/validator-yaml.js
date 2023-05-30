@@ -62,7 +62,7 @@ const parseAPIData = async (fileName , apiJson) => {
           continue; 
         }
 
-          if( (api['x-group-name']) && api['x-proxy-name']){ 
+          if( api['x-proxy-name']){ 
             check = true; 
           } else{ 
 

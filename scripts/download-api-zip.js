@@ -34,7 +34,7 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
             for (const [path, obj] of Object.entries(apiJson.paths)) {
               for (const [reqType, api] of Object.entries(obj)) {
                 if (typeof api !== 'object' || api === null) { continue; }
-                if (api['x-group-name'] && api['x-proxy-name']) {
+                if ( api['x-proxy-name']) {
                   check = true;
                 } else {
                   if (!api.hasOwnProperty('x-proxy-name')) {
