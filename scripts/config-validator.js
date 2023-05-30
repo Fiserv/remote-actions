@@ -127,7 +127,8 @@ const validateSpecExistence = (dir , tenantData)=> {
         const sortedVersions = sortVersionsDescending(versions); 
         if (sortedVersions.length > 0 ) {
           if (sortedVersions[0] != MajorVersion){
-            errorMsg(`Incorrect major version : ${MajorVersion} found suggested Major version: ${sortedVersions[0]}`);
+            errorMsg(`Incorrect API major version assignment : ${MajorVersion}. 
+            Please use correct versioning pattern (use Major, Minor and Patch) suggested Major version: ${sortedVersions[0]}`);
             specExistence = false;
         }
         } 
