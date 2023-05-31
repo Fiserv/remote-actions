@@ -5,8 +5,9 @@ const yaml = require('js-yaml');
 const SwaggerParser = require('@apidevtools/swagger-parser'); 
 const args = process.argv.slice(2); 
 const folder = args?.[0]+"/reference"; 
-
-const {errorMsg,errorMessage  , printMessage} = require('./utils/tools')
+const showdown = require('showdown');
+const {errorMsg,errorMessage  , printMessage} = require('./utils/tools');
+const { enrichHTMLFromMarkup, showdownHighlight } = require('./utils/md-utils'); 
 
 /* VALIDATION RULES
    -  `YAML` Extension check 
@@ -37,7 +38,7 @@ const validateDir = async (dir) => {
           const parsedData = await SwaggerParser.validate(apiJson);
 
           if (parsedData){
-            check = await parseAPIData(fileName , apiJson);
+            check = await parseAPIData(fileName , parsedData , apiJson); 
             }
         } catch (e) {
           errorMessage('YAML VALIDATOR'  ,`File : ${file.name} : FAILED`);
@@ -48,41 +49,106 @@ const validateDir = async (dir) => {
       }
     });
   });
+ 
 };
 
 
-const parseAPIData = async (fileName , apiJson) => {
+const parseAPIData = async (fileName , parsedData , apiJson) => {
   let check = false;
   try{
     for (const [path, obj] of Object.entries(apiJson.paths)) {
 
       for (const [reqType, api] of Object.entries(obj)) {
 
-        if (typeof api !== 'object' || api === null) { 
-          continue; 
-        }
-
+        if (typeof api !== 'object' || api === null) {  continue;  }
           if( api['x-proxy-name']){ 
             check = true; 
           } else{ 
-
             if (!api.hasOwnProperty('x-proxy-name')){  
               errorMessage('YAML VALIDATOR'  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`); 
             } 
             check = false; 
             return;
-          }
+          } 
+          const version =  fileName.split('/')[1];
+          check = validateIndexBody(fileName ,parsedData , apiJson, path , reqType , api , version); 
+          //console.log(`check : ${check}`);
       }
     } 
       if (check){
       printMessage(`File: ${fileName} : PASSED`);
+      } else {
+        errorMsg(`Validation error in file ${fileName}`); 
       }
- 
   } catch (err) {
-    console.log(err?.message);
+    errorMsg(`Error: ${e.message}`);
   }
   return check;
 };
+
+
+const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , api , version) =>{
+ let check = true;
+  try{
+    const pathJSON = yamlJSONData.paths[path][reqType]; 
+    const converter = new showdown.Converter({
+      ghCompatibleHeaderId: true,
+      emoji: true,
+      disableForced4SpacesIndentedSublists: true,
+      literalMidWordUnderscores: true,
+      tables: true,
+      extensions: [enrichHTMLFromMarkup(), showdownHighlight],
+    });
+
+    const strRequestBody = pathJSON.requestBody ? JSON.stringify(pathJSON.requestBody, (key, value) => {
+      if (key === 'description' && typeof value === 'string') {
+        return converter.makeHtml(value);
+      } else{
+        return value;
+      }
+    }) : '';
+
+    const strResponses = pathJSON.responses ? JSON.stringify(pathJSON.responses, (key, value) => {
+      if (key === 'description' && typeof value === 'string') {
+        return converter.makeHtml(value);
+      } else{
+        return value;
+      }
+    }) : '';
+
+    const strParameters = pathJSON.parameters ? JSON.stringify(pathJSON.parameters) : '';
+
+    body = {
+  
+      title: api['x-proxy-name'] ? api['x-proxy-name'] : (api.tags ? api.tags[0] : api.summary),
+      titleKW: api['x-proxy-name'] ? api['x-proxy-name'] : (api.tags ? api.tags[0] : api.summary), 
+      summary: api.summary,
+      path,
+      description: api.description ? api.description : '',
+      tags: api.tags,
+      requestType: reqType,
+      requestBody: strRequestBody,
+      xGroupName: api['x-group-name'] ? api['x-group-name'] : '',
+      xProxyName: api['x-proxy-name'] ? api['x-proxy-name'] : '',
+      xDisableDefaultExample: api['x-disable-default-example'] ? api['x-disable-default-example'] : false,
+      responses: strResponses,
+      parameters: strParameters,
+      servers: yamlData.servers,   
+      version: version,
+      xLinks: api['x-links'] ? api['x-links'] : {},
+      childProductName: Array.isArray(api['x-child-product-name']) ? api['x-child-product-name'] : [api['x-child-product-name']],     
+      xDefaultExample: api['x-default-example'] ? api['x-default-example'] : '',
+      xCore: api['x-core'] ? api['x-core'] : '',
+      xDefaultCore: api['x-core-default'] ? api['x-core-default'] : '',
+      xUseCases: api['x-use-cases'] ? api['x-use-cases'] : [],
+    };  
+  }catch(e){
+    errorMessage('YAML VALIDATOR ' ,`File :${fileName} with ${e?.message}`);
+    check = false;
+  }  
+
+  return check;
+}
 
 
 const main = async() => {
