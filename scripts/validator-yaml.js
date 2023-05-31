@@ -143,7 +143,7 @@ const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , a
       xUseCases: api['x-use-cases'] ? api['x-use-cases'] : [],
     };  
   }catch(e){
-    errorMessage('YAML VALIDATOR ' ,`File :${fileName} with ${e?.message}`);
+    errorMessage('YAML VALIDATOR' ,`File :${fileName} with ${e?.message}`);
     check = false;
   }  
 
