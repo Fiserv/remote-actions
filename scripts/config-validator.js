@@ -4,7 +4,7 @@ const fs = require('fs');
 const yaml = require('js-yaml'); 
 const args = process.argv.slice(2); 
 const folder = args?.[0]+"/config"; 
-const {errorMessage , errorMsg  , printMessage} = require('./utils/tools')
+const {errorMessage , errorMsg  , printMessage , provideReferenceFolder} = require('./utils/tools')
 const ded_validator  = 'DED VALIDATOR';
 const pdl_validator  = 'Product Layout VALIDATOR'; 
 const tenant_config_validator = 'TENANT CONFIG VALIDATOR'; 
@@ -109,12 +109,12 @@ const validateSpecExistence = (dir , tenantData)=> {
 
       const apiSpecFiles = item.apiSpecFileNames ;  
       if (apiSpecFiles.length > 0){
-        for (const filePath of apiSpecFiles) {
-          const file = `${dir}/reference/${version}/${filePath}.yaml`;
+        for (const filePath of apiSpecFiles) { 
+          const file = `${provideReferenceFolder(dir)}/${version}/${filePath}.yaml`;
           if (!fs.existsSync(file)) {  
             errorMsg(`${file} - Missing`);
             specExistence = false;
-          }
+          } 
         }
       }   
     } 

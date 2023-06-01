@@ -6,14 +6,17 @@ const SwaggerParser = require('@apidevtools/swagger-parser');
 const AdmZip = require('adm-zip');
 const postmanConverter = require('openapi-to-postmanv2');
 const args = process.argv.slice(2);
-const folder = `${args?.[0]}/reference`;
+const folder = args?.[0];
 
-const { errorMessage, printMessage } = require('./utils/tools');
+const { errorMessage, printMessage , provideReferenceFolder} = require('./utils/tools');
 const postman_zip  = new AdmZip() , spec_zip = new AdmZip();
 const specZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_spec' : 'tennat_spec';
 const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postman' : 'tennat_postman';
 
     const generateZipCollection = async (dir) => {
+
+   try{
+
     const files = await fs.promises.readdir(dir, { withFileTypes: true });
     for (const file of files) {
       if (file.isDirectory()) {
@@ -51,7 +54,7 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
             if (check) { 
               const tenant_repo = getTenantRepoName(dir);
               printMessage(`Sub Dir accessed ---${dir}`);  
-              printMessage(`Tenant files  :${tenant_repo}`);
+              printMessage(`Tenant files  :${JSON.stringify(tenant_repo)}`);
              
               if (await generateSpecZipCollection(tenant_repo ,  file , content )){
                 printMessage(`Spec File : ${file.name} added to Zip`);
@@ -70,17 +73,22 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
         errorMessage('ZIP GENERATOR', 'Invalid subdir or file extension.');
       }
     }
+    } catch (e) {
+      errorMessage('ZIP GENERATOR', e.message);
+    }
     };
 
     const getTenantRepoName = (str) => { 
       const data = {}
-      const parts = str.split('/reference'); 
+ 
+      const parts = str.split(str.includes('references') ? '/references' : '/reference'); 
+
       if (parts.length > 1) {   
         const arr = parts[0].split('/');
         const name = arr[arr.length - 2];  
         const filePath = parts[1];
         data.repo = name;
-        data.path = filePath;  
+        data.path = filePath; 
         return data;
       }
       return null; 
@@ -88,8 +96,8 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
 
     const generateSpecZipCollection = async(folder , file , content ) => {  
       try{
-      
-        if (folder === '../reference') {
+ 
+        if (folder === '../reference') { 
           spec_zip.addFile(file.name, Buffer.from(content, 'utf8'), 'Adding folders');
         } else {
           spec_zip.addFile(`${folder?.repo}/${folder?.path}/${file.name}`, Buffer.from(content, 'utf8'), 'Adding file');
@@ -136,7 +144,8 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
     try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      generateZipCollection(folder);
+      const refFolder = provideReferenceFolder(folder); 
+      generateZipCollection(refFolder);
     } else {
       errorMessage('ZIP GENERATOR', 'No Path for reference dir. defined');
     }
