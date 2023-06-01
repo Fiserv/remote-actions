@@ -4,9 +4,11 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const SwaggerParser = require('@apidevtools/swagger-parser'); 
 const args = process.argv.slice(2); 
-const folder = args?.[0]+"/reference"; 
+// Add reference or references in the path
+const folder = args?.[0]; 
+
 const showdown = require('showdown');
-const {errorMsg,errorMessage  , printMessage} = require('./utils/tools');
+const {errorMsg,errorMessage  , printMessage , provideReferenceFolder } = require('./utils/tools');
 const { enrichHTMLFromMarkup, showdownHighlight } = require('./utils/md-utils'); 
 
 /* VALIDATION RULES
@@ -16,9 +18,11 @@ const { enrichHTMLFromMarkup, showdownHighlight } = require('./utils/md-utils');
       - x-group-name
 
 */
-
-const validateDir = async (dir) => {
+ 
+const validateDir = async (dir) => { 
+  
   let check = false;
+  
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async file => {
 
@@ -155,8 +159,9 @@ const main = async() => {
 
   try {
     printMessage(`External Dir ---->>> ${folder}`);   
-    if ( args?.length > 0){ 
-    await validateDir(folder);
+    if ( args?.length > 0){  
+      const refFolder = provideReferenceFolder(folder); 
+      await validateDir(refFolder);
    }else{
     errorMessage('YAML VALIDATOR'  ,'No Path for reference dir. defined');
    }
