@@ -3,9 +3,9 @@ on:
   workflow_call:
   # Triggers the workflow on push or pull request events but only for the dev , stage and main branch
   push:
-    branches: [ develop,stage,main ]
+    branches: [ develop,stage,preview,main ]
   pull_request:
-    branches: [ develop,stage,main ]
+    branches: [ develop,stage,preview,main ]
     paths:
       - 'docs/**' 
 
