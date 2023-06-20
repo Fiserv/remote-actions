@@ -118,16 +118,19 @@ const postmanZipFile = args[0]?.includes("/") ? args[0].split('/').pop()+'_postm
 
         postmanConverter.convert(
           { type: 'string', data: content },
-          { requestParametersResolution: 'Example', folderStrategy: 'Tags' },
+          {  folderStrategy: 'Tags' },
           (err, conversionResult) => {
-            if (!conversionResult.result) {
-              printMessage('Could not convert', conversionResult);
-            } else {   
- 
-                if (folder === '../reference') {
-                  postman_zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
-                } else {
-                  postman_zip.addFile(`${folder?.repo}/${folder?.path}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
+              if (err !== null) { 
+                errorMessage('Postman GENERATOR - Could not convert spec file', err);
+                return false;
+              }
+            
+              if (conversionResult.result){ 
+                  printMessage(`Adding file postman ----- ${folder?.repo}/${folder?.path}/${postmanFileName}`); 
+                  if (folder === '../reference') {
+                    postman_zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
+                  } else {
+                    postman_zip.addFile(`${folder?.repo}/${folder?.path}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
                 }
                 postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`); 
             }
