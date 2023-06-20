@@ -11,14 +11,11 @@ jobs:
   api-validator: 
     uses: ./.github/workflows/github-yaml-validator.yaml
     if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
-  # docs-validator: 
-  #   uses: Fiserv/remote-actions/.github/workflows/github-md-validator.yaml@develop
-  #   if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/main'))}}  
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
   api-zip-generator:
     needs: api-validator
     uses: ./.github/workflows/github-zip-generator.yaml
-    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
+    if: ${{ ((github.repository != 'Fiserv/issuer-solutions') || ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
     secrets: inherit    
