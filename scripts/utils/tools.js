@@ -18,6 +18,10 @@ const processArgs = (args = []) => {
   return argsAndValues;
 };
 
+const warningMsg = (message) => { 
+  console.log(`\x1b[35m Warning : ${message} \x1b[0m`  );
+};
+
 const errorMsg = (message) => { 
   console.log(`\x1b[31m ${message} \x1b[0m`  );
 };
@@ -50,4 +54,5 @@ module.exports = {
   errorMessage,
   printMessage,
   provideReferenceFolder,
+  warningMsg,
 };
