@@ -17,7 +17,7 @@ const validateDir = async (dir) => {
   for (const file of files) {
     let check = true;
     
-    if (file.name === 'document-explorer-definition.yaml'){ 
+    if (file?.name === 'document-explorer-definition.yaml'){ 
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8');
@@ -34,11 +34,23 @@ const validateDir = async (dir) => {
       }
     } 
 
-    if (file.name === 'product-layout.yaml'){ 
+    if (file?.name === 'product-layout.yaml'){ 
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8');
-        const apiJson = yaml.load(content);  
+        const apiJson = yaml.load(content); 
+        
+        if (!apiJson?.getStarted){
+          errorMsg(`${file?.name} missing Getting Started link ! `); 
+          check = false;
+        }else{ 
+          const file = `${args}${apiJson?.getStarted}`; 
+          if (!fs.existsSync(file)) {  
+            errorMsg(`${apiJson?.getStarted} doesn't exist in docs directory`);  
+            check = false;
+          } 
+        }
+        
       } catch (e) {
         errorMessage(pdl_validator  ,e?.message);
         check = false;
@@ -50,7 +62,7 @@ const validateDir = async (dir) => {
       }
     } 
 
-    if (file.name === 'tenant.json'){
+    if (file?.name === 'tenant.json'){
       try{ 
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8'); 
