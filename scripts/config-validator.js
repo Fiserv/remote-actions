@@ -109,7 +109,7 @@ const validateSpecExistence = (dir , tenantData)=> {
   let MajorVersionCheck =0 , MajorVersion = 0;
   let versions = [];
   
-  if (tenantData?.apiVersions.length > 0){
+  if (tenantData?.apiVersions && tenantData?.apiVersions.length > 0){
     for (const item of tenantData.apiVersions) {  
       const version = item?.version ;  
       const versionType = item?.versionType; 
