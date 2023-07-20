@@ -8,15 +8,15 @@ on:
     branches: [ develop,stage,preview,main ]   
    
 jobs:
-  api-validator: 
+  api_validator: 
     uses: ./.github/workflows/github-yaml-validator.yaml
     if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
-    secrets: inherit    
+    secrets: inherit
+  api-zip-generator:
+    needs: api_validator
+    uses: ./.github/workflows/github-zip-generator.yaml
+    if: ${{ !contains( needs.api_validator.outputs.firstword , 'SKIPPED') && ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/main')) }}
+    secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
-    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
-  api-zip-generator:
-    needs: api-validator
-    uses: ./.github/workflows/github-zip-generator.yaml
-    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
-    secrets: inherit    
+    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}   
