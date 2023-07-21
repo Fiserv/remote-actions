@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   workflow_call:
     outputs:
-      firstword:
+      statuscheck:
         description: "Output of Api validation job"
         value: ${{ jobs.api_validator_actions.outputs.output1 }}  
   # Triggers the workflow on push or pull request events but only for the dev , stage and main branch
@@ -78,6 +78,7 @@ jobs:
         run: npm list
 
       - name: Running API Specs Validator.....
+        id : apivalidate      
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
