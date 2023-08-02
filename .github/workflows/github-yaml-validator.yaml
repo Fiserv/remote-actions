@@ -1,6 +1,11 @@
 name: API Specs Validator
 on:
+  workflow_dispatch:
   workflow_call:
+    outputs:
+      statuscheck:
+        description: "Output of Api validation job"
+        value: ${{ jobs.api_validator_actions.outputs.output1 }}  
   # Triggers the workflow on push or pull request events but only for the dev , stage and main branch
   push:
     branches: [ develop,stage,preview,main ]
@@ -12,9 +17,11 @@ on:
       - 'reference/**' 
       
 jobs:
-  API-Validator-Actions:
+  api_validator_actions:
     runs-on: ubuntu-latest
-    timeout-minutes: 15    
+    timeout-minutes: 15
+    outputs:
+      output1: ${{ steps.apivalidate.outputs.JobStatus }}        
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
@@ -71,6 +78,7 @@ jobs:
         run: npm list
 
       - name: Running API Specs Validator.....
+        id : apivalidate      
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
@@ -91,12 +99,17 @@ jobs:
           echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
-          exit 1
+          exit 1 
           elif [[ $result == *'PASSED'* ]] ;then
-          echo "Validator Ran Successfully....🍏"
+          echo "Validator Ran Successfully....🍏" 
+          elif [[ $result == *'SKIPPED'* ]] ;then
+          echo "Validator JOB IS SKIPPED"
+          echo "JobStatus="$result >> $GITHUB_OUTPUT                    
           fi
-      - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Show file content
-        run: |
-          pwd
-          ls -la
+        # env:
+        #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
+         
+
+        #  gh run cancel ${{ github.run_id }} 
+        #   gh run watch ${{ github.run_id }}          

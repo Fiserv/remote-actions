@@ -4,20 +4,12 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const SwaggerParser = require('@apidevtools/swagger-parser'); 
 const args = process.argv.slice(2); 
-// Add reference or references in the path
 const folder = args?.[0]; 
-
+const YAML_VALIDATOR = 'YAML VALIDATOR';
 const showdown = require('showdown');
 const {errorMsg,errorMessage  , printMessage , provideReferenceFolder } = require('./utils/tools');
 const { enrichHTMLFromMarkup, showdownHighlight } = require('./utils/md-utils'); 
-
-/* VALIDATION RULES
-   -  `YAML` Extension check 
-   -  Custom Tags check 
-      - x-proxy-name
-      - x-group-name
-
-*/
+const { exit } = require('process');
  
 const validateDir = async (dir) => { 
   
@@ -37,7 +29,7 @@ const validateDir = async (dir) => {
           const tenantName =  args[0].split('/').pop(); 
           fileName = fileName.split(`/${tenantName}/`)[1];
           if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
-            errorMessage('YAML VALIDATOR'  ,'No path provided!');
+            errorMessage(YAML_VALIDATOR  ,'No path provided!');
           }
           const parsedData = await SwaggerParser.validate(apiJson);
 
@@ -45,14 +37,16 @@ const validateDir = async (dir) => {
             check = await parseAPIData(fileName , parsedData , apiJson); 
             }
         } catch (e) {
-          errorMessage('YAML VALIDATOR'  ,`File : ${file.name} : FAILED`);
+          errorMessage(YAML_VALIDATOR  ,`File : ${file.name} : FAILED`);
           errorMsg(`Error: ${e.message}`);
         }
       }else{
-        errorMessage('YAML VALIDATOR'  ,`Not a YAML Spec file : ${file.name}`);
+        errorMessage(YAML_VALIDATOR  ,`Not a YAML Spec file : ${file.name}`);
       }
     });
   });
+
+  return check;
  
 };
 
@@ -69,7 +63,7 @@ const parseAPIData = async (fileName , parsedData , apiJson) => {
             check = true; 
           } else{ 
             if (!api.hasOwnProperty('x-proxy-name')){  
-              errorMessage('YAML VALIDATOR'  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`); 
+              errorMessage(YAML_VALIDATOR  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`); 
             } 
             check = false; 
             return;
@@ -147,26 +141,54 @@ const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , a
       xUseCases: api['x-use-cases'] ? api['x-use-cases'] : [],
     };  
   }catch(e){
-    errorMessage('YAML VALIDATOR' ,`File :${fileName} with ${e?.message}`);
+    errorMessage(YAML_VALIDATOR ,`File :${fileName} with ${e?.message}`);
     check = false;
-  }  
-
+  }   
   return check;
-}
+};
+
+const isDocOnlyTenant = async (dir) => {
+
+  const files = await fs.promises.readdir(dir, { withFileTypes: true });
+  let check = false; 
+  for (const file of files) {   
+    if (file?.name === 'tenant.json'){
+      try{ 
+       
+        const fileName = `${dir}/${file.name}`;
+        const content = await fs.promises.readFile(fileName, 'utf8'); 
+        const tenantData = JSON.parse(content);   
+        if (tenantData?.apiVersions && tenantData?.apiVersions.length > 0){
+          return true;
+        } 
+      }catch (e){
+        errorMessage(YAML_VALIDATOR  ,e?.message);
+        check = false;
+      }  
+    }   
+  };
+  return check;
+};
 
 
 const main = async() => {
 
   try {
-    printMessage(`External Dir ---->>> ${folder}`);   
+    //printMessage(`External Dir ---->>> ${folder}`);   
     if ( args?.length > 0){  
-      const refFolder = provideReferenceFolder(folder); 
-      await validateDir(refFolder);
+      // Check for API version in tenant configuration file
+      const check = await isDocOnlyTenant(folder+"/config"); 
+      if (check){
+        const refFolder = provideReferenceFolder(folder); 
+        await validateDir(refFolder);
+      } else{
+        printMessage('SKIPPED');
+      }
    }else{
-    errorMessage('YAML VALIDATOR'  ,'No Path for reference dir. defined');
+    errorMessage(YAML_VALIDATOR  ,'No Path for reference dir. defined');
    }
   } catch (e) {
-    errorMessage('YAML VALIDATOR'  ,e.message);
+    errorMessage(YAML_VALIDATOR  ,e.message);
   }
 }
 

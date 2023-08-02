@@ -47,7 +47,7 @@ const validateDir = async (dir) => {
 
     const validateSpecExistence = async(dir , tenantData) => {  
       let specExistence = true;
-      if (tenantData?.apiVersions.length > 0){
+      if (tenantData?.apiVersions && tenantData?.apiVersions.length > 0){
         for (const item of tenantData.apiVersions) {  
           const version = item?.version ;   
           const apiSpecFiles = item.apiSpecFileNames ;  
