@@ -108,7 +108,7 @@ jobs:
           destination_repo: 'Fiserv/tenants-data'
           destination_folder: 'assets'
           destination_branch: '${{ github.ref_name }}'        
-          user_email: 'abhishek.singh3@fiserv.com'
+          user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: 'asingh2023'
           commit_message: 'pushing zip file remotely'
 
@@ -121,9 +121,8 @@ jobs:
           destination_repo: 'Fiserv/tenants-data'
           destination_folder: 'assets'
           destination_branch: '${{ github.ref_name }}'        
-          user_email: 'abhishek.singh3@fiserv.com'
+          user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: 'asingh2023'
           commit_message: 'pushing zip file remotely' 
-      # - name: Commited changes from action runner to remote branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
+ 
         

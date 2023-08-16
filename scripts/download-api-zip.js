@@ -160,51 +160,6 @@ const validateDir = async (dir) => {
         return true;
       };
 
-
-    // const generatePostmanCollection = async(folder , postmanFileName , content ) => { 
-    //   let timeout;
-    //   try{   
-    //     const postmanPromise = new Promise((resolve, reject) => {
-          
-    //         postmanConverter.convert(
-    //           { type: 'string', data: content },
-    //           {},
-    //           (err, conversionResult) => { 
-
-    //             if (err !== null) { 
-    //               errorMessage('Postman GENERATOR - Could not convert spec file', err);
-    //               reject(false);
-    //             }
-    //             if (conversionResult.result){ 
-    //               printMessage(`Adding file postman ----- ${folder?.repo}${folder?.path}/${postmanFileName}`); 
-    //               if (folder === '../reference') {
-    //                 postman_zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
-    //               } else {
-    //                 postman_zip.addFile(`${folder?.repo}${folder?.path}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
-    //               }
-    //               postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`); 
-    //               resolve(true);
-    //             }
-    //           }
-    //         ); 
-    //   }); 
-
-    //   const result = await Promise.race([postmanPromise, new Promise((resolve, reject) => { 
-    //       timeout = setTimeout(() => {
-    //         warningMsg(`Postman GENERATOR - Timeout error with file ${postmanFileName}`);
-    //         reject(false);
-    //       }, 5000); // 1 s 
-    //     })]);
-    //       clearTimeout(timeout);
-    //       console.log(`timout: ${timeout}`);
-    //       return result;
-    //       } catch (e) {
-    //     errorMessage('Postman GENERATOR', e);
-    //     return false;
-    //     }
-    //   };
-
-
       const generatePostmanCollections = (folder ,postmanFileName ,content ) => {  
         let check = false;
         try{    
