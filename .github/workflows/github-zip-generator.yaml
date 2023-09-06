@@ -125,9 +125,15 @@ jobs:
       #     user_name: 'asingh2023'
       #     commit_message: 'pushing zip file remotely' 
  
-      - name: Archive code coverage results
+      - name: Upload Postman Zip
         uses: actions/upload-artifact@v3
         with:
           name: ${{ github.event.repository.name }}_postman.zip
           path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
+
+      - name: Upload Specification Zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}_postman.zip
+          path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip          
         
