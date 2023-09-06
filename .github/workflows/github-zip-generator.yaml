@@ -99,30 +99,35 @@ jobs:
           cd assets
           ls -la 
 
-      - name: Pushing postman.zip file remotely into tenants-data repository.
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        with:
-          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip'
-          destination_repo: 'Fiserv/tenants-data'
-          destination_folder: 'assets'
-          destination_branch: '${{ github.ref_name }}'        
-          user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: 'asingh2023'
-          commit_message: 'pushing zip file remotely'
+      # - name: Pushing postman.zip file remotely into tenants-data repository.
+      #   uses: dmnemec/copy_file_to_another_repo_action@main
+      #   env:
+      #     API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
+      #   with:
+      #     source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip'
+      #     destination_repo: 'Fiserv/tenants-data'
+      #     destination_folder: 'assets'
+      #     destination_branch: '${{ github.ref_name }}'        
+      #     user_email: ${{ vars.ACTION_EADDRESS }}
+      #     user_name: 'asingh2023'
+      #     commit_message: 'pushing zip file remotely'
 
-      - name: Pushing specs.zip file remotely into tenants-data repository.
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        with:
-          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip'
-          destination_repo: 'Fiserv/tenants-data'
-          destination_folder: 'assets'
-          destination_branch: '${{ github.ref_name }}'        
-          user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: 'asingh2023'
-          commit_message: 'pushing zip file remotely' 
+      # - name: Pushing specs.zip file remotely into tenants-data repository.
+      #   uses: dmnemec/copy_file_to_another_repo_action@main
+      #   env:
+      #     API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
+      #   with:
+      #     source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip'
+      #     destination_repo: 'Fiserv/tenants-data'
+      #     destination_folder: 'assets'
+      #     destination_branch: '${{ github.ref_name }}'        
+      #     user_email: ${{ vars.ACTION_EADDRESS }}
+      #     user_name: 'asingh2023'
+      #     commit_message: 'pushing zip file remotely' 
  
+       - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}_postman.zip
+          path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
         
