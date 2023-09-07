@@ -128,14 +128,12 @@ jobs:
       - name: Upload Postman Zip
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ github.event.repository.name }}_${{ github.ref_name }}
-          path: |
-            ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
-            ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip
+          name: ${{ github.event.repository.name }}_${{ github.ref_name }}_postman.zip
+          path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
 
-      # - name: Upload Specification Zip
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_spec.zip
-      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip          
+      - name: Upload Specification Zip
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ github.event.repository.name }}_${{ github.ref_name }}_spec.zip
+          path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip          
         
