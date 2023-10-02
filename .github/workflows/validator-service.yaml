@@ -20,5 +20,5 @@ jobs:
     secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
-    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
+    #if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
       
