@@ -1,9 +1,9 @@
-name: Python Script CI
-
+name: Webhook Failed Retry
+ 
 on:
+  workflow_call: 
   push:
-    branches:
-      - develop
+    branches: [ develop,stage,preview,main ]
 
 jobs:
   build:
