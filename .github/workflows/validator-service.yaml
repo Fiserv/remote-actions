@@ -10,8 +10,7 @@ on:
    
 jobs:
   api_validator: 
-    uses: ./.github/workflows/github-yaml-validator.yaml
-    if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
+    uses: ./.github/workflows/github-yaml-validator.yaml 
     secrets: inherit
   api-zip-generator:
     needs: api_validator
@@ -20,5 +19,5 @@ jobs:
     secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
-    #if: ${{ ((github.ref == 'refs/heads/develop') || (github.ref == 'refs/heads/stage') || (github.ref == 'refs/heads/preview') || (github.ref == 'refs/heads/main')) }}
-      
+  webhook-retrigger:
+    uses: ./.github/workfows/retrigger-failed-webhook.yaml
