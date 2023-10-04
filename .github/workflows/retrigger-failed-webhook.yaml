@@ -1,6 +1,7 @@
 name: Webhook Failed Retry
  
 on:
+  workflow_dispatch:
   workflow_call: 
   push:
     branches: [ develop,stage,preview,main ]
