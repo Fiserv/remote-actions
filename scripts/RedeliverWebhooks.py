@@ -9,7 +9,7 @@ github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
 
 # Function to get a list of hook IDs for the repository
 def get_hook_ids():
-    url = f"https://api.github.com/repos/{owner}/{repo}/hooks"
+    url = f"https://api.github.com/repos/{owner}/{repo}/hooks?per_page=2"
     headers = {
         "Authorization": f"Bearer {github_auth_token}",
         "Accept": "application/vnd.github.v3+json",
@@ -39,7 +39,8 @@ def redeliver_failed_deliveries(hook_id):
     for delivery in deliveries:
         if delivery["status_code"] == 200:
             delivery_id = delivery["id"]
-            print(f"Deliveries found for delivery ID {delivery_id} corresponding to hook ID {hook_id}")
+            last_response = delivery["last_response"]
+            print(f"Deliveries found for delivery ID {delivery_id} corresponding to hook ID {hook_id} respose {last_response}")
     
     for delivery in deliveries:
         if delivery["status_code"] == 500:
