@@ -34,13 +34,12 @@ def redeliver_failed_deliveries(hook_id):
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     deliveries = response.json()
-    
 
-    for delivery in deliveries:
-        if delivery["status_code"] == 200:
-            delivery_id = delivery["id"]
-            last_response = delivery["last_response"]
-            print(f"Deliveries found for delivery ID {delivery_id} corresponding to hook ID {hook_id} respose {last_response}")
+    # for delivery in deliveries:
+    #     if delivery["status_code"] == 200:
+    #         delivery_id = delivery["id"]
+    #         last_response = delivery["last_response"]
+    #         print(f"Deliveries found for delivery ID {delivery_id} corresponding to hook ID {hook_id} respose {last_response}")
     
     for delivery in deliveries:
         if delivery["status_code"] == 500:
@@ -52,8 +51,7 @@ def redeliver_failed_deliveries(hook_id):
  
             
 
-if __name__ == "__main__":
-    #github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
+if __name__ == "__main__": 
     
     if github_auth_token:
         print("Secret Value FOUND.")
