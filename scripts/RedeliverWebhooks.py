@@ -62,8 +62,11 @@ if __name__ == "__main__":
         print("Secret Value NOT found.")
         
     hook_ids = get_hook_ids()
-    if hook_ids is not None
+    try:
+        if hook_ids is not None 
         print("Hook IDs:", hook_ids)
+    except:
+        print("No Hooks found")    
     
     for hook_id in hook_ids:
         redeliver_failed_deliveries(hook_id)
