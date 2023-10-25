@@ -7,14 +7,9 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument(dest='repo', help="Tenant repo name")
 
-args = parser.parse_args()
+tenant_repo = parser.parse_args().repo
 
-# owner = "Fiserv"
-# repo = "Testing-repo"
 github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
-
-tenant_repo = args.repo
-
 
 # Function to get a list of hook IDs for the repository
 def get_hook_ids():
@@ -56,7 +51,7 @@ def redeliver_failed_deliveries(hook_id):
 
 if __name__ == "__main__": 
     
-    print ('value of variable a is:',tenant_repo)
+    print ('Retrying for the Tenant: ',tenant_repo)
 
     if github_auth_token:
         print("Secret Value FOUND.")
