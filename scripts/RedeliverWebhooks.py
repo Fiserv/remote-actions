@@ -19,9 +19,9 @@ def get_hook_ids():
         "Accept": "application/vnd.github.v3+json",
         "X-GitHub-Api-Version": "2022-11-28"
     }
-
+     
     response = requests.get(url, headers=headers)
-    response.raise_for_status()
+    #response.raise_for_status()
     hooks = response.json()
     hook_ids = [hook["id"] for hook in hooks]
     return hook_ids
