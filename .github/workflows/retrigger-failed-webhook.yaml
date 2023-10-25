@@ -1,5 +1,4 @@
 name: Webhook Failed Retry
- 
 on:
   workflow_dispatch:
   workflow_call: 
@@ -9,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 15
     steps:
     - name: Checkout code
       uses: actions/checkout@v3

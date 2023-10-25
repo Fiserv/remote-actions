@@ -20,4 +20,4 @@ jobs:
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
   webhook-retrigger:
-    uses: ./.github/workfows/retrigger-failed-webhook.yaml
+    uses: ./.github/workflows/retrigger-failed-webhook.yaml
