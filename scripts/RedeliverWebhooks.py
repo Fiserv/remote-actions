@@ -11,7 +11,7 @@ owner = "Fiserv"
 repo = "Testing-repo"
 github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
 
-tenant_repo = args.v1
+tenant_repo=args.v1
 
 
 # Function to get a list of hook IDs for the repository
@@ -54,7 +54,7 @@ def redeliver_failed_deliveries(hook_id):
 
 if __name__ == "__main__": 
     
-    print ('value of variable a is:',tenant_repo)
+    print ('value of variable a is:',args.v1)
 
     if github_auth_token:
         print("Secret Value FOUND.")
