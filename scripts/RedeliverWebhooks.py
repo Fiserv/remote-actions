@@ -5,15 +5,15 @@ import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('v1')
+parser.add_argument(dest='repo', help="Tenant repo name")
 
 args = parser.parse_args()
 
-owner = "Fiserv"
-repo = "Testing-repo"
+# owner = "Fiserv"
+# repo = "Testing-repo"
 github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
 
-tenant_repo=args.v1
+tenant_repo = args.repo
 
 
 # Function to get a list of hook IDs for the repository
