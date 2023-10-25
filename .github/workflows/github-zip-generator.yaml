@@ -122,7 +122,7 @@ jobs:
           destination_folder: 'assets'
           destination_branch: '${{ github.ref_name }}'        
           user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: ${{ vars.ACTION_USERNAME }}
+          user_name: '${{ vars.ACTION_USERNAME }}'
           commit_message: 'pushing zip file remotely' 
  
       # - name: Upload Postman Zip
