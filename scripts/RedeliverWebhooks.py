@@ -63,7 +63,7 @@ if __name__ == "__main__":
         
     hook_ids = get_hook_ids()
     try:
-        if hook_ids is not None 
+        if hook_ids is not None: 
         print("Hook IDs:", hook_ids)
     except:
         print("No Hooks found")    
