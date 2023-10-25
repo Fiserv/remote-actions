@@ -24,7 +24,7 @@ def get_hook_ids():
     #response.raise_for_status()
     hook_ids = []
 
-    status = rresponse.status_code
+    status = response.status_code
     print ('response: ', status)
 
     if status == 200:
