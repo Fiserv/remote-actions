@@ -109,8 +109,8 @@ jobs:
           destination_folder: 'assets'
           destination_branch: '${{ github.ref_name }}'        
           user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: '${{ vars.ACTION_USERNAME }}'
-          commit_message: 'pushing zip file remotely'
+          user_name: 'asingh2023'
+          commit_message: 'pushing zip postman file remotely'
 
       - name: Pushing specs.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -122,8 +122,8 @@ jobs:
           destination_folder: 'assets'
           destination_branch: '${{ github.ref_name }}'        
           user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: '${{ vars.ACTION_USERNAME }}'
-          commit_message: 'pushing zip file remotely' 
+          user_name: 'asingh2023'
+          commit_message: 'pushing zip specs file remotely' 
  
       # - name: Upload Postman Zip
       #   uses: actions/upload-artifact@v3
