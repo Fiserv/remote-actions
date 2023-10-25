@@ -1,15 +1,22 @@
 import requests
 import json
 import os
+import argparse
+parser = argparse.ArgumentParser()
+
+parser.add_argument('v1')
+args = parser.parse_args()
 
 owner = "Fiserv"
 repo = "Testing-repo"
 github_auth_token = os.environ.get("TEST_GITHUB_AUTH_TOKEN")
 
+tenant_repo = args.v1
+
 
 # Function to get a list of hook IDs for the repository
 def get_hook_ids():
-    url = f"https://api.github.com/repos/{owner}/{repo}/hooks?per_page=2"
+    url = f"https://api.github.com/repos/{tenant_repo}/hooks?per_page=1"
     headers = {
         "Authorization": f"Bearer {github_auth_token}",
         "Accept": "application/vnd.github.v3+json",
@@ -24,7 +31,7 @@ def get_hook_ids():
 
 # Function to redeliver failed deliveries with status code 500
 def redeliver_failed_deliveries(hook_id):
-    url = f"https://api.github.com/repos/{owner}/{repo}/hooks/{hook_id}/deliveries"
+    url = f"https://api.github.com/repos/{tenant_repo}/hooks/{hook_id}/deliveries"
     headers = {
         "Authorization": f"Bearer {github_auth_token}",
         "Accept": "application/vnd.github.v3+json",
@@ -34,17 +41,11 @@ def redeliver_failed_deliveries(hook_id):
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     deliveries = response.json()
-
-    # for delivery in deliveries:
-    #     if delivery["status_code"] == 200:
-    #         delivery_id = delivery["id"]
-    #         last_response = delivery["last_response"]
-    #         print(f"Deliveries found for delivery ID {delivery_id} corresponding to hook ID {hook_id} respose {last_response}")
     
     for delivery in deliveries:
         if delivery["status_code"] == 500:
             delivery_id = delivery["id"]
-            redeliver_url = f"https://api.github.com/repos/{owner}/{repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
+            redeliver_url = f"https://api.github.com/repos/{tenant_repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
             response = requests.post(redeliver_url, headers=headers)
             response.raise_for_status()
             print(f"Redelivered delivery ID {delivery_id} for hook ID {hook_id}")
@@ -53,6 +54,8 @@ def redeliver_failed_deliveries(hook_id):
 
 if __name__ == "__main__": 
     
+    print ('value of variable a is:',tenant_repo)
+
     if github_auth_token:
         print("Secret Value FOUND.")
     else:
