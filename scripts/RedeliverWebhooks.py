@@ -22,9 +22,14 @@ def get_hook_ids():
      
     response = requests.get(url, headers=headers)
     #response.raise_for_status()
-    print ('response: ',response)
-    hooks = response.json()
-    hook_ids = [hook["id"] for hook in hooks]
+    hook_ids = []
+
+    print ('response: ',response.raise_for_status())
+
+    if response.raise_for_status() == 200:
+        hooks = response.json()
+        hook_ids = [hook["id"] for hook in hooks]
+
     return hook_ids
 
 # Function to redeliver failed deliveries
