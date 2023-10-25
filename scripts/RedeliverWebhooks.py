@@ -56,7 +56,7 @@ def redeliver_failed_deliveries(hook_id):
 
 if __name__ == "__main__": 
     
-    print ('value of variable a is:',args.v1)
+    print ('value of variable a is:',tenant_repo)
 
     if github_auth_token:
         print("Secret Value FOUND.")
