@@ -95,9 +95,6 @@ const validateDir = async (dir) => {
                     if (fileName !== null){
                       tenant_repo.path = tenant_repo?.path.replace(`/${fileName}`, '');
                     } 
-                    // printMessage(` Dir ---${dir}`); 
-                    // printMessage(` file ---${JSON.stringify(fileAr)}`); 
-                    // printMessage(`Tenant files  :${JSON.stringify(tenant_repo)}`); 
                     if (await generateSpecZipCollection(tenant_repo ,  fileName , content ) 
                             && tenant_repo !== null 
                             &&  fileName!== null 
@@ -203,10 +200,6 @@ const validateDir = async (dir) => {
         printMessage(`External Dir ---->>> ${args}`);
         if (args?.length > 0) { 
         await validateDir(folder+"/config"); 
-        //  console.log("----------------------------------------------------------------");
-        //  const refFolder = provideReferenceFolder(folder); 
-        //  console.log(`refFolder :${refFolder}`);
-        //  await generateZipCollection(refFolder);
         } else {
           errorMessage(Zip_Generator, 'No Path for reference dir. defined');
         }
