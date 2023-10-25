@@ -43,7 +43,7 @@ def redeliver_failed_deliveries(hook_id):
     deliveries = response.json()
     
     for delivery in deliveries:
-        if delivery["status_code"] == 500:
+        if delivery["status_code"] >= 400:
             delivery_id = delivery["id"]
             redeliver_url = f"https://api.github.com/repos/{tenant_repo}/hooks/{hook_id}/deliveries/{delivery_id}/attempts"
             response = requests.post(redeliver_url, headers=headers)
@@ -62,7 +62,8 @@ if __name__ == "__main__":
         print("Secret Value NOT found.")
         
     hook_ids = get_hook_ids()
-    print("Hook IDs:", hook_ids)
+    if hook_ids is not None
+        print("Hook IDs:", hook_ids)
     
     for hook_id in hook_ids:
         redeliver_failed_deliveries(hook_id)
