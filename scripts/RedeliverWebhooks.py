@@ -22,6 +22,7 @@ def get_hook_ids():
      
     response = requests.get(url, headers=headers)
     #response.raise_for_status()
+    print ('response: ',response)
     hooks = response.json()
     hook_ids = [hook["id"] for hook in hooks]
     return hook_ids
