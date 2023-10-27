@@ -13,7 +13,7 @@ jobs:
 
     - name: Creating new temp sub dir called `tools`
       run: |
-         mkdir -m 777 tools
+         mkdir -m 750 tools
          cd tools
 
     - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
@@ -41,25 +41,3 @@ jobs:
       env:
         TEST_GITHUB_AUTH_TOKEN: ${{ secrets.TEST_GITHUB_AUTH_TOKEN }}
       run: python ${{ github.workspace }}/tools/scripts/RedeliverWebhooks.py ${{ github.repository }}
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 15
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v3
-
-#     - name: Set up Python
-#       uses: actions/setup-python@v4
-#       with:
-#         python-version: 3.x
-
-#     - name: Install dependencies
-#       run: pip install -r https://raw.githubusercontent.com/Fiserv/remote-actions/${{ github.ref }}/.github/workflows/requirements.txt
-      
-#     - name: Run Python script
-#       env:
-#         TEST_GITHUB_AUTH_TOKEN: ${{ secrets.TEST_GITHUB_AUTH_TOKEN }}
-#       run: python scripts/RedeliverWebhooks.py ${{ github.repository }}
-      
