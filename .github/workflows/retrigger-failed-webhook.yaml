@@ -1,0 +1,27 @@
+name: Webhook Failed Retry
+on:
+  workflow_dispatch:
+  workflow_call: 
+  push:
+    branches: [ develop,stage,preview,main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: pip install -r .github/workflows/requirements.txt
+
+    - name: Run Python script
+      env:
+        TEST_GITHUB_AUTH_TOKEN: ${{ secrets.TEST_GITHUB_AUTH_TOKEN }}
+      run: python scripts/RedeliverWebhooks.py ${{ github.repository }}

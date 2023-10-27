@@ -95,9 +95,6 @@ const validateDir = async (dir) => {
                     if (fileName !== null){
                       tenant_repo.path = tenant_repo?.path.replace(`/${fileName}`, '');
                     } 
-                    // printMessage(` Dir ---${dir}`); 
-                    // printMessage(` file ---${JSON.stringify(fileAr)}`); 
-                    // printMessage(`Tenant files  :${JSON.stringify(tenant_repo)}`); 
                     if (await generateSpecZipCollection(tenant_repo ,  fileName , content ) 
                             && tenant_repo !== null 
                             &&  fileName!== null 
@@ -160,51 +157,6 @@ const validateDir = async (dir) => {
         return true;
       };
 
-
-    // const generatePostmanCollection = async(folder , postmanFileName , content ) => { 
-    //   let timeout;
-    //   try{   
-    //     const postmanPromise = new Promise((resolve, reject) => {
-          
-    //         postmanConverter.convert(
-    //           { type: 'string', data: content },
-    //           {},
-    //           (err, conversionResult) => { 
-
-    //             if (err !== null) { 
-    //               errorMessage('Postman GENERATOR - Could not convert spec file', err);
-    //               reject(false);
-    //             }
-    //             if (conversionResult.result){ 
-    //               printMessage(`Adding file postman ----- ${folder?.repo}${folder?.path}/${postmanFileName}`); 
-    //               if (folder === '../reference') {
-    //                 postman_zip.addFile(`${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
-    //               } else {
-    //                 postman_zip.addFile(`${folder?.repo}${folder?.path}/${postmanFileName}`, JSON.stringify(conversionResult?.output[0]?.data));
-    //               }
-    //               postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`); 
-    //               resolve(true);
-    //             }
-    //           }
-    //         ); 
-    //   }); 
-
-    //   const result = await Promise.race([postmanPromise, new Promise((resolve, reject) => { 
-    //       timeout = setTimeout(() => {
-    //         warningMsg(`Postman GENERATOR - Timeout error with file ${postmanFileName}`);
-    //         reject(false);
-    //       }, 5000); // 1 s 
-    //     })]);
-    //       clearTimeout(timeout);
-    //       console.log(`timout: ${timeout}`);
-    //       return result;
-    //       } catch (e) {
-    //     errorMessage('Postman GENERATOR', e);
-    //     return false;
-    //     }
-    //   };
-
-
       const generatePostmanCollections = (folder ,postmanFileName ,content ) => {  
         let check = false;
         try{    
@@ -248,10 +200,6 @@ const validateDir = async (dir) => {
         printMessage(`External Dir ---->>> ${args}`);
         if (args?.length > 0) { 
         await validateDir(folder+"/config"); 
-        //  console.log("----------------------------------------------------------------");
-        //  const refFolder = provideReferenceFolder(folder); 
-        //  console.log(`refFolder :${refFolder}`);
-        //  await generateZipCollection(refFolder);
         } else {
           errorMessage(Zip_Generator, 'No Path for reference dir. defined');
         }

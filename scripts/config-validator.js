@@ -38,19 +38,7 @@ const validateDir = async (dir) => {
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8');
-        const apiJson = yaml.load(content); 
-        
-        if (!apiJson?.getStarted){
-          errorMsg(`${file?.name} missing Getting Started link ! `); 
-          check = false;
-        }else{ 
-          const file = `${args}${apiJson?.getStarted}`; 
-          if (!fs.existsSync(file)) {  
-            errorMsg(`${apiJson?.getStarted} doesn't exist in docs directory`);  
-            check = false;
-          } 
-        }
-        
+        yaml.load(content); 
       } catch (e) {
         errorMessage(pdl_validator  ,e?.message);
         check = false;
@@ -66,8 +54,20 @@ const validateDir = async (dir) => {
       try{ 
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8'); 
-        const data = JSON.parse(content); 
-        check = validateSpecExistence(args?.[0] , data); 
+        const data = JSON.parse(content);
+         
+        check = validateSpecExistence(args?.[0] , data);  
+        if (!data?.getStartedFilePath){
+          errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in tenant.json file`); 
+          check = false;
+        }else{ 
+          const file = `${args}${data?.getStartedFilePath}`; 
+          if (!fs.existsSync(file)) {  
+            errorMsg(`${data?.getStartedFilePath} doesn't exist in docs directory`);  
+            check = false;
+          } 
+        }
+
       }catch (e){
         errorMessage(tenant_config_validator  ,e?.message);
         check = false;

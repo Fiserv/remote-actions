@@ -3,6 +3,7 @@
   "name": "DeveloperStudio",
   "brand": "Fiserv",
   "brandLogoURL": "https://raw.githubusercontent.com/Fiserv/Developer-Portal-Tenant-API/develop/assets/images/Fiserv_Logo.jpg",
+  "getStartedFilePath": "/docs/getting-started.md",
   "solution": [
     "financial-institutions"
   ],
@@ -19,7 +20,7 @@
       ]
     }
   ],
-  "apiVersionsq": [
+  "apiVersions": [
     {
       "version": "1.0.0",
       "versionType": "major",
