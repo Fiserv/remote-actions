@@ -19,7 +19,7 @@ jobs:
         python-version: 3.x
 
     - name: Install dependencies
-      run: pip install -r Fiserv/remote-actions/.github/workflows/requirements.txt
+      run: pip install -r https://raw.githubusercontent.com/Fiserv/remote-actions/${{ github.ref }}/.github/workflows/requirements.txt
       
     - name: Run Python script
       env:
