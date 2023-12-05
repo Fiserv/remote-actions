@@ -1,9 +1,8 @@
 name: API Specs ZIP Generator
 on:
-  # Triggers the workflow on push or pull request events but only for the develop , stage and main branch
-  workflow_call:  
+  workflow_call:
   push:
-    branches: [ develop,stage,preview,main ]
+    branches: [ develop,stage,preview,main,previous ]
     paths:
       - 'reference/**' 
 
