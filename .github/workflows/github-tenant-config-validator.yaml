@@ -1,13 +1,16 @@
 name: TenantConfig Validator
 on:
   workflow_call:
-  # Triggers the workflow on push or pull request events but only for the dev , stage and main branch
+  # branches are specified for 'push' and 'pull' triggers to enable local testing
+  # (modify files in this repo instead of having to modify other repo's)
+  # The workflow trigger happens regardless of the branches included in the 'push'
+  # and 'pull' request triggers.
   push:
-    branches: [ develop,stage,preview,main ]
+    branches: [ develop,stage,preview,main,previous ]
     paths:
       - 'config/**'     
   pull_request:
-    branches: [ develop,stage,preview,main ]
+    branches: [ develop,stage,preview,main,previous ]
     paths:
       - 'config/**' 
 
