@@ -2,10 +2,6 @@ name: Webhook Failed Retry
 on:
   workflow_dispatch:
   workflow_call:
-  # branches are specified for the 'push' trigger to enable local testing
-  # (modify files in this repo instead of having to modify other repo's)
-  # The workflow trigger happens regardless of the branches included in the 'push'
-  # trigger.
   push:
     branches: [ develop,stage,preview,main,previous ]
 

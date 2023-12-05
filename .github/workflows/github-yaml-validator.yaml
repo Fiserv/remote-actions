@@ -6,10 +6,6 @@ on:
       statuscheck:
         description: "Output of Api validation job"
         value: ${{ jobs.api_validator_actions.outputs.output1 }}  
-  # branches are specified for 'push' and 'pull' triggers to enable local testing
-  # (modify files in this repo instead of having to modify other repo's)
-  # The workflow trigger happens regardless of the branches included in the 'push'
-  # and 'pull' request triggers.
   push:
     branches: [ develop,stage,preview,main, previous ]
     paths:
