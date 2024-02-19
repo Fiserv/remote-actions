@@ -113,7 +113,7 @@ jobs:
         id : sizevalidate
         run: |
           ls
-          oversized_files=$(find /reference -type f -size +$(echo "(1.5 * 1024)" | bc | cut -d'.' -f1)k)
+          oversized_files=$(find reference -type f -size +$(echo "(1.5 * 1024)" | bc | cut -d'.' -f1)k)
           if [ -n "$oversized_files" ]; then
             echo "The following files are larger than 1.5MB:"
             echo "$oversized_files"
