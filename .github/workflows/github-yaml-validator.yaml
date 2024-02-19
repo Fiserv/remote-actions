@@ -118,4 +118,5 @@ jobs:
             echo "The following files are larger than 1.5MB:"
             echo "$oversized_files"
             exit 1
+          fi
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
