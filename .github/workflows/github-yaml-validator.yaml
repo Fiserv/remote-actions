@@ -110,7 +110,7 @@ jobs:
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
 
       - name: API Specs Size Validator.....
-        id : sizevalidate  
+        id : sizevalidate
         run: |
           ls
           oversized_files=$(find /reference -type f -size +$(echo "1.5 * 1024" | bc)k)
@@ -118,4 +118,4 @@ jobs:
             echo "The following files are larger than 1MB:"
             echo "$oversized_files"
             exit 1
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"   
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
