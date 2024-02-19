@@ -97,18 +97,25 @@ jobs:
           rm -rf ${{github.workspace }}/tools
           echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
-          echo "Validator failed and exiting the Job..."
-          exit 1 
+            echo "Validator failed and exiting the Job..."
+            exit 1 
           elif [[ $result == *'PASSED'* ]] ;then
-          echo "Validator Ran Successfully....🍏" 
+            echo "Validator Ran Successfully....🍏" 
           elif [[ $result == *'SKIPPED'* ]] ;then
-          echo "Validator JOB IS SKIPPED"
-          echo "JobStatus="$result >> $GITHUB_OUTPUT                    
+            echo "Validator JOB IS SKIPPED"
+            echo "JobStatus="$result >> $GITHUB_OUTPUT                    
           fi
         # env:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
-         
 
-        #  gh run cancel ${{ github.run_id }} 
-        #   gh run watch ${{ github.run_id }}          
+      - name: API Specs Size Validator.....
+        id : sizevalidate
+        run: |
+          ls
+          oversized_files=$(find /reference -type f -size +$(echo "1.5 * 1024" | bc)k)
+          if [ -n "$oversized_files" ]; then
+            echo "The following files are larger than 1MB:"
+            echo "$oversized_files"
+            exit 1
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
