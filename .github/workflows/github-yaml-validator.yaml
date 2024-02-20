@@ -119,7 +119,7 @@ jobs:
             echo "JobStatus=SKIPPED" >> $GITHUB_OUTPUT   
             exit 0
           fi
-          oversized_files=$(find /reference -type f -size +$(echo "( ${{ env.filesize }} * 1024)" | bc | cut -d'.' -f1)k)
+          oversized_files=$(find reference -type f -size +$(echo "( ${{ env.filesize }} * 1024)" | bc | cut -d'.' -f1)k)
           if [ -n "$oversized_files" ]; then
             echo "The following files are larger than ${{ env.filesize }}MB:"
             echo "$oversized_files"
