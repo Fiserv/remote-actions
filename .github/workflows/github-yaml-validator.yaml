@@ -114,7 +114,7 @@ jobs:
       - name: Validate API Reference
         run: |
           for file in reference/*.yaml; do
-            prism mock --spec reference/$file || exit 1
+            prism mock reference/$file || exit 1
           done
       
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
