@@ -113,16 +113,17 @@ jobs:
       #   run: npm install -g @stoplight/spectral
       # - name: Spectral API Validation
       #   run: |
+      #     spectral_failure=false
       #     echo 'extends: ["spectral:oas", "spectral:asyncapi"]' > .spectral.yaml
-      #     for file in reference/*.yaml; do
-      #       spectral lint $file --ruleset .spectral.yaml
+      #     for file in $(find reference -type f -name '*.yaml'); do
+      #       spectral lint $file --ruleset .spectral.yaml || spectral_failure=true
       #     done
 
       - name: Install Swagger CLI
         run: npm install -g swagger-cli
       - name: Validate API Specifications
         run: |
-          for file in reference/*.yaml; do
+          for file in $(find reference -type f -name '*.yaml'); do
             swagger-cli validate $file
           done
       
