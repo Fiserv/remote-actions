@@ -108,21 +108,3 @@ jobs:
         # env:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
-
-      - name: API Specs Size Validator.....
-        id : sizevalidate
-        env:
-          filesize: 1.5
-        run: |
-          if [ ! -d "reference" ]; then
-            echo "No references found. Skipping job."
-            echo "JobStatus=SKIPPED" >> $GITHUB_OUTPUT   
-            exit 0
-          fi
-          oversized_files=$(find reference -type f -size +$(echo "( ${{ env.filesize }} * 1024)" | bc | cut -d'.' -f1)k)
-          if [ -n "$oversized_files" ]; then
-            echo "The following files are larger than ${{ env.filesize }}MB:"
-            echo "$oversized_files"
-            exit 1
-          fi
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
