@@ -113,8 +113,9 @@ jobs:
         run: npm install -g @stoplight/spectral
       - name: Validate API Reference
         run: |
+          spectral lint --init
           for file in reference/*.yaml; do
-            spectral lint $file
+            spectral lint $file  --ruleset spectral.yml
           done
       
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
