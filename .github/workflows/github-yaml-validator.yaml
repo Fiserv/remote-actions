@@ -109,12 +109,12 @@ jobs:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
 
-      - name: Install Prism
-        run: npm install -g @stoplight/prism-cli
+      - name: Install Spectral
+        run: npm install -g @stoplight/spectral
       - name: Validate API Reference
         run: |
           for file in reference/*.yaml; do
-            prism mock $file || exit 1
+            spectral lint $file
           done
       
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
