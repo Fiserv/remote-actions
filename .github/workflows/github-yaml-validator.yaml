@@ -111,11 +111,23 @@ jobs:
 
       - name: Install Spectral
         run: npm install -g @stoplight/spectral
-      - name: Validate API Reference
+      - name: Create Spectral Configuration File
         run: |
-          spectral lint --init
+          echo "rules:" > spectral.yml
+          echo "  no-eval:" >> spectral.yml
+          echo "    recommended: error" >> spectral.yml
+      - name: Spectral API Validation
+        run: |
           for file in reference/*.yaml; do
             spectral lint $file  --ruleset spectral.yml
+          done
+
+      - name: Install Swagger CLI
+        run: npm install -g swagger-cli
+      - name: Validate API Specifications
+        run: |
+          for file in reference/*.yaml; do
+            swagger-cli validate $file
           done
       
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
