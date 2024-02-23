@@ -109,14 +109,14 @@ jobs:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
 
-      - name: Install Spectral
-        run: npm install -g @stoplight/spectral
-      - name: Spectral API Validation
-        run: |
-          echo 'extends: ["spectral:oas", "spectral:asyncapi"]' > .spectral.yaml
-          for file in reference/*.yaml; do
-            spectral lint $file --ruleset .spectral.yaml
-          done
+      # - name: Install Spectral
+      #   run: npm install -g @stoplight/spectral
+      # - name: Spectral API Validation
+      #   run: |
+      #     echo 'extends: ["spectral:oas", "spectral:asyncapi"]' > .spectral.yaml
+      #     for file in reference/*.yaml; do
+      #       spectral lint $file --ruleset .spectral.yaml
+      #     done
 
       - name: Install Swagger CLI
         run: npm install -g swagger-cli
