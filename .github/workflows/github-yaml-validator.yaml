@@ -122,13 +122,13 @@ jobs:
             current_file_success=true
             prism mock $file &
             prism_pid=$!
-            timeout=30
-            sleep_interval=5
+            timeout=10
+            sleep_interval=3
             counter=0
-            while ! curl -sSf http://localhost:4010 2>&1 >/dev/null; do
+            while ! curl -sSf http://127.0.0.1:4010 2>&1 >/dev/null; do
                 counter=$((counter + 1))
                 if [ "$counter" -gt "$timeout" ]; then
-                    echo "Prism mock did not start within $timeout seconds for $file."
+                    echo "Prism mock did not start for $file."
                     prism_failure=true
                     current_file_success=false
                     break
