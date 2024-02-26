@@ -120,7 +120,7 @@ jobs:
           prism_failure=false
           for file in $(find reference -type f -name '*.yaml'); do
             current_file_success=true
-            prism mock --spec file &
+            prism mock $file &
             prism_pid=$!
             timeout=30
             sleep_interval=5
