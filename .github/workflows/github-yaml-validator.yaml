@@ -135,8 +135,10 @@ jobs:
                 fi
                 sleep $sleep_interval
             done
-            if [[ $current_file_success ]]; then echo "Prism mock started successfully."; fi
-            kill -TERM $prism_pid
+            if [[ $current_file_success ]]; then
+              echo "Prism mock started successfully."
+              kill -TERM $prism_pid
+            fi
           done
           if [[ $prism_failure ]]; then exit 1; fi
 
