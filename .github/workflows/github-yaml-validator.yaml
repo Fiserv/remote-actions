@@ -109,6 +109,37 @@ jobs:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
 
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install Prism CLI
+        run: npm install -g @stoplight/prism-cli
+      - name: Run Prism Mock
+        run: |
+          prism_failure=false
+          for file in $(find reference -type f -name '*.yaml'); do
+            current_file_success=true
+            prism mock --spec file &
+            prism_pid=$!
+            timeout=30
+            sleep_interval=5
+            counter=0
+            while ! curl -sSf http://localhost:4010 2>&1 >/dev/null; do
+                counter=$((counter + 1))
+                if [ "$counter" -gt "$timeout" ]; then
+                    echo "Prism mock did not start within $timeout seconds for $file."
+                    prism_failure=true
+                    current_file_success=false
+                    break
+                fi
+                sleep $sleep_interval
+            done
+            if [[ $current_file_success ]]; then echo "Prism mock started successfully."; fi
+            kill -TERM $prism_pid
+          done
+          if [[ $prism_failure ]]; then exit 1; fi
+
       - name: Install Spectral
         run: npm install -g @stoplight/spectral
       - name: Spectral API Validation
