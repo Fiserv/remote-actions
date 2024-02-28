@@ -1,0 +1,80 @@
+name: API Specs Validator
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      statuscheck:
+        description: "Output of API validation job"
+        value: ${{ jobs.api_validator_actions.outputs.output1 }}  
+  push:
+    branches: [ develop,stage,preview,main, previous ]
+    paths:
+      - 'reference/**'     
+  pull_request:
+    branches: [ develop,stage,preview,main,previous ]
+    paths:
+      - 'reference/**' 
+      
+jobs:
+  api_validator_actions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      output1: ${{ steps.apivalidate.outputs.JobStatus }}        
+    steps:
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and ${GITHUB_REF##*/} and ${GITHUB_REF#refs/heads/} and your repository is ${{ github.repository }}." 
+      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
+        uses: actions/checkout@v3
+        with:
+         repository: ${{ github.repository }}
+         path: ${{ github.workspace }}
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Install Prism CLI
+        run: npm install -g @stoplight/prism-cli
+      - name: Install curl
+        run: sudo apt-get install curl -y
+      - name: Run Prism Mock
+        run: |
+          prism_failure=false
+          for file in $(find reference -type f -name '*.yaml'); do
+            current_file_success=true
+            prism mock $file &
+            prism_pid=$!
+            log_output=$(prism mock $file | tee /dev/tty)
+            sleep 3
+            url=$(echo "$log_output" | grep -oP 'POST\s+(http://[^ ]+)' | head -n 1)
+            echo "Sending POST request to $url"
+            curl -X POST "$url" -H 'Content-Type: application/json'
+            # if [[ $current_file_success ]]; then
+            #   echo "Prism mock started successfully."
+            kill $prism_pid
+            # fi
+          done
+          # if [[ $prism_failure ]]; then exit 1; fi
+
+      - name: Install Spectral
+        run: npm install -g @stoplight/spectral
+      - name: Spectral API Validation
+        run: |
+          spectral_failure=false
+          echo 'extends: ["spectral:oas", "spectral:asyncapi"]' > .spectral.yaml
+          for file in $(find reference -type f -name '*.yaml'); do
+            spectral lint $file --ruleset .spectral.yaml || spectral_failure=true
+          done
+          if [[ $spectral_failure ]]; then exit 1; fi
+
+      - name: Install Swagger CLI
+        run: npm install -g swagger-cli
+      - name: Validate API Specifications
+        run: |
+          for file in $(find reference -type f -name '*.yaml'); do
+            swagger-cli validate $file
+          done
+      
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"

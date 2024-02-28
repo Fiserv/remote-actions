@@ -4,8 +4,8 @@ on:
   workflow_call:
     outputs:
       statuscheck:
-        description: "Output of Api validation job"
-        value: ${{ jobs.api_validator_actions.outputs.output1 }}  
+        description: "Output of YAML validation job"
+        value: ${{ jobs.yaml_validator_actions.outputs.output1 }}  
   push:
     branches: [ develop,stage,preview,main, previous ]
     paths:
@@ -16,7 +16,7 @@ on:
       - 'reference/**' 
       
 jobs:
-  api_validator_actions:
+  yaml_validator_actions:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -108,51 +108,3 @@ jobs:
         # env:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
-
-      - name: Install Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-      - name: Install Prism CLI
-        run: npm install -g @stoplight/prism-cli
-      - name: Install curl
-        run: sudo apt-get install curl -y
-      - name: Run Prism Mock
-        run: |
-          prism_failure=false
-          for file in $(find reference -type f -name '*.yaml'); do
-            current_file_success=true
-            log_output=$(prism mock $file & | tee /dev/tty)
-            prism_pid=$!
-            sleep 3
-            # log_output=$(prism mock $file & | tee /dev/tty)
-            first_url=$(echo "$log_output" | grep -oP 'POST\s+(http://[^ ]+)' | head -n 1)
-            echo "Sending POST request to $url"
-            curl -X POST "$url" -H 'Content-Type: application/json'
-            # if [[ $current_file_success ]]; then
-            #   echo "Prism mock started successfully."
-            kill $prism_pid
-            # fi
-          done
-          # if [[ $prism_failure ]]; then exit 1; fi
-
-      - name: Install Spectral
-        run: npm install -g @stoplight/spectral
-      - name: Spectral API Validation
-        run: |
-          spectral_failure=false
-          echo 'extends: ["spectral:oas", "spectral:asyncapi"]' > .spectral.yaml
-          for file in $(find reference -type f -name '*.yaml'); do
-            spectral lint $file --ruleset .spectral.yaml || spectral_failure=true
-          done
-          if [[ $spectral_failure ]]; then exit 1; fi
-
-      - name: Install Swagger CLI
-        run: npm install -g swagger-cli
-      - name: Validate API Specifications
-        run: |
-          for file in $(find reference -type f -name '*.yaml'); do
-            swagger-cli validate $file
-          done
-      
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.sizevalidate.outputs.JobStatus }}"
