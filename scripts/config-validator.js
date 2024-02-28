@@ -10,8 +10,7 @@ const pdl_validator  = 'Product Layout VALIDATOR';
 const tenant_config_validator = 'TENANT CONFIG VALIDATOR'; 
 let check = true;
 let dedFileExistence = true;
-const validateDir = async (dir) => { 
-
+const validateDir = async (dir, fiserv_resources = false) => { 
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
   
   for (const file of files) {
@@ -55,21 +54,28 @@ const validateDir = async (dir) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8'); 
         const data = JSON.parse(content);
+        const valid_solutions = fiserv_resources ? ['fiserv-resources'] : ['merchants', 'financial-institutions', 'fintech', 'carat', 'fiserv-resources'];
          
-        check = validateSpecExistence(args?.[0] , data);  
-        if (!data?.getStartedFilePath){
-          errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in tenant.json file`); 
+        check = validateSpecExistence(args?.[0] , data);
+        if (!data?.solution?.length() > 0) {
+          errorMsg(`File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`); 
           check = false;
-        }else{ 
+        } else if (!data?.solution.filter(x => !valid_solutions.includes(x)).isEmpty()) {
+          errorMsg(`File ${file?.name} has invalid solutions ${data?.solution.filter(x => !valid_solutions.includes(x))} in the array! Please fix the solution array in ${file?.name} file`); 
+          check = false;
+        }
+        if (!data?.getStartedFilePath){
+          errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`); 
+          check = false;
+        } else { 
           const file = `${args}${data?.getStartedFilePath}`; 
           if (!fs.existsSync(file)) {  
             errorMsg(`${data?.getStartedFilePath} doesn't exist in docs directory`);  
             check = false;
           } 
         }
-
       }catch (e){
-        errorMessage(tenant_config_validator  ,e?.message);
+        errorMessage(tenant_config_validator ,e?.message);
         check = false;
       } 
 
@@ -184,4 +190,3 @@ const main = async() => {
 if (require.main === module) {
   main();
 }
-

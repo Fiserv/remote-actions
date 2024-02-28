@@ -81,7 +81,11 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          result=$(npm run configcheck ${{github.workspace }})
+          if [[ $TOS ]]; then
+            result=$(npm run configcheck ${{github.workspace }} true)
+          else
+            result=$(npm run configcheck ${{github.workspace }})
+          fi
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd
