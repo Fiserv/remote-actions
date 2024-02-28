@@ -50,7 +50,7 @@ const validateDir = async (dir, fiserv_resources = false) => {
     } 
 
     if (file?.name === 'tenant.json'){
-      try{ 
+      try { 
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, 'utf8'); 
         const data = JSON.parse(content);
@@ -74,10 +74,10 @@ const validateDir = async (dir, fiserv_resources = false) => {
             check = false;
           } 
         }
-      }catch (e){
+      } catch (e) {
         errorMessage(tenant_config_validator ,e?.message);
         check = false;
-      } 
+      }
 
       if (check){ 
         printMessage(`${tenant_config_validator} : PASSED`);
