@@ -115,21 +115,22 @@ jobs:
           node-version: '14'
       - name: Install Prism CLI
         run: npm install -g @stoplight/prism-cli
+      - name: Install curl
+        run: sudo apt-get install curl -y
       - name: Run Prism Mock
         run: |
           prism_failure=false
           for file in $(find reference -type f -name '*.yaml'); do
             current_file_success=true
-            prism mock $file &
-            echo $! >> prism_pid.txt
+            log_output=$(prism mock $file & | tee /dev/tty)
+            prism_pid=$!
             sleep 3
-            log_output=$(prism mock --spec your-api-spec.yaml | tee /dev/tty)
+            # log_output=$(prism mock $file & | tee /dev/tty)
             first_url=$(echo "$log_output" | grep -oP 'POST\s+(http://[^ ]+)' | head -n 1)
             echo "Sending POST request to $url"
             curl -X POST "$url" -H 'Content-Type: application/json'
             # if [[ $current_file_success ]]; then
             #   echo "Prism mock started successfully."
-            prism_pid=$(cat prism_pid.txt)
             kill $prism_pid
             # fi
           done
