@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v3
         with:
          repository: Fiserv/remote-actions
-         ref: develop
+         ref: PORT-10030-Solution-Validator
          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
@@ -73,7 +73,6 @@ jobs:
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
-          git checkout PORT-10030-Solution-Validator
           ls -la
           npmv=$(npm --version)
           echo "NPM version installed : " $npmv
