@@ -73,6 +73,7 @@ jobs:
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
+          git checkout PORT-10030-Solution-Validator
           ls -la
           npmv=$(npm --version)
           echo "NPM version installed : " $npmv
