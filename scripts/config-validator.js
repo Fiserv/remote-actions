@@ -55,7 +55,7 @@ const validateDir = async (dir, fiserv_resources = false) => {
         const content = await fs.promises.readFile(fileName, 'utf8'); 
         const data = JSON.parse(content);
         const valid_solutions = fiserv_resources ? ['fiserv-resources'] : ['merchants', 'financial-institutions', 'fintech', 'carat', 'fiserv-resources'];
-        printMessage(`Validating ${data?.solution} vs ${valid_solutions}`);
+        printMessage(`Validating [${data?.solution}] vs [${valid_solutions}]`);
         check = validateSpecExistence(args?.[0] , data);
         if (!data?.solution?.length > 0) {
           errorMsg(`File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`); 
