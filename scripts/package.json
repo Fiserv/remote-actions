@@ -7,7 +7,7 @@
     "download": "node download-api-zip.js $path",
     "validate": "node validator-yaml.js $path",
     "markdown": "node md-validator.js $path",
-    "configcheck": "node config-validator.js $path",
+    "configcheck": "node config-validator.js $path $tos",
     "test": "node download-api-zip.js reference"
   },
   "author": "",

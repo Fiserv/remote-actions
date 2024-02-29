@@ -18,7 +18,7 @@ jobs:
     if: ${{ !contains( needs.api_validator.outputs.statuscheck , 'SKIPPED') && github.event_name == 'push' }}
     secrets: inherit         
   tenant-config-validator: 
-    uses: ./.github/workflows/github-tenant-config-validator.yaml@PORT-10030-Solution-Validator
+    uses: ./.github/workflows/github-tenant-config-validator.yaml
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}
