@@ -29,7 +29,7 @@ const validateDir = async (dir, fiserv_resources = false) => {
       if (check){
         printMessage(`${ded_validator} : PASSED`); 
       }else{
-        errorMessage(ded_validator  ,"FAILED");
+        errorMessage(ded_validator, "FAILED");
       }
     } 
 

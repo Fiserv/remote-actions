@@ -82,8 +82,10 @@ jobs:
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           if [[ $TOS ]]; then
+            echo "Executing 'npm run configcheck ${{github.workspace }} true'"
             result=$(npm run configcheck ${{github.workspace }} true)
           else
+            echo "Executing 'npm run configcheck ${{github.workspace }}'"
             result=$(npm run configcheck ${{github.workspace }})
           fi
           echo "**********TEST RESULTS*********************"
