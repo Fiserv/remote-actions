@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const yaml = require('js-yaml'); 
-const args = process.argv.slice(1); 
+const args = process.argv.slice(2);
 const folder = args?.[0]+"/config"; 
 const fiserv_resources = args?.[1] || false; 
 const {errorMessage , errorMsg  , printMessage , provideReferenceFolder} = require('./utils/tools')
@@ -174,16 +174,16 @@ const sortVersionsDescending = (versions) => {
 const main = async() => { 
   try {
     printMessage(`External Dir ---->>> ${folder}`);   
-    if ( args?.length > 0){ 
+    if (args?.length > 0){ 
       await validateDir(folder, fiserv_resources);
       if (check){
         printMessage(`External Dir ---->>> ${folder}`); 
       }
     }else{
-      errorMessage('Tenant Config VALIDATOR'  ,'No Path for reference dir. defined');
+      errorMessage('Tenant Config VALIDATOR', 'No Path for reference dir. defined');
     }
   } catch (e) {
-    errorMessage('Tenant Config VALIDATOR'  ,e.message);
+    errorMessage('Tenant Config VALIDATOR', e.message);
   }
 
 };
