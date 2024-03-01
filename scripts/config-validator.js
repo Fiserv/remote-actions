@@ -2,15 +2,16 @@
 
 const fs = require('fs');
 const yaml = require('js-yaml'); 
-const args = process.argv.slice(2); 
+const args = process.argv.slice(1); 
 const folder = args?.[0]+"/config"; 
+const fiserv_resources = args?.[1] || false; 
 const {errorMessage , errorMsg  , printMessage , provideReferenceFolder} = require('./utils/tools')
 const ded_validator  = 'DED VALIDATOR';
 const pdl_validator  = 'Product Layout VALIDATOR'; 
 const tenant_config_validator = 'TENANT CONFIG VALIDATOR'; 
 let check = true;
 let dedFileExistence = true;
-const validateDir = async (dir, fiserv_resources = false) => { 
+const validateDir = async (dir, fiserv_resources) => { 
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
   
   for (const file of files) {
@@ -174,7 +175,7 @@ const main = async() => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);   
     if ( args?.length > 0){ 
-      await validateDir(folder);
+      await validateDir(folder, fiserv_resources);
       if (check){
         printMessage(`External Dir ---->>> ${folder}`); 
       }
