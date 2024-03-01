@@ -4,6 +4,8 @@ on:
     inputs:
       FR_tenant:
         description: 'Variable specifically for Fiserv Resources tenants'
+        required: false
+        default: false
   push:
     branches: [ develop,stage,preview,main,previous ]
     paths:
