@@ -87,7 +87,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          if [[ ${{ github.event.inputs.fr-tenant }} ]]; then
+          if [[ ${{ inputs.fr-tenant }} ]]; then
             echo "Executing 'npm run configcheck ${{github.workspace }} true'"
             result=$(npm run configcheck ${{github.workspace }} true)
           else

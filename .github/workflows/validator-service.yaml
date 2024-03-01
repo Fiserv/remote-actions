@@ -26,7 +26,7 @@ jobs:
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     with:
-      fr-tenant : ${{ github.event.inputs.fr-tenant }}
+      fr-tenant: ${{ inputs.fr-tenant }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}
