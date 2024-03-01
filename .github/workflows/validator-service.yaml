@@ -19,6 +19,8 @@ jobs:
     secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
+    with:
+      TOS : ${{ github.event.inputs.my_variable }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}
