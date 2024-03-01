@@ -2,7 +2,7 @@ name: Tenant Validator
 on:
   workflow_call:
     inputs:
-      FR_tenant:
+      fr-tenant:
         description: 'Variable specifically for Fiserv Resources tenants'
         required: false
         default: false
@@ -25,7 +25,7 @@ jobs:
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     with:
-      FR_tenant : ${{ github.event.inputs.FR_tenant }}
+      fr-tenant : ${{ github.event.inputs.fr-tenant }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}

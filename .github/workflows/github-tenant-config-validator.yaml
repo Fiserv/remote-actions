@@ -2,7 +2,7 @@ name: TenantConfig Validator
 on:
   workflow_call:
     inputs:
-      FR_tenant:
+      fr-tenant:
         description: 'Variable specifically for Fiserv Resources tenants'
         required: false
         default: false
@@ -86,7 +86,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          if [[ ${{ github.event.inputs.FR_tenant }} ]]; then
+          if [[ ${{ github.event.inputs.fr-tenant }} ]]; then
             echo "Executing 'npm run configcheck ${{github.workspace }} true'"
             result=$(npm run configcheck ${{github.workspace }} true)
           else
