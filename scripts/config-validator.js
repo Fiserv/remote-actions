@@ -68,7 +68,7 @@ const validateDir = async (dir, fiserv_resources) => {
           errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`); 
           check = false;
         } else { 
-          const file = `${args}${data?.getStartedFilePath}`; 
+          const file = `${args?.[0]}${data?.getStartedFilePath}`; 
           if (!fs.existsSync(file)) {  
             errorMsg(`${data?.getStartedFilePath} doesn't exist in docs directory`);  
             check = false;
