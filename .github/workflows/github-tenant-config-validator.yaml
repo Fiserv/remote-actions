@@ -88,17 +88,17 @@ jobs:
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           if [[ ${{ inputs.fr-tenant }} ]]; then
-            echo "Executing 'npm run configcheck ${{github.workspace }} true'"
-            result=$(npm run configcheck ${{github.workspace }} true)
+            echo "Executing config check for fiserv-resources tenant'"
+            result=$(npm run configcheck ${{ github.workspace }} true)
           else
-            echo "Executing 'npm run configcheck ${{github.workspace }}'"
-            result=$(npm run configcheck ${{github.workspace }})
+            echo "Executing config check for generic tenant"
+            result=$(npm run configcheck ${{ github.workspace }})
           fi
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd
           ls -la
-          rm -rf ${{github.workspace }}/tools
+          rm -rf ${{ github.workspace }}/tools
           echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
