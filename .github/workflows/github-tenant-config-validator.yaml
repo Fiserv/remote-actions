@@ -88,7 +88,7 @@ jobs:
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           echo " Is TOS tenant: ${{ inputs.fr-tenant }}"
-          if [[ ${{ inputs.fr-tenant }} ]]; then
+          if [[ ${{ inputs.fr-tenant }} == true ]]; then
             echo "Executing config check for fiserv-resources tenant'"
             result=$(npm run configcheck ${{ github.workspace }} true)
           else
