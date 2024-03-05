@@ -39,7 +39,7 @@ jobs:
         uses: actions/checkout@v3
         with:
          repository: Fiserv/remote-actions
-         ref: main
+         ref: fr-tenant-fix
          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
