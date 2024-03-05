@@ -1,6 +1,12 @@
 name: Tenant Validator
 on:
   workflow_call:
+    inputs:
+      fr-tenant:
+        description: 'Variable specifically for Fiserv Resources tenants'
+        required: false
+        default: false
+        type: boolean
   # Triggers the workflow on push or pull request events but only for the dev, stage, main, preview, and previous branches
   push:
     branches: [ develop,stage,preview,main,previous ]
@@ -19,6 +25,8 @@ jobs:
     secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
+    with:
+      fr-tenant: ${{ inputs.fr-tenant }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}

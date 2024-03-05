@@ -1,6 +1,12 @@
 name: TenantConfig Validator
 on:
   workflow_call:
+    inputs:
+      fr-tenant:
+        description: 'Variable specifically for Fiserv Resources tenants'
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [ develop,stage,preview,main,previous ]
     paths:
@@ -33,7 +39,7 @@ jobs:
         uses: actions/checkout@v3
         with:
          repository: Fiserv/remote-actions
-         ref: develop
+         ref: main
          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
@@ -81,12 +87,18 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          result=$(npm run configcheck ${{github.workspace }})
+          if [[ ${{ inputs.fr-tenant }} ]]; then
+            echo "Executing config check for fiserv-resources tenant'"
+            result=$(npm run configcheck ${{ github.workspace }} true)
+          else
+            echo "Executing config check for generic tenant"
+            result=$(npm run configcheck ${{ github.workspace }})
+          fi
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd
           ls -la
-          rm -rf ${{github.workspace }}/tools
+          rm -rf ${{ github.workspace }}/tools
           echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
