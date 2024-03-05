@@ -87,6 +87,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
+          echo " Is TOS tenant: ${{ inputs.fr-tenant }}"
           if [[ ${{ inputs.fr-tenant }} ]]; then
             echo "Executing config check for fiserv-resources tenant'"
             result=$(npm run configcheck ${{ github.workspace }} true)
