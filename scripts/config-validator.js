@@ -57,12 +57,14 @@ const validateDir = async (dir, fiserv_resources) => {
         const data = JSON.parse(content);
         const valid_solutions = fiserv_resources ? ['fiserv-resources'] : ['merchants', 'financial-institutions', 'fintech', 'carat'];
         check = validateSpecExistence(args?.[0], data);
-        if (!data?.solution?.length) {
-          errorMsg(`File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`);
-          check = false;
-        } else if (data?.solution.filter(x => !valid_solutions.includes(x)).length) {
-          errorMsg(`File ${file?.name} has invalid solutions [${data?.solution.filter(x => !valid_solutions.includes(x))}] in the array! Please fix the solution array in ${file?.name} file`);
-          check = false;
+        if (data?.name !== "Support") {
+          if (!data?.solution?.length) {
+            errorMsg(`File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`);
+            check = false;
+          } else if (data?.solution.filter(x => !valid_solutions.includes(x)).length) {
+            errorMsg(`File ${file?.name} has invalid solutions [${data?.solution.filter(x => !valid_solutions.includes(x))}] in the array! Please fix the solution array in ${file?.name} file`);
+            check = false;
+          }
         }
         if (!data?.getStartedFilePath){
           errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`);
