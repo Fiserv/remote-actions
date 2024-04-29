@@ -66,13 +66,20 @@ const validateDir = async (dir, fiserv_resources) => {
             check = false;
           }
         }
-        if (!data?.getStartedFilePath){
+        if (!data?.getStartedFilePath) {
           errorMsg(`File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`);
           check = false;
         } else {
-          const file = `${args?.[0]}${data?.getStartedFilePath}`;
+          const file = `${args?.[0]}/${data?.getStartedFilePath?.charAt(0) === '/' ? data?.getStartedFilePath.substring(1) : data?.getStartedFilePath}`;
           if (!fs.existsSync(file)) {
             errorMsg(`${data?.getStartedFilePath} doesn't exist in docs directory`);
+            check = false;
+          }
+        }
+        if (data?.resourcesFilePath) {
+          const file = `${args?.[0]}/${data.resourcesFilePath.charAt(0) === '/' ? data.resourcesFilePath.substring(1) : data.resourcesFilePath}`;
+          if (!fs.existsSync(file)) {
+            errorMsg(`${data?.resourcesFilePath} doesn't exist in docs directory`);
             check = false;
           }
         }
