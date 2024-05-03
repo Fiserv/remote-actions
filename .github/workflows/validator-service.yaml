@@ -16,13 +16,12 @@ on:
    
 jobs:
   api_validator: 
-    uses: ./.github/workflows/github-yaml-validator.yaml 
-    if: ${{ contains(github.event.head_commit.modified, 'reference/') }}
+    uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
   api-zip-generator:
     needs: api_validator
     uses: ./.github/workflows/github-zip-generator.yaml
-    if: ${{ !contains( needs.api_validator.outputs.statuscheck , 'SKIPPED') && github.event_name == 'push' }}
+    if: ${{ !contains( needs.api_validator.outputs.statuscheck , 'SKIPPED') && github.event_name == 'push' && contains(github.event.head_commit.modified, 'reference/') }}
     secrets: inherit         
   tenant-config-validator: 
     uses: ./.github/workflows/github-tenant-config-validator.yaml
