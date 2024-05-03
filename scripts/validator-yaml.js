@@ -146,7 +146,7 @@ const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , a
   return check;
 };
 
-const isDocOnlyTenant = async (dir) => {
+const hasAPIs = async (dir) => {
 
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
   let check = false; 
@@ -175,9 +175,9 @@ const main = async() => {
   try {
     if ( args?.length > 0){  
       // Check for API version in tenant configuration file
-      const check = await isDocOnlyTenant(folder+"/config"); 
-      if (check){
-        const refFolder = provideReferenceFolder(folder); 
+      const checkAPIs = await hasAPIs(folder+"/config");
+      if (checkAPIs){
+        const refFolder = provideReferenceFolder(folder);
         await validateDir(refFolder);
       } else{
         printMessage('SKIPPED');
