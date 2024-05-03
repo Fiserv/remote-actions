@@ -17,6 +17,7 @@ on:
 jobs:
   api_validator: 
     uses: ./.github/workflows/github-yaml-validator.yaml 
+    if: ${{ contains(github.event.head_commit.modified, 'reference/') }}
     secrets: inherit
   api-zip-generator:
     needs: api_validator
