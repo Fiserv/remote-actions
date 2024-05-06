@@ -58,7 +58,7 @@ const validateDir = async (dir, fiserv_resources) => {
         const valid_solutions = fiserv_resources ? ['fiserv-resources'] : ['merchants', 'financial-institutions', 'fintech', 'carat'];
         check = validateSpecExistence(args?.[0], data);
         if (data?.name !== "Support") {
-          if (!data?.solution?.length && valid_solutions?.length) {
+          if (!data?.solution?.length) {
             errorMsg(`File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`);
             check = false;
           } else if (data?.solution.filter(x => !valid_solutions.includes(x)).length) {
