@@ -67,13 +67,13 @@ const parseAPIData = async (fileName , parsedData , apiJson) => {
             return;
           }
           const version =  fileName.split('/')[1];
-          check = validateIndexBody(fileName ,parsedData , apiJson, path , reqType , api , version);
+          check = validateIndexBody(fileName, parsedData, apiJson, path, reqType, api, version);
       }
     }
       if (check) {
       printMessage(`File: ${fileName} : PASSED`);
       } else {
-        errorMsg(`Validation error in file ${fileName}`); 
+        errorMsg(`Validation error in file ${fileName}`);
       }
   } catch (e) {
     errorMsg(`Error: ${e?.message}`);
