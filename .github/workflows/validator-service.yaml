@@ -19,11 +19,12 @@ jobs:
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
   log_stuff:
+    needs: api_validator
     runs-on: ubuntu-latest
     steps:
-      - run: echo "event name - ${{ github.event_name }}"
-      - run: github.event.head_commit.modified - ${{ github.event.head_commit.modified }}"
-      - run: needs.api_validator.outputs.statuscheck - ${{ needs.api_validator.outputs.statuscheck }}"
+      - run: echo "event name ${{ github.event_name }}"
+      - run: echo "github event head_commit modified ${{ github.event.head_commit.modified }}"
+      - run: echo "needs api_validator outputs statuscheck ${{ needs.api_validator.outputs.statuscheck }}"
   api-zip-generator:
     needs: api_validator
     uses: ./.github/workflows/github-zip-generator.yaml
