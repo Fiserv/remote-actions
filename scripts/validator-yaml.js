@@ -29,7 +29,7 @@ const validateDir = async (dir) => {
           const tenantName =  args[0].split('/').pop(); 
           fileName = fileName.split(`/${tenantName}/`)[1];
           if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
-            errorMessage(YAML_VALIDATOR  ,'No path provided!');
+            errorMessage(YAML_VALIDATOR, 'No path provided!');
           }
           const parsedData = await SwaggerParser.validate(apiJson);
 
@@ -37,11 +37,11 @@ const validateDir = async (dir) => {
             check = await parseAPIData(fileName , parsedData , apiJson); 
             }
         } catch (e) {
-          errorMessage(YAML_VALIDATOR  ,`File : ${file.name} : FAILED`);
-          errorMsg(`Error: ${e.message}`);
+          errorMessage(YAML_VALIDATOR, `File : ${file.name} : FAILED`);
+          errorMsg(`Error: ${e?.message}`);
         }
       }else{
-        errorMessage(YAML_VALIDATOR  ,`Not a YAML Spec file : ${file.name}`);
+        errorMessage(YAML_VALIDATOR, `Not a YAML Spec file : ${file.name}`);
       }
     });
   });
@@ -58,34 +58,31 @@ const parseAPIData = async (fileName , parsedData , apiJson) => {
 
       for (const [reqType, api] of Object.entries(obj)) {
 
-        if (typeof api !== 'object' || api === null) {  continue;  }
-          if( api['x-proxy-name']){ 
-            check = true; 
-          } else{ 
-            if (!api.hasOwnProperty('x-proxy-name')){  
-              errorMessage(YAML_VALIDATOR  ,`File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`); 
-            } 
-            check = false; 
+        if (typeof api !== 'object' || api === null) {  continue; }
+          if (!api['x-proxy-name']) {
+            if (!api.hasOwnProperty('x-proxy-name')){
+              errorMessage(YAML_VALIDATOR, `File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`);
+            }
+            check = false;
             return;
-          } 
+          }
           const version =  fileName.split('/')[1];
-          check = validateIndexBody(fileName ,parsedData , apiJson, path , reqType , api , version); 
+          check = validateIndexBody(fileName, parsedData, apiJson, path, reqType, api, version);
       }
-    } 
-      if (check){
+    }
+      if (check) {
       printMessage(`File: ${fileName} : PASSED`);
       } else {
-        errorMsg(`Validation error in file ${fileName}`); 
+        errorMsg(`Validation error in file ${fileName}`);
       }
-  } catch (err) {
-    errorMsg(`Error: ${e.message}`);
+  } catch (e) {
+    errorMsg(`Error: ${e?.message}`);
   }
   return check;
 };
 
 
 const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , api , version) =>{
- let check = true;
   try{
     const pathJSON = yamlJSONData.paths[path][reqType]; 
     const converter = new showdown.Converter({
@@ -116,7 +113,6 @@ const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , a
     const strParameters = pathJSON.parameters ? JSON.stringify(pathJSON.parameters) : '';
 
     body = {
-  
       title: api['x-proxy-name'] ? api['x-proxy-name'] : (api.tags ? api.tags[0] : api.summary),
       titleKW: api['x-proxy-name'] ? api['x-proxy-name'] : (api.tags ? api.tags[0] : api.summary), 
       summary: api.summary,
@@ -139,15 +135,19 @@ const validateIndexBody = (fileName , yamlData ,yamlJSONData ,path , reqType , a
       xDefaultCore: api['x-core-default'] ? api['x-core-default'] : '',
       xUseCases: api['x-use-cases'] ? api['x-use-cases'] : [],
     };  
-  }catch(e){
+  } catch(e) {
     errorMessage(YAML_VALIDATOR ,`File :${fileName} with ${e?.message}`);
-    check = false;
-  }   
-  return check;
+    return false;
+  }
+
+  if (body.xProxyName.length > 0 && /^[^A-Za-z]|[\W]$/.test(body.xProxyName)) {
+    errorMessage(YAML_VALIDATOR, `File :${fileName} API-Path:${path} Error: Empty space at start/end of 'x-proxy-name'`);
+    return false;
+  }
+  return true;
 };
 
 const hasAPIs = async (dir) => {
-
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
   let check = false; 
   for (const file of files) {   
@@ -171,7 +171,6 @@ const hasAPIs = async (dir) => {
 
 
 const main = async() => {
-
   try {
     if ( args?.length > 0){  
       // Check for API version in tenant configuration file
@@ -183,10 +182,10 @@ const main = async() => {
         printMessage('SKIPPED');
       }
    }else{
-    errorMessage(YAML_VALIDATOR  ,'No Path for reference dir. defined');
+    errorMessage(YAML_VALIDATOR, 'No Path for reference dir. defined');
    }
   } catch (e) {
-    errorMessage(YAML_VALIDATOR  ,e.message);
+    errorMessage(YAML_VALIDATOR, e?.message);
   }
 }
 
