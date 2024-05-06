@@ -18,12 +18,6 @@ jobs:
   api_validator: 
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
-  display_statuscheck_value:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Display statuscheck value
-        run:
-          echo "Statuscheck value: ${{needs.api_validator.outputs.statuscheck}}"
   api-zip-generator:
     needs: api_validator
     uses: ./.github/workflows/github-zip-generator.yaml
