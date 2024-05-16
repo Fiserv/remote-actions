@@ -17,11 +17,13 @@ on:
 jobs:
   api_validator:
     uses: ./.github/workflows/github-yaml-validator.yaml
+    if: ${{ github.event_name != 'push' }}
     secrets: inherit
   tenant-config-validator:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     with:
       fr-tenant: ${{ inputs.fr-tenant }}
+    if: ${{ github.event_name != 'push' }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}
