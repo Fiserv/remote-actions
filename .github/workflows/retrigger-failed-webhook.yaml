@@ -3,41 +3,40 @@ on:
   workflow_dispatch:
   workflow_call:
   push:
-    branches: [ develop,stage,preview,main,previous ]
+    branches: [develop, stage, preview, main, previous]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    steps:    
+    steps:
+      - name: Creating new temp sub dir called `tools`
+        run: |
+          mkdir -m 750 tools
+          cd tools
 
-    - name: Creating new temp sub dir called `tools`
-      run: |
-         mkdir -m 750 tools
-         cd tools
+      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          path: ${{ github.workspace }}
 
-    - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-      uses: actions/checkout@v3
-      with:
-        repository: ${{ github.repository }}
-        path: ${{ github.workspace }}
+      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
+        uses: actions/checkout@v3
+        with:
+          repository: Fiserv/remote-actions
+          ref: main
+          path: ${{ github.workspace }}/tools
 
-    - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-      uses: actions/checkout@v3
-      with:
-        repository: Fiserv/remote-actions
-        ref: main
-        path: ${{ github.workspace }}/tools
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.x
+      - name: Install dependencies
+        run: pip install -r ${{ github.workspace }}/tools/.github/workflows/requirements.txt
 
-    - name: Install dependencies
-      run: pip install -r ${{ github.workspace }}/tools/.github/workflows/requirements.txt
-      
-    - name: Run Python script
-      env:
-        TEST_GITHUB_AUTH_TOKEN: ${{ secrets.TEST_GITHUB_AUTH_TOKEN }}
-      run: python ${{ github.workspace }}/tools/scripts/RedeliverWebhooks.py ${{ github.repository }}
+      - name: Run Python script
+        env:
+          TEST_GITHUB_AUTH_TOKEN: ${{ secrets.TEST_GITHUB_AUTH_TOKEN }}
+        run: python ${{ github.workspace }}/tools/scripts/RedeliverWebhooks.py ${{ github.repository }}
