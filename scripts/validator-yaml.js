@@ -176,7 +176,7 @@ const validateIndexBody = (
     return false;
   }
 
-  if (body.xProxyName.length > 0 && /^[^A-Za-z]|[\W]$/.test(body.xProxyName)) {
+  if (body.xProxyName.length > 0 && /^[^A-Za-z]/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Empty space at start/end of 'x-proxy-name'`
