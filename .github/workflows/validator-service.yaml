@@ -3,30 +3,27 @@ on:
   workflow_call:
     inputs:
       fr-tenant:
-        description: 'Variable specifically for Fiserv Resources tenants'
+        description: "Variable specifically for Fiserv Resources tenants"
         required: false
         default: false
         type: boolean
   # Triggers the workflow on push or pull request events but only for the dev, stage, main, preview, and previous branches
   push:
-    branches: [ develop,stage,preview,main,previous ]
+    branches: [develop, stage, preview, main, previous]
   pull_request:
-    branches: [ develop,stage,preview,main,previous ]
-    types: [opened , reopened]
-   
+    branches: [develop, stage, preview, main, previous]
+    types: [opened, reopened]
+
 jobs:
-  api_validator: 
+  api_validator:
     uses: ./.github/workflows/github-yaml-validator.yaml
+    if: ${{ github.event_name != 'push' }}
     secrets: inherit
-  api-zip-generator:
-    needs: api_validator
-    uses: ./.github/workflows/github-zip-generator.yaml
-    if: ${{ !contains( needs.api_validator.outputs.statuscheck , 'SKIPPED') && github.event_name == 'push' }}
-    secrets: inherit         
-  tenant-config-validator: 
+  tenant-config-validator:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     with:
       fr-tenant: ${{ inputs.fr-tenant }}
+    if: ${{ github.event_name != 'push' }}
   webhook-retrigger:
     uses: ./.github/workflows/retrigger-failed-webhook.yaml
     if: ${{ github.event_name == 'push' }}

@@ -5,57 +5,57 @@ on:
     outputs:
       statuscheck:
         description: "Output of Api validation job"
-        value: ${{ jobs.api_validator_actions.outputs.output1 }}  
+        value: ${{ jobs.api_validator_actions.outputs.output1 }}
   push:
-    branches: [ develop,stage,preview,main, previous ]
+    branches: [develop, stage, preview, main, previous]
     paths:
-      - 'reference/**'     
+      - "reference/**"
   pull_request:
-    branches: [ develop,stage,preview,main,previous ]
+    branches: [develop, stage, preview, main, previous]
     paths:
-      - 'reference/**' 
-      
+      - "reference/**"
+
 jobs:
   api_validator_actions:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
-      output1: ${{ steps.apivalidate.outputs.JobStatus }}        
+      output1: ${{ steps.apivalidate.outputs.JobStatus }}
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and ${GITHUB_REF##*/} and ${GITHUB_REF#refs/heads/} and your repository is ${{ github.repository }}." 
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and ${GITHUB_REF##*/} and ${GITHUB_REF#refs/heads/} and your repository is ${{ github.repository }}."
       - name: Creating new temp sub dir called `tools`
         run: |
-         mkdir -m 777 tools
-         cd tools
-         pwd
-         ls -la
+          mkdir -m 777 tools
+          cd tools
+          pwd
+          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@v3
         with:
-         repository: ${{ github.repository }}
-         path: ${{ github.workspace }}
+          repository: ${{ github.repository }}
+          path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
         uses: actions/checkout@v3
         with:
-         repository: Fiserv/remote-actions
-         ref: main
-         path: ${{ github.workspace }}/tools
+          repository: Fiserv/remote-actions
+          ref: main
+          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
-         cd ${{ github.workspace }}
-         pwd
-         ls -la
-         cd ${{ github.workspace }}/tools
-         pwd
-         ls -la
+          cd ${{ github.workspace }}
+          pwd
+          ls -la
+          cd ${{ github.workspace }}/tools
+          pwd
+          ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
-         pwd
-         ls -la
+          pwd
+          ls -la
 
       - name: Cache node modules
         id: cache-npm
@@ -77,7 +77,7 @@ jobs:
         run: npm list
 
       - name: Running API Specs Validator.....
-        id : apivalidate      
+        id: apivalidate
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
@@ -106,5 +106,5 @@ jobs:
             echo "JobStatus="$result >> $GITHUB_OUTPUT                    
           fi
         # env:
-        #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}          
+        #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
