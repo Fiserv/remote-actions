@@ -26,7 +26,7 @@ jobs:
           repository: ${{ github.repository }}
           path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
           repository: Fiserv/remote-actions
           ref: main
@@ -125,13 +125,13 @@ jobs:
           commit_message: "pushing zip specs file remotely"
 
       # - name: Upload Postman Zip
-      #   uses: actions/upload-artifact@v3
+      #   uses: actions/upload-artifact@main
       #   with:
       #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_postman.zip
       #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
 
       # - name: Upload Specification Zip
-      #   uses: actions/upload-artifact@v3
+      #   uses: actions/upload-artifact@main
       #   with:
       #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_spec.zip
       #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip

@@ -16,13 +16,13 @@ jobs:
           cd tools
 
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
           path: ${{ github.workspace }}
 
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
           repository: Fiserv/remote-actions
           ref: main
