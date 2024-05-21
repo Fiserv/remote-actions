@@ -26,9 +26,9 @@ const errorMsg = (message) => {
   console.log(`\x1b[31m ${message} \x1b[0m`);
 };
 
-const errorMessage = (type, message) => {
+const errorMessage = (type, message = "") => {
   console.log(
-    `\x1b[31m \x1b[1m-------------------------${type} FAILED -------------------------- \x1b[0m`
+    `\x1b[31m \x1b[1m-------------------------${type} FAILED-------------------------- \x1b[0m`
   );
   console.log(`\x1b[33m ${message} \x1b[0m`);
 };
