@@ -7,14 +7,14 @@ on:
         required: false
         default: false
         type: boolean
-  push:
-    branches: [develop, stage, preview, main, previous]
-    paths:
-      - "config/**"
-  pull_request:
-    branches: [develop, stage, preview, main, previous]
-    paths:
-      - "config/**"
+  # push:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "config/**"
+  # pull_request:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "config/**"
 
 jobs:
   Tenant-Config-Action:
