@@ -47,7 +47,7 @@ const validateFiles = (dir, arr) => {
       const file = `${dir}/${obj?.filePath}`;
       if (obj?.filePath) {
         if (!fs.existsSync(file)) {
-          errorMsg(`${file} - Missing from ${dir}`);
+          errorMsg(`${file} - Missing from assets/files/`);
           validFileAccessDefinition = false;
         } else {
           if (!supported_file_types.find((f) => file.endsWith(f))) {
