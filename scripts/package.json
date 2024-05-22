@@ -8,7 +8,7 @@
     "validate": "node validator-yaml.js $path",
     "markdown": "node md-validator.js $path",
     "configcheck": "node config-validator.js $path",
-    "fileaccesscheck": "node file-access-validator.js $path",
+    "fileaccess": "node file-access-validator.js $path",
     "test": "node download-api-zip.js reference"
   },
   "author": "",

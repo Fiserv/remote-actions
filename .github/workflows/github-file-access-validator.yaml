@@ -69,7 +69,7 @@ jobs:
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           echo "Executing file access definition check"
-          result=$(npm run fileaccesscheck ${{ github.workspace }})
+          result=$(npm run fileaccess ${{ github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd
