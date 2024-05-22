@@ -20,3 +20,5 @@ jobs:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     with:
       fr-tenant: ${{ inputs.fr-tenant }}
+  file-access-validator:
+    uses: ./.github/workflows/github-file-access-validator.yaml

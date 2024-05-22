@@ -6,14 +6,14 @@ on:
       statuscheck:
         description: "Output of Api validation job"
         value: ${{ jobs.api_validator_actions.outputs.output1 }}
-  push:
-    branches: [develop, stage, preview, main, previous]
-    paths:
-      - "reference/**"
-  pull_request:
-    branches: [develop, stage, preview, main, previous]
-    paths:
-      - "reference/**"
+  # push:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "reference/**"
+  # pull_request:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "reference/**"
 
 jobs:
   api_validator_actions:
