@@ -11,19 +11,13 @@ on:
       - "config/files-access-definiton.yaml"
 
 jobs:
-  Tenant-Config-Action:
+  File-Access-Action:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Creating new temp sub dir called `tools`
-        run: |
-          mkdir -m 777 tools
-          cd tools
-          pwd
-          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@main
         with:
@@ -41,13 +35,6 @@ jobs:
           pwd
           ls -la
           cd ${{ github.workspace }}/tools
-          pwd
-          ls -la
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          pwd
           ls -la
 
       - name: Cache node modules
@@ -81,7 +68,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          echo "Executing config check for generic tenant"
+          echo "Executing file access definition check"
           result=$(npm run fileaccesscheck ${{ github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
