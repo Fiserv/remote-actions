@@ -9,14 +9,16 @@ let fileAccessFileExistence = true;
 const file_access_validator = "FILE ACCESS VALIDATOR";
 const access_levels = ["public", "private"];
 const supported_file_types = [
-  "pdf",
-  "zip",
-  "txt",
-  "xlsx",
   "doc",
   "docx",
+  "md",
+  "pdf",
   "ppt",
   "pptx",
+  "txt",
+  "xls",
+  "xlsx",
+  "zip",
 ];
 
 const validateDir = async (dir) => {
@@ -49,15 +51,14 @@ const validateFiles = (dir, arr) => {
         if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing from assets/files/`);
           validFileAccessDefinition = false;
-        } else {
-          if (!supported_file_types.find((f) => file.endsWith(f))) {
-            errorMsg(
+        }
+        if (!supported_file_types.find((f) => file.endsWith(f))) {
+          errorMsg(
               `${file} - Using unsupported file type ${file.substring(
-                file.lastIndexOf(".")
+                  file.lastIndexOf(".")
               )}`
-            );
-            validFileAccessDefinition = false;
-          }
+          );
+          validFileAccessDefinition = false;
         }
       }
       if (obj?.access) {
