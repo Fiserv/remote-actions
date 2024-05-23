@@ -48,15 +48,16 @@ const validateFiles = (dir, arr) => {
     arr.forEach((obj) => {
       const file = `${dir}/${obj?.filePath}`;
       if (obj?.filePath) {
+        if (!fs.existsSync(file)) {
+          errorMsg(`${file} - Missing from assets/files/`);
+          validFileAccessDefinition = false;
+        }
         if (!supported_file_types.find((f) => file.endsWith(f))) {
           errorMsg(
               `${file} - Using unsupported file type ${file.substring(
                   file.lastIndexOf(".")
               )}`
           );
-          validFileAccessDefinition = false;
-        } else if (!fs.existsSync(file)) {
-          errorMsg(`${file} - Missing from assets/files/`);
           validFileAccessDefinition = false;
         }
       }
