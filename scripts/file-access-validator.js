@@ -11,8 +11,11 @@ const access_levels = ["public", "private"];
 const supported_file_types = [
   "doc",
   "docx",
+  "gz",
   "md",
+  "msi",
   "pdf",
+  "png",
   "ppt",
   "pptx",
   "txt",
