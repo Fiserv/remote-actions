@@ -24,9 +24,6 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Creating new temp sub dir called `tools`
-        run: |
-          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@main
         with:
@@ -73,6 +70,8 @@ jobs:
         run: npm list
 
       - name: Running Tenant Config Validator.....
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
@@ -84,13 +83,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          if [[ ${{ inputs.fr-tenant }} == true ]]; then
-            echo "Executing config check for fiserv-resources tenant'"
-            result=$(npm run configcheck ${{ github.workspace }} true)
-          else
-            echo "Executing config check for generic tenant"
-            result=$(npm run configcheck ${{ github.workspace }})
-          fi
+          result=$(npm run configcheck ${{ github.workspace }} ${{ github.ref }} ${{ variables.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd

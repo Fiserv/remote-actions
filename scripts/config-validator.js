@@ -2,9 +2,13 @@
 
 const fs = require("fs");
 const yaml = require("js-yaml");
+const fetch = require('node-fetch');
+
+const github_token = process.env.API_TOKEN_GITHUB;
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/config";
-const fiserv_resources = args?.[1] || false;
+const ref = args?.[1];
+const fiserv_resources = args?.[2] || false;
 const {
   errorMessage,
   errorMsg,
@@ -16,7 +20,7 @@ const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
 let check = true;
 let dedFileExistence = true;
-const validateDir = async (dir, fiserv_resources) => {
+const validateDir = async (dir, ref, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
@@ -27,7 +31,7 @@ const validateDir = async (dir, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const apiJson = yaml.load(content);
-        check = validateDocLinks(args?.[0], apiJson);
+        check = validateDocLinks(args?.[0], apiJson, ref);
       } catch (e) {
         errorMessage(ded_validator, e?.message);
         check = false;
@@ -130,18 +134,35 @@ const validateDir = async (dir, fiserv_resources) => {
   }
 };
 
-const validateDocLinks = (dir, arr) => {
+const validateDocLinks = async (dir, arr, ref) => {
   try {
-    arr.forEach((obj) => {
-      if (obj?.link !== undefined && obj.link !== null) {
-        const file = `${dir}/${obj?.link}`;
-        if (!fs.existsSync(file)) {
+    arr.forEach(async (obj) => {
+      if (obj?.link?.length) {
+        const file = `${dir}/${obj.link}`;
+        if (obj.link.includes("branch")) {
+          const repo = dir.match(/[^/]+$/)?.[0];
+          const branch = obj.link.match(/branch=(.+)&?/)?.[1] || ref;
+          obj.link = obj.link.split(/&?branch/)[0];
+          const response = await fetch(`https://api.github.com/repos/Fiserv/${repo}/contents/${obj.link}?ref=${branch}`,
+              {
+                headers: {
+                    Authorization: 'Bearer ' + github_token
+                }
+            });
+            if (response.status === 404) {
+              errorMsg(`${obj.link}${ref ? `?ref=${branch}` : ''} - Missing`);
+                dedFileExistence = false;
+            } else if (!response.ok) {
+                throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
+            }
+        }
+        else if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing`);
           dedFileExistence = false;
         }
       }
       if (obj?.sections) {
-        validateDocLinks(dir, obj?.sections);
+        validateDocLinks(dir, obj?.sections, ref);
       }
     });
   } catch (e) {
@@ -215,7 +236,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);
     if (args?.length > 0) {
-      await validateDir(folder, fiserv_resources);
+      await validateDir(folder, ref, fiserv_resources);
       if (check) {
         printMessage(`External Dir ---->>> ${folder}`);
       }
