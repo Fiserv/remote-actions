@@ -2,9 +2,12 @@
 
 const fs = require("fs");
 const yaml = require("js-yaml");
+const fetch = require('node-fetch');
+
+const github_token = process.env.API_TOKEN_GITHUB;
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/config";
-const fiserv_resources = args?.[1] || false;
+const fiserv_resources = args?.[1] || "false";
 const {
   errorMessage,
   errorMsg,
@@ -60,7 +63,7 @@ const validateDir = async (dir, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const data = JSON.parse(content);
-        const valid_solutions = fiserv_resources
+        const valid_solutions = fiserv_resources === "true"
           ? ["fiserv-resources"]
           : ["merchants", "financial-institutions", "fintech", "carat"];
         check = validateSpecExistence(args?.[0], data);
@@ -70,19 +73,14 @@ const validateDir = async (dir, fiserv_resources) => {
               `File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`
             );
             check = false;
-          } else if (
-            data?.solution.filter((x) => !valid_solutions.includes(x)).length
-          ) {
-            errorMsg(
-              `File ${
-                file?.name
-              } has invalid solutions [${data?.solution.filter(
-                (x) => !valid_solutions.includes(x)
-              )}] in the array! Please fix the solution array in ${
-                file?.name
-              } file`
-            );
-            check = false;
+          } else {
+            const invalid_solutions = data?.solution.filter((x) => !valid_solutions.includes(x))
+              if ( invalid_solutions.length ) {
+              errorMsg(
+                `File ${ file?.name } has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${ file?.name } file`
+              );
+              check = false;
+            }
           }
         }
         if (!data?.getStartedFilePath) {
@@ -130,12 +128,29 @@ const validateDir = async (dir, fiserv_resources) => {
   }
 };
 
-const validateDocLinks = (dir, arr) => {
+const validateDocLinks = async (dir, arr) => {
   try {
-    arr.forEach((obj) => {
-      if (obj?.link !== undefined && obj.link !== null) {
-        const file = `${dir}/${obj?.link}`;
-        if (!fs.existsSync(file)) {
+    arr.forEach(async (obj) => {
+      if (obj?.link?.length) {
+        const file = `${dir}/${obj.link}`;
+        if (obj.link.includes("branch")) {
+          const repo = dir.match(/[^/]+$/)?.[0];
+          const branch = obj.link.match(/branch=(.+)&?/)?.[1];
+          obj.link = obj.link.split(/&?branch/)[0];
+          const response = await fetch(`https://api.github.com/repos/Fiserv/${repo}/contents/${obj.link}?ref=${branch}`,
+              {
+                headers: {
+                    Authorization: 'Bearer ' + github_token
+                }
+            });
+            if (response.status === 404) {
+              errorMsg(`${repo}/contents/${obj.link}?ref=${branch} - Missing`);
+                dedFileExistence = false;
+            } else if (!response.ok) {
+                throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
+            }
+        }
+        else if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing`);
           dedFileExistence = false;
         }
@@ -214,6 +229,9 @@ const sortVersionsDescending = (versions) => {
 const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);
+    printMessage(args);
+    printMessage(`Executing validateDir(${folder}, ${fiserv_resources})`)
+
     if (args?.length > 0) {
       await validateDir(folder, fiserv_resources);
       if (check) {
@@ -222,7 +240,7 @@ const main = async () => {
     } else {
       errorMessage(
         "Tenant Config VALIDATOR",
-        "No Path for reference dir. defined"
+        "No path for reference dir. defined"
       );
     }
   } catch (e) {

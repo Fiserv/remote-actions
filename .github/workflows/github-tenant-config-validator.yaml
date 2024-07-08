@@ -1,12 +1,6 @@
 name: TenantConfig Validator
 on:
   workflow_call:
-    inputs:
-      fr-tenant:
-        description: "Variable specifically for Fiserv Resources tenants"
-        required: false
-        default: false
-        type: boolean
   # push:
   #   branches: [develop, stage, preview, main, previous]
   #   paths:
@@ -24,16 +18,11 @@ jobs:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Creating new temp sub dir called `tools`
-        run: |
-          mkdir -m 777 tools
-          cd tools
-          pwd
-          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
+          ref: ${{ github.base_ref }}
           path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
         uses: actions/checkout@main
@@ -44,10 +33,8 @@ jobs:
       - name: List files in the repository
         run: |
           cd ${{ github.workspace }}
-          pwd
           ls -la
           cd ${{ github.workspace }}/tools
-          pwd
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
@@ -76,6 +63,8 @@ jobs:
         run: npm list
 
       - name: Running Tenant Config Validator.....
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
@@ -87,19 +76,9 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          if [[ ${{ inputs.fr-tenant }} == true ]]; then
-            echo "Executing config check for fiserv-resources tenant'"
-            result=$(npm run configcheck ${{ github.workspace }} true)
-          else
-            echo "Executing config check for generic tenant"
-            result=$(npm run configcheck ${{ github.workspace }})
-          fi
+          result=$(npm run configcheck ${{ github.workspace }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{ github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
           exit 1
@@ -107,9 +86,3 @@ jobs:
           echo "Validator Ran Successfully....🍏"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Show file content
-        run: |
-          pwd
-          ls -la
-      # - name: Commited changes from action runner to remote branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
