@@ -229,6 +229,9 @@ const sortVersionsDescending = (versions) => {
 const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);
+    printMessage(args);
+    printMessage(`Executing validateDir(${folder}, ${ref}, ${fiserv_resources})`)
+
     if (args?.length > 0) {
       await validateDir(folder, ref, fiserv_resources);
       if (check) {

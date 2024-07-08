@@ -83,7 +83,6 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          echo " Executing: npm run configcheck ${{ github.workspace }} ${{ github.ref }} ${{ vars.FISERV_INTERNAL }}"
           result=$(npm run configcheck ${{ github.workspace }} ${{ github.ref }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
