@@ -1,12 +1,6 @@
 name: Tenant Validator
 on:
   workflow_call:
-    inputs:
-      fr-tenant:
-        description: "Variable specifically for Fiserv Resources tenants"
-        required: false
-        default: false
-        type: boolean
   # Triggers the workflow on pull request
   pull_request:
     branches: [develop, stage, preview, main, previous]
@@ -18,7 +12,6 @@ jobs:
     secrets: inherit
   tenant-config-validator:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
-    with:
-      fr-tenant: ${{ inputs.fr-tenant }}
+    secrets: inherit
   file-access-validator:
     uses: ./.github/workflows/github-file-access-validator.yaml

@@ -1,12 +1,6 @@
 name: TenantConfig Validator
 on:
   workflow_call:
-    inputs:
-      fr-tenant:
-        description: "Variable specifically for Fiserv Resources tenants"
-        required: false
-        default: false
-        type: boolean
   # push:
   #   branches: [develop, stage, preview, main, previous]
   #   paths:
