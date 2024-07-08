@@ -145,7 +145,7 @@ const validateDocLinks = async (dir, arr, ref) => {
                 }
             });
             if (response.status === 404) {
-              errorMsg(`${obj.link}${ref ? `?ref=${branch}` : ''} - Missing`);
+              errorMsg(`${repo}/contents/${obj.link}?ref=${branch} - Missing`);
                 dedFileExistence = false;
             } else if (!response.ok) {
                 throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
@@ -241,7 +241,7 @@ const main = async () => {
     } else {
       errorMessage(
         "Tenant Config VALIDATOR",
-        "No Path for reference dir. defined"
+        "No path for reference dir. defined"
       );
     }
   } catch (e) {
