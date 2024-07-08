@@ -11,7 +11,7 @@ jobs:
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
   tenant-config-validator:
-    uses: ./.github/workflows/github-tenant-config-validator.yaml
+    uses: ./.github/workflows/github-tenant-config-validator.yaml@minh-test
     secrets: inherit
   file-access-validator:
     uses: ./.github/workflows/github-file-access-validator.yaml
