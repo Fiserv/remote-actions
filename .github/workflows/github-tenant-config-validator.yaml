@@ -35,6 +35,7 @@ jobs:
           pwd
           ls -la
           cd ${{ github.workspace }}/tools
+          git checkout minh-test
           pwd
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
