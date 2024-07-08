@@ -74,11 +74,14 @@ const validateDir = async (dir, ref, fiserv_resources) => {
               `File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`
             );
             check = false;
-          } else if ( data?.solution.filter((x) => !valid_solutions.includes(x)).length ) {
-            errorMsg(
-              `File ${ file?.name } has invalid solutions [${data?.solution.filter(x => !valid_solutions.includes(x))}] in the array! Please fix the solution array in ${ file?.name } file`
-            );
-            check = false;
+          } else {
+            const invalid_solutions = data?.solution.filter((x) => !valid_solutions.includes(x))
+              if ( invalid_solutions.length ) {
+              errorMsg(
+                `File ${ file?.name } has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${ file?.name } file`
+              );
+              check = false;
+            }
           }
         }
         if (!data?.getStartedFilePath) {
