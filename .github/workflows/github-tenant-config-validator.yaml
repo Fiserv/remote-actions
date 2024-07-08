@@ -76,7 +76,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          result=$(npm run configcheck ${{ github.workspace }} ${{ github.base_ref }} ${{ vars.FISERV_INTERNAL }})
+          result=$(npm run configcheck ${{ github.workspace }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then

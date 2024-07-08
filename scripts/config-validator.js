@@ -7,8 +7,7 @@ const fetch = require('node-fetch');
 const github_token = process.env.API_TOKEN_GITHUB;
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/config";
-const ref = args?.[1];
-const fiserv_resources = args?.[2] || "false";
+const fiserv_resources = args?.[1] || "false";
 const {
   errorMessage,
   errorMsg,
@@ -20,7 +19,7 @@ const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
 let check = true;
 let dedFileExistence = true;
-const validateDir = async (dir, ref, fiserv_resources) => {
+const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
@@ -31,7 +30,7 @@ const validateDir = async (dir, ref, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const apiJson = yaml.load(content);
-        check = validateDocLinks(args?.[0], apiJson, ref);
+        check = validateDocLinks(args?.[0], apiJson);
       } catch (e) {
         errorMessage(ded_validator, e?.message);
         check = false;
@@ -129,14 +128,14 @@ const validateDir = async (dir, ref, fiserv_resources) => {
   }
 };
 
-const validateDocLinks = async (dir, arr, ref) => {
+const validateDocLinks = async (dir, arr) => {
   try {
     arr.forEach(async (obj) => {
       if (obj?.link?.length) {
         const file = `${dir}/${obj.link}`;
         if (obj.link.includes("branch")) {
           const repo = dir.match(/[^/]+$/)?.[0];
-          const branch = obj.link.match(/branch=(.+)&?/)?.[1] || ref;
+          const branch = obj.link.match(/branch=(.+)&?/)?.[1];
           obj.link = obj.link.split(/&?branch/)[0];
           const response = await fetch(`https://api.github.com/repos/Fiserv/${repo}/contents/${obj.link}?ref=${branch}`,
               {
@@ -157,7 +156,7 @@ const validateDocLinks = async (dir, arr, ref) => {
         }
       }
       if (obj?.sections) {
-        validateDocLinks(dir, obj?.sections, ref);
+        validateDocLinks(dir, obj?.sections);
       }
     });
   } catch (e) {
@@ -231,10 +230,10 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);
     printMessage(args);
-    printMessage(`Executing validateDir(${folder}, ${ref}, ${fiserv_resources})`)
+    printMessage(`Executing validateDir(${folder}, ${fiserv_resources})`)
 
     if (args?.length > 0) {
-      await validateDir(folder, ref, fiserv_resources);
+      await validateDir(folder, fiserv_resources);
       if (check) {
         printMessage(`External Dir ---->>> ${folder}`);
       }
