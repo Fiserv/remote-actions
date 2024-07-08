@@ -76,9 +76,7 @@ const validateDir = async (dir, ref, fiserv_resources) => {
             check = false;
           } else if ( data?.solution.filter((x) => !valid_solutions.includes(x)).length ) {
             errorMsg(
-              `File ${ file?.name } has invalid solutions [
-                ${data?.solution.filter(x => !valid_solutions.includes(x))}
-                ] in the array! Please fix the solution array in ${ file?.name } file`
+              `File ${ file?.name } has invalid solutions [${data?.solution.filter(x => !valid_solutions.includes(x))}] in the array! Please fix the solution array in ${ file?.name } file`
             );
             check = false;
           }
