@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: Fiserv/remote-actions
-          ref: main
+          ref: minh-test
           path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
@@ -35,7 +35,6 @@ jobs:
           pwd
           ls -la
           cd ${{ github.workspace }}/tools
-          git checkout minh-test
           pwd
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
