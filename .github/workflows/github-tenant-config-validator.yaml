@@ -22,20 +22,19 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
+          ref: ${{ github.base_ref }}
           path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
         uses: actions/checkout@main
         with:
           repository: Fiserv/remote-actions
-          ref: minh-test
+          ref: main
           path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
           cd ${{ github.workspace }}
-          pwd
           ls -la
           cd ${{ github.workspace }}/tools
-          pwd
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
@@ -77,14 +76,9 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          echo " Executing: npm run configcheck ${{ github.workspace }} ${{ github.base_ref }} ${{ vars.FISERV_INTERNAL }}"
           result=$(npm run configcheck ${{ github.workspace }} ${{ github.base_ref }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{ github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
           exit 1
@@ -92,9 +86,3 @@ jobs:
           echo "Validator Ran Successfully....🍏"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Show file content
-        run: |
-          pwd
-          ls -la
-      # - name: Commited changes from action runner to remote branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4
