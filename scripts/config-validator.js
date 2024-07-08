@@ -8,7 +8,7 @@ const github_token = process.env.API_TOKEN_GITHUB;
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/config";
 const ref = args?.[1];
-const fiserv_resources = args?.[2] || false;
+const fiserv_resources = args?.[2] || "false";
 const {
   errorMessage,
   errorMsg,
@@ -64,7 +64,7 @@ const validateDir = async (dir, ref, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const data = JSON.parse(content);
-        const valid_solutions = fiserv_resources
+        const valid_solutions = fiserv_resources === "true"
           ? ["fiserv-resources"]
           : ["merchants", "financial-institutions", "fintech", "carat"];
         check = validateSpecExistence(args?.[0], data);
