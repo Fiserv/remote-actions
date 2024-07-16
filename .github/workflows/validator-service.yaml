@@ -2,9 +2,9 @@ name: Tenant Validator
 on:
   workflow_call:
   # Triggers the workflow on pull request
-  pull_request:
-    branches: [develop, stage, preview, main, previous]
-    types: [opened, reopened]
+  # pull_request:
+  #   branches: [develop, stage, preview, main, previous]
+  #   types: [opened, reopened]
 
 jobs:
   api_validator:
