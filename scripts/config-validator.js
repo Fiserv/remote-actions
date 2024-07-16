@@ -96,7 +96,12 @@ const validateDir = async (dir, fiserv_resources) => {
             )
             check = false;
           }
-          if (!fs.existsSync(`${args?.[0]}/get-started.md`)) {
+          const file = `${args?.[0]}/${
+            data.resourcesFilePath.charAt(0) === "/"
+              ? data.resourcesFilePath.substring(1)
+              : data.resourcesFilePath
+          }`;
+          if (!fs.existsSync(file)) {
             errorMsg(
               `${data?.getStartedFilePath} doesn't exist in docs directory`
             );
