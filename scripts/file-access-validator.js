@@ -63,6 +63,12 @@ const validateFiles = (dir, arr) => {
           );
           validFileAccessDefinition = false;
         }
+        if (file.includes(" ")) {
+          errorMsg(
+            `${file} - Contains space in name`
+          );
+          validFileAccessDefinition = false;
+        }
       }
       if (obj?.access) {
         if (!access_levels.find((x) => x === obj.access)) {
