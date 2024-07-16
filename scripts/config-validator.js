@@ -97,9 +97,9 @@ const validateDir = async (dir, fiserv_resources) => {
             check = false;
           }
           const file = `${args?.[0]}/${
-            data.resourcesFilePath.charAt(0) === "/"
-              ? data.resourcesFilePath.substring(1)
-              : data.resourcesFilePath
+            data.getStartedFilePath.charAt(0) === "/"
+              ? data.getStartedFilePath.substring(1)
+              : data.getStartedFilePath
           }`;
           if (!fs.existsSync(file)) {
             errorMsg(
@@ -110,7 +110,7 @@ const validateDir = async (dir, fiserv_resources) => {
         }
 
         if (data?.resourcesFilePath) {
-          if (!data?.resourcesFilePath.startsWith("/")) {
+          if (data?.resourcesFilePath.startsWith("/")) {
             errorMsg(
               `${data?.resourcesFilePath} should follow the format 'docs/...' without starting /`
             );
