@@ -25,7 +25,7 @@ const supported_file_types = [
 ];
 
 const validateDir = async (dir) => {
-  const files = await fs.promises.readdir(dir, { withFileTypes: true });
+  const files = await fs.promises.readdir(dir);
 
   for (const file of files) {
     if (file === "files-access-definition.yaml") {
