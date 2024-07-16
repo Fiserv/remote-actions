@@ -63,7 +63,7 @@ const validateFiles = (dir, arr) => {
           );
           validFileAccessDefinition = false;
         }
-        if (file.includes(" ")) {
+        if (file.includes(' ')) {
           errorMsg(
             `${file} - Contains space in name`
           );
