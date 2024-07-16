@@ -25,12 +25,12 @@ const supported_file_types = [
 ];
 
 const validateDir = async (dir) => {
-  const files = await fs.promises.readdir(dir, { withFileTypes: true });
+  const files = await fs.promises.readdir(dir);
 
   for (const file of files) {
-    if (file?.name === "files-access-definiton.yaml") {
+    if (file === "files-access-definition.yaml") {
       try {
-        const fileName = `${dir}/${file.name}`;
+        const fileName = `${dir}/${file}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const fileAccessJson = yaml.load(content);
         return validateFiles(`${args?.[0]}/assets/files`, fileAccessJson);
@@ -50,6 +50,7 @@ const validateFiles = (dir, arr) => {
   try {
     arr.forEach((obj) => {
       const file = `${dir}/${obj?.filePath}`;
+      console.log(file)
       if (obj?.filePath) {
         if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing from assets/files/`);
@@ -69,6 +70,11 @@ const validateFiles = (dir, arr) => {
           );
           validFileAccessDefinition = false;
         }
+      } else {
+        errorMsg(
+          `Missing filepath`
+        );
+        validFileAccessDefinition = false;
       }
       if (obj?.access) {
         if (!access_levels.find((x) => x === obj.access)) {
