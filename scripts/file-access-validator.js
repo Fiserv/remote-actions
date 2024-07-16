@@ -25,7 +25,7 @@ const supported_file_types = [
 ];
 
 const validateDir = async (dir) => {
-  const files = await fs.promises.readdir(dir);
+  const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
     if (file === "files-access-definition.yaml") {
@@ -50,7 +50,6 @@ const validateFiles = (dir, arr) => {
   try {
     arr.forEach((obj) => {
       const file = `${dir}/${obj?.filePath}`;
-      console.log(file)
       if (obj?.filePath) {
         if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing from assets/files/`);
