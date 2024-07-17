@@ -90,10 +90,10 @@ const validateDir = async (dir, fiserv_resources) => {
           );
           check = false;
         } else {
-          if (data.getStartedFilePath !== "docs/get-started.md") {
+          if (data?.getStartedFilePath.startsWith("/")) {
             errorMsg(
-              `'getStartedFilePath: ${data.getStartedFilePath}' must follow exact format 'docs/get-started.md'`
-            )
+              `'getStartedFilePath: ${data?.getStartedFilePath}' should follow the format 'docs/...' without starting /`
+            );
             check = false;
           }
           const file = `${args?.[0]}/${
