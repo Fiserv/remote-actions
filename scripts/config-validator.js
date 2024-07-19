@@ -90,12 +90,6 @@ const validateDir = async (dir, fiserv_resources) => {
           );
           check = false;
         } else {
-          if (data?.getStartedFilePath.startsWith("/")) {
-            errorMsg(
-              `'getStartedFilePath: ${data?.getStartedFilePath}' should follow the format 'docs/...' without starting /`
-            );
-            check = false;
-          }
           const file = `${args?.[0]}/${
             data.getStartedFilePath.charAt(0) === "/"
               ? data.getStartedFilePath.substring(1)
@@ -110,12 +104,6 @@ const validateDir = async (dir, fiserv_resources) => {
         }
 
         if (data?.resourcesFilePath) {
-          if (data?.resourcesFilePath.startsWith("/")) {
-            errorMsg(
-              `'resourcesFilePath: ${data?.resourcesFilePath}' should follow the format 'docs/...' without starting /`
-            );
-            check = false;
-          }
           const file = `${args?.[0]}/${
             data.resourcesFilePath.charAt(0) === "/"
               ? data.resourcesFilePath.substring(1)
