@@ -20,6 +20,7 @@
     "https": "^1.0.0",
     "js-yaml": "^4.1.0",
     "markdown-it": "^13.0.1",
+    "markdownlint": "^0.34.0",
     "openapi-to-postmanv2": "^4.15.0",
     "showdown": "^2.1.0"
   }
