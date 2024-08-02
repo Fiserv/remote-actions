@@ -10,9 +10,7 @@ const {
   showdownHighlight,
   mdExtension,
 } = require("./utils/md-utils");
-const { errorMessage, printMessage } = require("./utils/tools");
-const html_validator = require("html-validator");
-const https = require("https");
+const { errorMessage, errorMsg, printMessage } = require("./utils/tools");
 let urlsArr = [];
 
 const converter = new showdown.Converter({
@@ -36,16 +34,32 @@ converter.addExtension(() => {
         }
         return text;
       },
-    },
+    }
   ];
 }, "externalLink");
+
+converter.addExtension(() => {
+  return [
+  {
+    type: 'output',
+    filter: function (htmlContent) {
+        const imgRegex = /<img.*?src=["'](.*?)["']/g;
+        let match;
+        while ((match = imgRegex.exec(htmlContent)) !== null) {
+          urlsArr.push(match[1]);
+        }
+        return htmlContent;
+    }
+  }
+  ]
+}, "extractImageUrls");
 
 const markdownlinter = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files.forEach(async (file) => {
-      if (file.isDirectory()) {
+      if (file?.isDirectory()) {
         markdownlinter(`${dir}/${file.name}`);
-      } else if (/\.md$/.test(file.name)) {
+      } else if (/\.md$/.test(file?.name)) {
         try {
           let fileName = `${dir}/${file.name}`;
           const options = {
@@ -62,21 +76,21 @@ const markdownlinter = async (dir) => {
             if (!err) {
               if (result.toString().length > 0) {
                 errorMessage(
-                  "MD VALIDATOR",
+                  "MD LINTER",
                   `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName}`
                 );
                 printMessage(result);
               } else {
-                printMessage(`${fileName} - PASSED`);
+                printMessage(`${fileName} - LINTER PASSED`);
               }
             }
           });
         } catch (e) {
-          errorMessage("MD VALIDATOR", e.message);
+          errorMessage("MD LINTER", e.message);
         }
       } else {
         errorMessage(
-          "MD VALIDATOR",
+          "MD LINTER",
           `Invalid subdir or file extension : ${dir}/${file.name}`
         );
       }
@@ -87,89 +101,57 @@ const markdownlinter = async (dir) => {
 const mdHtmlValidator = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async (file) => {
-      if (files?.isDirectory()) {
-        markdownValidator(`${dir}/${file.name}`);
-      } else if (/\.md$/.test(file.name)) {
+      if (file?.isDirectory()) {
+        check = mdHtmlValidator(`${dir}/${file.name}`);
+      } else if (/\.md$/.test(file?.name)) {
         try {
+          let check = true;
           let fileName = `${dir}/${file.name}`;
           const content = fs.readFileSync(fileName, "utf8");
           const htmlData = converter.makeHtml(content);
 
-          // const options = {
-          //   validator: 'WHATWG',
-          //   data: htmlData,
-          //   isFragment: true
-          // }
-
-          for (const url of urlsArr) {
-            console.log("Url " + url);
-            // const options = {
-            //   url: 'https://localhost:8080/api/healthcheck',
-            //  // format: 'text'
-            //  // isLocal: true
-            // }
-            // const result = await html_validator(options) ;
-            const privateKey = fs.readFileSync(
-              "/Users/f2zdirk/Desktop/ssl/key.pem",
-              "utf8"
-            );
-            const certificate = fs.readFileSync(
-              "/Users/f2zdirk/Desktop/ssl/cert.pem",
-              "utf-8"
-            );
-
-            const postData = JSON.stringify({
-              msg: "Hello World!",
-            });
-
-            const options = {
-              hostname: "https://github.com",
-              port: 80,
-              path: "/Fiserv/sample-tenant-repo",
-              method: "HEAD",
-              headers: {
-                "Content-Type": "application/json",
-              },
-            };
-
-            const req = https.request(options, (res) => {
-              console.log(`STATUS: ${res.statusCode}`);
-              console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-              res.setEncoding("utf8");
-              res.on("data", (chunk) => {
-                console.log(`BODY: ${chunk}`);
-              });
-              res.on("end", () => {
-                console.log("No more data in response.");
-              });
-            });
-
-            req.on("error", (e) => {
-              console.error(`problem with request: ${e.message}`);
-            });
-
-            // Write data to request body
-            req.write(postData);
-            req.end();
+          urlsArr.forEach(url => {
+            if (/githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
+              if (/\.(png|jpg|jpeg)$/.test(url))
+                errorMsg(`> ${url} is a raw github image link. Please utilize '/assets/images' instead.`);
+              else
+                errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);
+              check = false;
+              return;
+            }
+          });
+          if (check) {
+            printMessage(`${fileName} - HTML VALIDATOR PASSED`);
+          } else {
+            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName}`);
           }
+          urlsArr = [];
         } catch (e) {
-          errorMessage("MD VALIDATOR", e.message);
+          errorMessage("HTML VALIDATOR", e.message);
+          urlsArr = [];
         }
       } else {
-        errorMessage("MD VALIDATOR", "Invalid subdir or Not a markdown file.");
+        errorMessage("HTML VALIDATOR", "Invalid subdir or Not a markdown file.");
+        urlsArr = [];
       }
     });
   });
 };
 
-try {
-  console.log(`External Dir ---->>> ${args}`);
-  if (args?.length > 0) {
-    markdownlinter(folder);
-    //mdHtmlValidator(folder);
-  } else {
-    errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
+const main = async () => {
+  try {
+    printMessage(`External Dir ---->>> ${args}`);
+    if (args?.length > 0) {
+      await markdownlinter(folder);
+      await mdHtmlValidator(folder);
+    } else {
+      errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
+    }
+  } catch (e) {
+    errorMessage("MD VALIDATOR", e.message);
   }
-} catch (e) {
-  errorMessage("MD VALIDATOR", e.message);
+};
+
+if (require.main === module) {
+  main();
 }

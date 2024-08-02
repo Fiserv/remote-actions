@@ -201,13 +201,11 @@ const parseURL = (baseURL = "", path = "") => {
 const imgPathParser = () => {
   return [
     {
-      type: "output",
-      regex: '<img src="(.+?)" (.*)/>',
-      replace: function (strChunk, match1, match2) {
-        const url = isAbsoluteURL(match1)
-          ? match1
-          : parseURL("https://localhost:8080", match1);
-        return `<img src="${url}" ${match2}/>`;
+      type: 'output',
+      regex: '<img [^>]*src="(.+?)"',
+      replace: function (strChunk, match) {
+        const url = isAbsoluteURL(match) ? match : parseURL("https://localhost:8080", match);
+        return strChunk.replace(match, url);
       },
     },
   ];
