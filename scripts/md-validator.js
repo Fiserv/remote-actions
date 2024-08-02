@@ -118,14 +118,20 @@ const mdHtmlValidator = async (dir) => {
                 errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);
               check = false;
               return;
+            } else if (/localhost:8080\/assets\//g.test(url)) {
+              if (!fs.existsSync(`${args[0]}/${url.substring(url.indexOf("assets/"))}`)) {
+                errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/`);
+                check = false;
+              }
             }
           });
+          urlsArr = [];
+
           if (check) {
             printMessage(`${fileName} - HTML VALIDATOR PASSED`);
           } else {
             errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName}`);
           }
-          urlsArr = [];
         } catch (e) {
           errorMessage("HTML VALIDATOR", e.message);
           urlsArr = [];
