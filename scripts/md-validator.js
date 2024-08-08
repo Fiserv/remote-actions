@@ -59,7 +59,9 @@ const markdownlinter = async (dir) => {
     files.forEach(async (file) => {
       if (file?.isDirectory()) {
         markdownlinter(`${dir}/${file.name}`);
-      } else if (/\.md$/.test(file?.name)) {
+        return;
+      }
+      if (/\.md$/.test(file?.name)) {
         try {
           let fileName = `${dir}/${file.name}`;
           const options = {
@@ -103,7 +105,9 @@ const mdHtmlValidator = async (dir) => {
     files?.forEach(async (file) => {
       if (file?.isDirectory()) {
         check = mdHtmlValidator(`${dir}/${file.name}`);
-      } else if (/\.md$/.test(file?.name)) {
+        return;
+      }
+      if (/\.md$/.test(file?.name)) {
         try {
           let check = true;
           let fileName = `${dir}/${file.name}`;
@@ -112,7 +116,7 @@ const mdHtmlValidator = async (dir) => {
 
           urlsArr.forEach(url => {
             if (/githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
-              if (/\.(png|jpg|jpeg)$/.test(url))
+              if (/\.(png|jpg|jpeg|gif|tiff)$/.test(url))
                 errorMsg(`> ${url} is a raw github image link. Please utilize '/assets/images' instead.`);
               else
                 errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);

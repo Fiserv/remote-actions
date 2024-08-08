@@ -5,14 +5,14 @@ on:
     outputs:
       statuscheck:
         description: "Output of markdown validation job"
-        value: ${{ jobs.markdown_validator_actions.outputs.output1 }}
+        value: ${{ jobs.markdown_validator_actions.outputs.job_status }}
 
 jobs:
   MD_Validator_Action:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
-      output1: ${{ steps.markdown_validate.outputs.JobStatus }}
+      job_status: ${{ steps.markdown_validate.outputs.JobStatus }}
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
