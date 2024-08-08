@@ -10,6 +10,9 @@ jobs:
   api_validator:
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
+  doc_validator:
+    uses: ./.github/workflows/github-md-validator.yaml
+    secrets: inherit
   tenant-config-validator:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     secrets: inherit
