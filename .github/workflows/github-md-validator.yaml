@@ -5,10 +5,10 @@ on:
     outputs:
       statuscheck:
         description: "Output of markdown validation job"
-        value: ${{ jobs.markdown_validator_actions.outputs.job_status }}
+        value: ${{ jobs.MD-Validator-Action.outputs.job_status }}
 
 jobs:
-  MD_Validator_Action:
+  MD-Validator-Action:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
