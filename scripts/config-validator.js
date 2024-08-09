@@ -124,7 +124,7 @@ const validateDir = async (dir, fiserv_resources) => {
       if (check) {
         printMessage(`${tenant_config_validator} : PASSED`);
       } else {
-        errorMessage(tenant_config_validator, "FAILED");
+        errorMessage(tenant_config_validator);
       }
     }
   }
