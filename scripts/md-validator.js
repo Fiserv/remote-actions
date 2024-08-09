@@ -79,11 +79,11 @@ const markdownlinter = async (dir) => {
               if (result.toString().length > 0) {
                 errorMessage(
                   "MD LINTER",
-                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName}`
+                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
                 );
                 printMessage(result);
               } else {
-                printMessage(`${fileName} - LINTER PASSED`);
+                printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
               }
             }
           });
@@ -93,7 +93,7 @@ const markdownlinter = async (dir) => {
       } else {
         errorMessage(
           "MD LINTER",
-          `${file.name} has an invalid format or file extension`
+          `${`${dir}/${file.name}`.split('/docs/')[1]} has an invalid format or file extension`
         );
       }
     });
@@ -132,16 +132,16 @@ const mdHtmlValidator = async (dir) => {
           urlsArr = [];
 
           if (check) {
-            printMessage(`${fileName} - HTML VALIDATOR PASSED`);
+            printMessage(`${fileName.split('/docs/')[1]} - HTML VALIDATOR PASSED`);
           } else {
-            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${file?.name}`);
+            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`);
           }
         } catch (e) {
           errorMessage("HTML VALIDATOR", e.message);
           urlsArr = [];
         }
       } else {
-        errorMessage("HTML VALIDATOR", `${file?.name} is an invalid subdir/markdown file`);
+        errorMessage("HTML VALIDATOR", `${`${dir}/${file?.name}`.split('/docs/')[1]} is an invalid subdir/markdown file`);
         urlsArr = [];
       }
     });
