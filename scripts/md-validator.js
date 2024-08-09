@@ -93,7 +93,7 @@ const markdownlinter = async (dir) => {
       } else {
         errorMessage(
           "MD LINTER",
-          `Invalid subdir or file extension : ${dir}/${file.name}`
+          `${file.name} has an invalid format or file extension`
         );
       }
     });
@@ -134,14 +134,14 @@ const mdHtmlValidator = async (dir) => {
           if (check) {
             printMessage(`${fileName} - HTML VALIDATOR PASSED`);
           } else {
-            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName}`);
+            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${file?.name}`);
           }
         } catch (e) {
           errorMessage("HTML VALIDATOR", e.message);
           urlsArr = [];
         }
       } else {
-        errorMessage("HTML VALIDATOR", "Invalid subdir or Not a markdown file.");
+        errorMessage("HTML VALIDATOR", `${file?.name} is an invalid subdir/markdown file`);
         urlsArr = [];
       }
     });
