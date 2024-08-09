@@ -5,7 +5,7 @@ on:
     outputs:
       statuscheck:
         description: "Output of Api validation job"
-        value: ${{ jobs.API-Validator-Action.outputs.output1 }}
+        value: ${{ jobs.api_validator_actions.outputs.output1 }}
   # push:
   #   branches: [develop, stage, preview, main, previous]
   #   paths:
@@ -16,7 +16,7 @@ on:
   #     - "reference/**"
 
 jobs:
-  API-Validator-Action:
+  api_validator_actions:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:

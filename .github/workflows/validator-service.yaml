@@ -7,7 +7,7 @@ on:
   #   types: [opened, reopened]
 
 jobs:
-  api-validator:
+  api_validator:
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
   doc-validator:
