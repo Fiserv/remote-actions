@@ -115,7 +115,7 @@ const mdHtmlValidator = async (dir) => {
           const htmlData = converter.makeHtml(content);
 
           urlsArr.forEach(url => {
-            if (/githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
+            if (/raw\.githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
               if (/\.(png|jpg|jpeg|gif|tiff)$/.test(url))
                 errorMsg(`> ${url} is a raw github image link. Please utilize '/assets/images' instead.`);
               else
