@@ -9,7 +9,6 @@ on:
 
 jobs:
   MD-Linter-Action:
-    continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
@@ -31,7 +30,7 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: Fiserv/remote-actions
-          ref: TFDS-1530-Direct-Link-Validator
+          ref: main
           path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
