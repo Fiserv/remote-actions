@@ -10,6 +10,9 @@ jobs:
   api_validator:
     uses: ./.github/workflows/github-yaml-validator.yaml
     secrets: inherit
+  doc-linter:
+    uses: ./.github/workflows/github-md-linter.yaml
+    secrets: inherit
   doc-validator:
     uses: ./.github/workflows/github-md-validator.yaml
     secrets: inherit
