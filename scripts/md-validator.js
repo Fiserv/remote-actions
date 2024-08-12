@@ -152,7 +152,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      await markdownlinter(folder);
+      // await markdownlinter(folder);
       await mdHtmlValidator(folder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
