@@ -1,5 +1,4 @@
-#!/usr/bin/env node
-
+const markdownlint = require("markdownlint");
 const showdown = require("showdown");
 const fs = require("fs");
 const args = process.argv.slice(2);
@@ -9,7 +8,7 @@ const {
   showdownHighlight,
   mdExtension,
 } = require("./utils/md-utils");
-const { errorMessage, errorMsg, printMessage } = require("./utils/tools");
+const { errorMessage, errorMsg, printMessage, warningMsg } = require("./utils/tools");
 let urlsArr = [];
 
 const converter = new showdown.Converter({
@@ -54,49 +53,50 @@ converter.addExtension(() => {
   ]
 }, "extractImageUrls");
 
-const mdHtmlValidator = async (dir) => {
+const markdownlinter = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
-    files?.forEach(async (file) => {
+    files.forEach(async (file) => {
       if (file?.isDirectory()) {
-        check = mdHtmlValidator(`${dir}/${file.name}`);
+        markdownlinter(`${dir}/${file.name}`);
         return;
       }
       if (/\.md$/.test(file?.name)) {
         try {
-          let check = true;
           let fileName = `${dir}/${file.name}`;
-          const content = fs.readFileSync(fileName, "utf8");
-          converter.makeHtml(content);
-
-          urlsArr.forEach(url => {
-            if (/raw\.githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
-              if (/\.(png|jpg|jpeg|gif|tiff)$/.test(url))
-                errorMsg(`> ${url} is a raw github image link. Please utilize '/assets/images' instead.`);
-              else
-                errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);
-              check = false;
-              return;
-            } else if (/localhost:8080\/assets\//g.test(url)) {
-              if (!fs.existsSync(`${args[0]}/${url.substring(url.indexOf("assets/"))}`)) {
-                errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/`);
-                check = false;
+          const options = {
+            files: [fileName],
+            config: {
+              default: true,
+              "no-hard-tabs": false,
+              whitespace: false,
+              line_length: false,
+              "no-duplicate-heading": false,
+              "first-line-heading": false,
+              "heading-style": false
+            },
+          };
+          // const result = markdownlint.sync(options);
+          markdownlint(options, function callback(err, result) {
+            if (!err) {
+              if (result.toString().length > 0) {
+                errorMessage(
+                  "MD LINTER",
+                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
+                );
+                warningMsg(result);
+              } else {
+                printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
               }
             }
           });
-          urlsArr = [];
-
-          if (check) {
-            printMessage(`${fileName.split('/docs/')[1]} - HTML VALIDATOR PASSED`);
-          } else {
-            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`);
-          }
         } catch (e) {
-          errorMessage("HTML VALIDATOR", e.message);
-          urlsArr = [];
+          errorMessage("MD LINTER", e.message);
         }
       } else {
-        errorMessage("HTML VALIDATOR", `${`${dir}/${file?.name}`.split('/docs/')[1]} is an invalid subdir/markdown file`);
-        urlsArr = [];
+        errorMessage(
+          "MD LINTER",
+          `${`${dir}/${file.name}`.split('/docs/')[1]} has an invalid format or file extension`
+        );
       }
     });
   });
@@ -106,7 +106,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      await mdHtmlValidator(folder);
+      await markdownlinter(folder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
     }

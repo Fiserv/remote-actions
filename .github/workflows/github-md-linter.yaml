@@ -1,4 +1,4 @@
-name: Markdown Linter
+name: Markdown Validator
 on:
   workflow_dispatch:
   workflow_call:
@@ -12,26 +12,74 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
-      job_status: ${{ steps.markdown_validate.outputs.JobStatus }}
-
-    permissions:
-      contents: read
-      packages: read
-
+      job_status: ${{ steps.markdown_lint.outputs.JobStatus }}
     steps:
-      - name: Checkout code
+      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
+      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - name: Creating new temp sub dir called `tools`
+        run: |
+          mkdir -m 777 tools
+      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
           ref: ${{ github.ref }}
           path: ${{ github.workspace }}
-          fetch-depth: 0
+      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
+        uses: actions/checkout@main
+        with:
+          repository: Fiserv/remote-actions
+          ref: main
+          path: ${{ github.workspace }}/tools
+      - name: List files in the repository
+        run: |
+          cd ${{ github.workspace }}
+          pwd
+          ls -la
+          cd ${{ github.workspace }}/tools
+          pwd
+          ls -la
+      - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
+      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
 
-      - name: Super-linter
-        uses: super-linter/super-linter@v6.8.0
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@main
         env:
-          VALIDATE_MARKDOWN: true
-          GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'Multiple headings with the same content' -ignore 'Expected: setext' -ignore 'Line length' -ignore 'First line in a file should be a top-level heading'"
-          IGNORE_GITIGNORED_FILES: true
-          MULTI_STATUS: false
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+        name: List the state of node modules
+        continue-on-error: true
+        run: npm list
+
+      - name: Running Markdown Linter.....
+        id: markdown_lint
+        run: |
+          cd ${{ github.workspace }}/tools/scripts
+          ls -la
+          npmv=$(npm --version)
+          echo "NPM version installed : " $npmv
+          nodev=$(node --version)
+          echo "Node version installed : " $nodev
+          npm install
+          echo " Repo: ${{ github.repository }}"
+          echo " Space: ${{ github.workspace }}"
+          result=$(npm run markdownlint ${{ github.workspace }})
+          echo "**********TEST RESULTS*********************"
+          echo "$result"
+          if [[ $result == *'VALIDATOR FAILED'* ]] ;then
+            echo "Validator failed and exiting the Job..."
+            exit 1 
+          elif [[ $result == *'PASSED'* ]] ;then
+            echo "Validator Ran Successfully....🍏"
+          fi
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.markdown_validate.outputs.JobStatus }}"
