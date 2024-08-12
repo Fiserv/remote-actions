@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 0
 
       - name: Super-linter
-        uses: super-linter/super-linter@main
+        uses: super-linter/super-linter@v6.8.0
         env:
           VALIDATE_MARKDOWN: true
           GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'Multiple headings with the same content' -ignore 'Expected: setext' -ignore 'Line length' -ignore 'First line in a file should be a top-level heading'"
