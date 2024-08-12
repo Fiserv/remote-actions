@@ -21,6 +21,7 @@ const converter = new showdown.Converter({
   tables: true,
   extensions: [enrichHTMLFromMarkup(), showdownHighlight, mdExtension],
 });
+
 converter.addExtension(() => {
   return [
     {
