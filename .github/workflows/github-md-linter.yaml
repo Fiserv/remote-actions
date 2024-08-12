@@ -1,0 +1,37 @@
+name: Markdown Linter
+on:
+  workflow_dispatch:
+  workflow_call:
+    outputs:
+      statuscheck:
+        description: "Output of markdown validation job"
+        value: ${{ jobs.MD-Linter-Action.outputs.job_status }}
+
+jobs:
+  MD-Linter-Action:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      job_status: ${{ steps.markdown_validate.outputs.JobStatus }}
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@main
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
+          path: ${{ github.workspace }}
+          fetch-depth: 0
+
+      - name: Super-linter
+        uses: super-linter/super-linter@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
+          VALIDATE_MARKDOWN: true
+          VALIDATE_YAML: true
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"

@@ -20,13 +20,11 @@ jobs:
       - name: Creating new temp sub dir called `tools`
         run: |
           mkdir -m 777 tools
-          cd tools
-          pwd
-          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
         uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
+          ref: ${{ github.ref }}
           path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
         uses: actions/checkout@main
@@ -44,10 +42,6 @@ jobs:
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          pwd
-          ls -la
 
       - name: Cache node modules
         id: cache-npm
@@ -71,7 +65,6 @@ jobs:
       - name: Running Markdown Validator.....
         id: markdown_validate
         run: |
-          pwd
           cd ${{ github.workspace }}/tools/scripts
           ls -la
           npmv=$(npm --version)
@@ -81,7 +74,7 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          result=$(npm run markdown ${{github.workspace }})
+          result=$(npm run markdown ${{ github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
           if [[ $result == *'VALIDATOR FAILED'* ]] ;then

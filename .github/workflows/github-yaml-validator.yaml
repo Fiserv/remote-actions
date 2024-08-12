@@ -52,10 +52,6 @@ jobs:
           ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          pwd
-          ls -la
 
       - name: Cache node modules
         id: cache-npm
