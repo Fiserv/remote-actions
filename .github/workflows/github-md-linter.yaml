@@ -33,4 +33,5 @@ jobs:
           VALIDATE_MARKDOWN: true
           GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'MD003/heading-style' -ignore 'MD024/no-duplicate-heading'"
           IGNORE_GITIGNORED_FILES: true
+          MULTI_STATUS: false
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
