@@ -82,4 +82,5 @@ jobs:
             exit 1 
           elif [[ $result == *'PASSED'* ]] ;then
             echo "Validator Ran Successfully....🍏"
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
+          fi
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.markdown_validate.outputs.JobStatus }}"
