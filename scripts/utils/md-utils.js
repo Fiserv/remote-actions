@@ -81,7 +81,6 @@ const mdExtension = () => {
       const [k, v] = c.match(/\s*(\w+)\s*:(.+)/).slice(1);
       o[k.toLowerCase()] = v.trim();
     }
-    logger.info('Comment parsed successfully');
     return o;
   };
 
