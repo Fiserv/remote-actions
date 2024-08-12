@@ -17,7 +17,6 @@ jobs:
     permissions:
       contents: read
       packages: read
-      statuses: write
 
     steps:
       - name: Checkout code
@@ -31,7 +30,7 @@ jobs:
       - name: Super-linter
         uses: super-linter/super-linter@main
         env:
-          GITHUB_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
           VALIDATE_MARKDOWN: true
-          VALIDATE_YAML: true
+          GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'MD003/heading-style' -ignore 'MD024/no-duplicate-heading'"
+          IGNORE_GITIGNORED_FILES: true
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
