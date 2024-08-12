@@ -34,7 +34,7 @@ const markdownlinter = async (dir) => {
                   "MD LINTER",
                   `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
                 );
-                errorMsg(result);
+                errorMsg(result.toString().replace(/.*\/docs\//, ''));
               } else {
                 printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
               }
