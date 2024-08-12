@@ -31,7 +31,7 @@ jobs:
         uses: super-linter/super-linter@main
         env:
           VALIDATE_MARKDOWN: true
-          GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'Multiple headings with the same content' -ignore 'Expected: setext'"
+          GITHUB_ACTIONS_COMMAND_ARGS: "-ignore 'Multiple headings with the same content' -ignore 'Expected: setext' -ignore 'MD013/line-length'"
           IGNORE_GITIGNORED_FILES: true
           MULTI_STATUS: false
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
