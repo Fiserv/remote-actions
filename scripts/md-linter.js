@@ -29,12 +29,12 @@ const markdownlinter = async (dir) => {
           };
           markdownlint(options, function callback(err, result) {
             if (!err) {
-              if (result.toString().length > 0) {
+              if (result?.toString().length > 0) {
                 errorMessage(
                   "MD LINTER",
                   `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
                 );
-                errorMsg(result.toString().replace(/.*\/docs\//, '')).replace(/\.md([: ])/, ' - ');
+                errorMsg(result.toString().replace(/.*\.md:/g, 'Line'));
               } else {
                 printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
               }
