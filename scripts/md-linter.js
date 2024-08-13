@@ -34,7 +34,7 @@ const markdownlinter = async (dir) => {
                   "MD LINTER",
                   `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
                 );
-                errorMsg(result.toString().replace(/.*\/docs\//, ''));
+                errorMsg(result.toString().replace(/.*\/docs\//, '')).replace(/\.md([: ])/, ' - ');
               } else {
                 printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
               }
@@ -57,7 +57,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      await markdownlinter(folder);
+      markdownlinter(folder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
     }

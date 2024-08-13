@@ -106,7 +106,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      await mdHtmlValidator(folder);
+      mdHtmlValidator(folder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
     }
