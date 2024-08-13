@@ -219,7 +219,7 @@ const enrichHTMLFromMarkup = (tenantData) => {
 
 const showdownHighlight = () => {
   const htmlunencode = (text) => {
-    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    return text.replace(/\&amp;/g, '&').replace(/\&lt;/g, '<').replace(/&gt;/g, '>');
   };
   return [
     {
