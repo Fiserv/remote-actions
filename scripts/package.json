@@ -7,6 +7,7 @@
     "download": "node download-api-zip.js $path",
     "validate": "node validator-yaml.js $path",
     "markdown": "node md-validator.js $path",
+    "markdownlint": "node md-linter.js $path",
     "configcheck": "node config-validator.js $args",
     "fileaccess": "node file-access-validator.js $path",
     "test": "node download-api-zip.js reference"

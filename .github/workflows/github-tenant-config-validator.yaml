@@ -78,7 +78,7 @@ jobs:
           result=$(npm run configcheck ${{ github.workspace }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          if [[ $result == *'VALIDATOR FAILED'* ]] ;then
+          if [[ $result == *'FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
           exit 1
           elif [[ $result == *'PASSED'* ]] ;then

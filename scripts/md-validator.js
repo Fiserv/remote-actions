@@ -2,7 +2,6 @@
 
 const showdown = require("showdown");
 const fs = require("fs");
-const markdownlint = require("markdownlint");
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/docs";
 const {
@@ -55,52 +54,6 @@ converter.addExtension(() => {
   ]
 }, "extractImageUrls");
 
-const markdownlinter = async (dir) => {
-  fs.readdir(dir, { withFileTypes: true }, (err, files) => {
-    files.forEach(async (file) => {
-      if (file?.isDirectory()) {
-        markdownlinter(`${dir}/${file.name}`);
-        return;
-      }
-      if (/\.md$/.test(file?.name)) {
-        try {
-          let fileName = `${dir}/${file.name}`;
-          const options = {
-            files: [fileName],
-            config: {
-              default: true,
-              "no-hard-tabs": false,
-              whitespace: false,
-              line_length: false,
-            },
-          };
-          // const result = markdownlint.sync(options);
-          markdownlint(options, function callback(err, result) {
-            if (!err) {
-              if (result.toString().length > 0) {
-                errorMessage(
-                  "MD LINTER",
-                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
-                );
-                printMessage(result);
-              } else {
-                printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
-              }
-            }
-          });
-        } catch (e) {
-          errorMessage("MD LINTER", e.message);
-        }
-      } else {
-        errorMessage(
-          "MD LINTER",
-          `${`${dir}/${file.name}`.split('/docs/')[1]} has an invalid format or file extension`
-        );
-      }
-    });
-  });
-};
-
 const mdHtmlValidator = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async (file) => {
@@ -113,7 +66,7 @@ const mdHtmlValidator = async (dir) => {
           let check = true;
           let fileName = `${dir}/${file.name}`;
           const content = fs.readFileSync(fileName, "utf8");
-          const htmlData = converter.makeHtml(content);
+          converter.makeHtml(content);
 
           urlsArr.forEach(url => {
             if (/raw\.githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
@@ -153,8 +106,7 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      // await markdownlinter(folder);
-      await mdHtmlValidator(folder);
+      mdHtmlValidator(folder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
     }
