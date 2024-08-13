@@ -76,10 +76,10 @@ jobs:
           result=$(npm run markdownlint ${{ github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          if [[ $result == *'VALIDATOR FAILED'* ]] ;then
+          if [[ $result == *'FAILED'* ]] ;then
             echo "Validator failed and exiting the Job..."
-            exit 1 
+            exit 1
           elif [[ $result == *'PASSED'* ]] ;then
             echo "Validator Ran Successfully....🍏"
           fi
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.markdown_validate.outputs.JobStatus }}"
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.markdown_lint.outputs.JobStatus }}"

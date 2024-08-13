@@ -92,7 +92,7 @@ jobs:
           ls -la
           rm -rf ${{github.workspace }}/tools
           echo "Temp tools directory deleted ......"
-          if [[ $result == *'VALIDATOR FAILED'* ]] ;then
+          if [[ $result == *'FAILED'* ]] ;then
             echo "Validator failed and exiting the Job..."
             exit 1 
           elif [[ $result == *'PASSED'* ]] ;then

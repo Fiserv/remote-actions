@@ -80,15 +80,11 @@ jobs:
           result=$(npm run download ${{github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
           if [[ $result == *'ZIP GENERATOR FAILED'* ]] ;then
-          echo "Validator failed and exiting the Job..."
-          exit 1
+            echo "Validator failed and exiting the Job..."
+            exit 1
           elif [[ $result == *'PASSED'* ]] ;then
-          echo "Validator Ran Successfully....🍏"
+            echo "Validator Ran Successfully....🍏"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Show file content
