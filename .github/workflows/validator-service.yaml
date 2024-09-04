@@ -19,5 +19,8 @@ jobs:
   tenant-config-validator:
     uses: ./.github/workflows/github-tenant-config-validator.yaml
     secrets: inherit
+  release-notes-validator:
+    uses: ./.github/workflows/github-release-notes-validator.yaml
+    secrets: inherit
   file-access-validator:
     uses: ./.github/workflows/github-file-access-validator.yaml
