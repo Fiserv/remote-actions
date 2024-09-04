@@ -183,6 +183,11 @@ const validateSpecExistence = (dir, tenantData) => {
         MajorVersion = version;
       }
 
+      if (!item.releaseNotesPath?.length || !item.releaseNotesPath.endsWith('.md')) {
+        errorMsg(`${version} missing proper release notes`);
+        specExistence = false;
+      }
+
       const apiSpecFiles = item.apiSpecFileNames;
       if (apiSpecFiles.length > 0) {
         for (const filePath of apiSpecFiles) {
