@@ -58,7 +58,7 @@ const main = async () => {
     } else {
       errorMessage(
         "Release Notes VALIDATOR",
-        "No path for reference dir. defined"
+        "No path for reference directory defined"
       );
     }
   } catch (e) {
