@@ -52,7 +52,6 @@ const validateNonEmptyDir = async (dir) => {
 const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${folder}`);
-    printMessage(args);
 
     if (args?.length > 0) {
       findReleaseNotes(folder);
