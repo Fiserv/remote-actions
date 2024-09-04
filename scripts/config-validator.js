@@ -230,15 +230,10 @@ const sortVersionsDescending = (versions) => {
 
 const main = async () => {
   try {
-    printMessage(`External Dir ---->>> ${folder}`);
-    printMessage(args);
-    printMessage(`Executing validateDir(${folder}, ${fiserv_resources})`)
+    printMessage(`Executing validateDir(${folder}, ${fiserv_resources})`);
 
     if (args?.length > 0) {
       await validateDir(folder, fiserv_resources);
-      if (check) {
-        printMessage(`External Dir ---->>> ${folder}`);
-      }
     } else {
       errorMessage(
         "Tenant Config VALIDATOR",

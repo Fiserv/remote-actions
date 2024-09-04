@@ -9,6 +9,7 @@
     "markdown": "node md-validator.js $path",
     "markdownlint": "node md-linter.js $path",
     "configcheck": "node config-validator.js $args",
+    "releasenotes": "node release-notes-validator.js $args",
     "fileaccess": "node file-access-validator.js $path",
     "test": "node download-api-zip.js reference"
   },
