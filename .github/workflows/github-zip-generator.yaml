@@ -92,7 +92,7 @@ jobs:
           pwd
           ls -la
           cd assets
-          ls -la
+          ls -la --block-size=M
 
       - name: Pushing postman.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -105,7 +105,7 @@ jobs:
           destination_branch: "${{ github.ref_name }}"
           user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: "pushing zip postman file remotely"
+          commit_message: "pushing ${{ github.event.repository.name }} postman zip"
 
       - name: Pushing specs.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -118,7 +118,7 @@ jobs:
           destination_branch: "${{ github.ref_name }}"
           user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: "pushing zip specs file remotely"
+          commit_message: "pushing ${{ github.event.repository.name }} openapi zip"
 
       # - name: Upload Postman Zip
       #   uses: actions/upload-artifact@main
