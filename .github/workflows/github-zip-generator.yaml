@@ -1,6 +1,5 @@
 name: API Specs ZIP Generator
 on:
-  workflow_dispatch:
   workflow_call:
   # push:
   #   branches: [develop, stage, preview, main, previous]
@@ -94,6 +93,7 @@ jobs:
           ls -la
           cd assets
           ls -lah
+          git config --global http.postBuffer 10048576
 
       - name: Pushing postman.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
