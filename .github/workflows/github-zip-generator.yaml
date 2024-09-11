@@ -1,5 +1,6 @@
 name: API Specs ZIP Generator
 on:
+  workflow_dispatch:
   workflow_call:
   # push:
   #   branches: [develop, stage, preview, main, previous]
