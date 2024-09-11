@@ -120,11 +120,12 @@ jobs:
           user_name: ${{ vars.ACTION_USERNAME }}
           commit_message: "pushing ${{ github.event.repository.name }} openapi zip"
 
-      # - name: Upload Postman Zip
-      #   uses: actions/upload-artifact@main
-      #   with:
-      #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_postman.zip
-      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
+      - name: Upload ZIP Artifacts
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ github.event.repository.name }}_${{ github.ref_name }}-zip-files
+          path: ${{ github.workspace }}/assets/${{ github.event.repository.name }}*.zip
 
       # - name: Upload Specification Zip
       #   uses: actions/upload-artifact@main
