@@ -92,7 +92,7 @@ jobs:
           pwd
           ls -la
           cd assets
-          ls -la --block-size=M
+          ls -lah
 
       - name: Pushing postman.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
