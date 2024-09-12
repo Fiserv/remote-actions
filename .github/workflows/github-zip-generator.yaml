@@ -93,6 +93,7 @@ jobs:
           ls -la
           cd assets
           ls -lah
+          echo "Setting postBuffer to 104857600"
           git config --global http.postBuffer 104857600
 
       - name: Pushing postman.zip file remotely into tenants-data repository.
