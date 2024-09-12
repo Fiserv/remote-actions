@@ -29,7 +29,7 @@ jobs:
           path: ${{ github.workspace }}/tools
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@main
         with:
           python-version: 3.x
 
