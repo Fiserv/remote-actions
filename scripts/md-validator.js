@@ -76,7 +76,7 @@ const mdHtmlValidator = async (dir) => {
                 errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);
               check = false;
               return;
-            } else if (/localhost:8080\/assets\//g.test(url)) {
+            } else if (/localhost:8080\/api\/(hosted-image|download)\//g.test(url)) {
               if (!fs.existsSync(`${args[0]}/${url.substring(url.indexOf("assets/"))}`)) {
                 errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/`);
                 check = false;
