@@ -1,17 +1,27 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const yaml = require('js-yaml'); 
-const args = process.argv.slice(2); 
-const folder = args?.[0]+"/config"; 
-const {errorMessage , errorMsg  , printMessage , provideReferenceFolder} = require('./utils/tools')
-const ded_validator  = 'DED VALIDATOR';
-const pdl_validator  = 'Product Layout VALIDATOR'; 
-const tenant_config_validator = 'TENANT CONFIG VALIDATOR'; 
+const fs = require("fs");
+const yaml = require("js-yaml");
+const fetch = require('node-fetch');
+
+const github_token = process.env.API_TOKEN_GITHUB;
+const args = process.argv.slice(2);
+const folder = args?.[0] + "/config";
+const fiserv_resources = args?.[1] || "false";
+const {
+  errorMessage,
+  errorMsg,
+  printMessage,
+  provideReferenceFolder,
+} = require("./utils/tools");
+const ded_validator = "DED VALIDATOR";
+const pdl_validator = "Product Layout VALIDATOR";
+const tenant_config_validator = "TENANT CONFIG VALIDATOR";
+const description_length = 112;
 let check = true;
 let dedFileExistence = true;
-const validateDir = async (dir) => { 
 
+const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
   
   for (const file of files) {
@@ -68,8 +78,33 @@ const validateDir = async (dir) => {
           } 
         }
 
-      }catch (e){
-        errorMessage(tenant_config_validator  ,e?.message);
+        if (data?.resourcesFilePath) {
+          const file = `${args?.[0]}/${
+            data.resourcesFilePath.charAt(0) === "/"
+              ? data.resourcesFilePath.substring(1)
+              : data.resourcesFilePath
+          }`;
+          if (!fs.existsSync(file)) {
+            errorMsg(
+              `${data?.resourcesFilePath} doesn't exist in docs directory`
+            );
+            check = false;
+          }
+        }
+
+        if (!data?.product.description) {
+          errorMsg(
+            `Tenant description is missing`
+          );
+          check = false;
+        } else if (data?.product.description?.length == 0 || data?.product.description?.length > description_length) {
+          errorMsg(
+            `Product description must be between 1 and ${description_length} characters.`
+          );
+          check = false;
+        }
+      } catch (e) {
+        errorMessage(tenant_config_validator, e?.message);
         check = false;
       } 
 
