@@ -1,55 +1,54 @@
 name: API Specs ZIP Generator
 on:
-  # Triggers the workflow on push or pull request events but only for the develop , stage and main branch
-  workflow_call:  
-  push:
-    branches: [ develop,stage,preview,main ]
-    paths:
-      - 'reference/**' 
+  workflow_call:
+  # push:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "reference/**"
 
 jobs:
   ZIP-Generator-Actions:
     runs-on: ubuntu-latest
-    timeout-minutes: 15    
+    timeout-minutes: 15
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}." 
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Creating new temp sub dir called `tools`
         run: |
-         mkdir -m 777 tools
-         cd tools
-         pwd
-         ls -la
+          mkdir -m 777 tools
+          cd tools
+          pwd
+          ls -la
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
-         repository: ${{ github.repository }}
-         path: ${{ github.workspace }}
+          repository: ${{ github.repository }}
+          path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
-         repository: Fiserv/remote-actions
-         ref: develop
-         path: ${{ github.workspace }}/tools
+          repository: Fiserv/remote-actions
+          ref: main
+          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
-         cd ${{ github.workspace }}
-         pwd
-         ls -la
-         cd ${{ github.workspace }}/tools
-         pwd
-         ls -la
+          cd ${{ github.workspace }}
+          pwd
+          ls -la
+          cd ${{ github.workspace }}/tools
+          pwd
+          ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
-         pwd
-         ls -la
+          pwd
+          ls -la
 
       - name: Cache node modules
         id: cache-npm
-        uses: actions/cache@v3
+        uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
@@ -81,15 +80,11 @@ jobs:
           result=$(npm run download ${{github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
           if [[ $result == *'ZIP GENERATOR FAILED'* ]] ;then
-          echo "Validator failed and exiting the Job..."
-          exit 1
+            echo "Validator failed and exiting the Job..."
+            exit 1
           elif [[ $result == *'PASSED'* ]] ;then
-          echo "Validator Ran Successfully....🍏"
+            echo "Validator Ran Successfully....🍏"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Show file content
@@ -97,43 +92,45 @@ jobs:
           pwd
           ls -la
           cd assets
-          ls -la 
+          ls -lah
+          echo "Setting postBuffer to 104857600"
+          git config --global http.postBuffer 104857600
 
       - name: Pushing postman.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         with:
-          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip'
-          destination_repo: 'Fiserv/tenants-data'
-          destination_folder: 'assets'
-          destination_branch: '${{ github.ref_name }}'        
+          source_file: "${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip"
+          destination_repo: "Fiserv/tenants-data"
+          destination_folder: "assets"
+          destination_branch: "${{ github.ref_name }}"
           user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: 'pushing zip postman file remotely'
+          commit_message: "pushing ${{ github.event.repository.name }} postman zip"
 
       - name: Pushing specs.zip file remotely into tenants-data repository.
         uses: dmnemec/copy_file_to_another_repo_action@main
         env:
           API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         with:
-          source_file: '${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip'
-          destination_repo: 'Fiserv/tenants-data'
-          destination_folder: 'assets'
-          destination_branch: '${{ github.ref_name }}'        
+          source_file: "${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip"
+          destination_repo: "Fiserv/tenants-data"
+          destination_folder: "assets"
+          destination_branch: "${{ github.ref_name }}"
           user_email: ${{ vars.ACTION_EADDRESS }}
           user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: 'pushing zip specs file remotely' 
- 
-      # - name: Upload Postman Zip
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_postman.zip
-      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip
+          commit_message: "pushing ${{ github.event.repository.name }} openapi zip"
+
+      - name: Upload ZIP Artifacts
+        if: failure()
+        uses: actions/upload-artifact@main
+        with:
+          name: ${{ github.event.repository.name }}_${{ github.ref_name }}-zip-files
+          path: ${{ github.workspace }}/assets/${{ github.event.repository.name }}*.zip
 
       # - name: Upload Specification Zip
-      #   uses: actions/upload-artifact@v3
+      #   uses: actions/upload-artifact@main
       #   with:
       #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_spec.zip
-      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip          
-        
+      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip

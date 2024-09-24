@@ -18,10 +18,9 @@
  * work or the delivery of this work.
  */
 
-const showdown = require('showdown');
-const hljs = require('highlight.js'); 
+const showdown = require("showdown");
+const hljs = require("highlight.js");
 const classAttr = 'class="';
-  
 
 const mdExtension = () => {
   let tabIndex = 0;
@@ -54,12 +53,17 @@ const mdExtension = () => {
         case 'tab':
           if (titles in obj) {
             tabIndex = 0;
-            out.push('<div><div class="border-gray-bottom mb-4 products-type d-flex">');
+            out.push('<div class="md-tabs"><div class="border-gray-bottom mb-4 products-type d-flex overflow-hidden">');
             obj[titles].split(',').map((t, tInx) => {
+              let thash = tocId(t.trim().toLowerCase().replaceAll(' ', '_'));
+              const duplicates = out.filter(element => element.includes('href') && element.includes(`#tab-${thash}`));
+              if (duplicates.length) {
+                thash += `-${duplicates.length}`;
+              }
               out.push(
-                `<span data-tab-index=${tInx} class="pb-2 me-4 ms-1 font-size-20 font-bold cursor-pointer ${
+                `<a href="#tab-${thash}" data-tab-id="${thash}" class="pb-2 me-4 ms-1 font-size-20 font-bold cursor-pointer ${
                   tInx === 0 ? 'orange products-type-border' : 'grey-disable'
-                }">${t.trim()}</span>`
+                }">${t.trim()}</a>`
               );
             });
             out.push(`</div><div data-tab-index=${tabIndex++}>`);
@@ -179,19 +183,18 @@ const imgPathParser = () => {
   return [
     {
       type: 'output',
-      regex: '<img src="(.+?)" (.*)/>',
-      replace: function (strChunk, match1, match2) {
-        
-        const url = isAbsoluteURL(match1) ? match1 : parseURL('https://localhost:8080', match1);
-        return `<img src="${url}" ${match2}/>`;
+      regex: '<img [^>]*src="(.+?)"',
+      replace: function (strChunk, match) {
+        const url = isAbsoluteURL(match) ? match : parseURL("https://localhost:8080", match);
+        return strChunk.replace(match, url);
       },
     },
   ];
 };
 
-const tocId = (id) => id.replace(/[^\w-]/g, '');
+const tocId = (id) => id.replace(/[àáâãäå]/gi,'a').replace(/[ÈÉÊË]/gi,'e').replace(/[Î]/gi,'i').replace(/[Ôó]/gi,'o').replace(/[Ù]/gi,'u').replace(/[Ç]/gi,'c').replace(/[^\w-_]/g, '');
 
-const enrichHTMLFromMarkup = () => {
+const enrichHTMLFromMarkup = (tenantData) => {
   const tagsMap = {
     h1: (id) => `<a class="anchor" href="#${id}" aria-hidden="true"><span class="octicon octicon-link"></span></a>`,
     h2: (id) => `<a class="anchor" href="#${id}" aria-hidden="true"><span class="octicon octicon-link"></span></a>`,
@@ -210,13 +213,13 @@ const enrichHTMLFromMarkup = () => {
     },
   }));
   const tagsExt = tagsExtension();
-  const imgParser = imgPathParser( );
+  const imgParser = imgPathParser();
   return [...bindings, ...tagsExt, ...imgParser];
 };
 
 const showdownHighlight = () => {
   const htmlunencode = (text) => {
-    return text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    return text.replace(/\&amp;/g, '&').replace(/\&lt;/g, '<').replace(/&gt;/g, '>');
   };
   return [
     {
@@ -248,9 +251,9 @@ const showdownHighlight = () => {
     },
   ];
 };
- 
+
 module.exports = {
   enrichHTMLFromMarkup,
-  showdownHighlight: showdownHighlight(), 
+  showdownHighlight: showdownHighlight(),
   mdExtension,
 };
