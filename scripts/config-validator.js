@@ -17,8 +17,10 @@ const {
 const ded_validator = "DED VALIDATOR";
 const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
+const description_length = 112;
 let check = true;
 let dedFileExistence = true;
+
 const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
@@ -115,6 +117,18 @@ const validateDir = async (dir, fiserv_resources) => {
             );
             check = false;
           }
+        }
+
+        if (!data?.product.description) {
+          errorMsg(
+            `Tenant description is missing`
+          );
+          check = false;
+        } else if (data?.product.description?.length == 0 || data?.product.description?.length > description_length) {
+          errorMsg(
+            `Product description must be between 1 and ${description_length} characters.`
+          );
+          check = false;
         }
       } catch (e) {
         errorMessage(tenant_config_validator, e?.message);
