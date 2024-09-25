@@ -78,7 +78,7 @@ const mdHtmlValidator = async (dir) => {
               return;
             } else if (/localhost:8080\/api\/(hosted-image|download)\//g.test(url)) {
               if (!fs.existsSync(`${args[0]}/${url.substring(url.indexOf("assets/"))}`)) {
-                errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/`);
+                errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/ (file must be in assets folder or subfolder)`);
                 check = false;
               }
             }
