@@ -178,7 +178,7 @@ const parseURL = (path = '', type = 'file') => {
   return `https://localhost:8080/api/${type === 'file'? 'download' : 'hosted-image'}/${path}`;
 };
 
-const imgPathParser = (tenantData) => {
+const imgPathParser = () => {
   return [
     {
       type: 'output',
@@ -191,7 +191,7 @@ const imgPathParser = (tenantData) => {
   ];
 };
 
-const filePathParser = (tenantData) => {
+const filePathParser = () => {
   return [
     {
       type: 'output',
