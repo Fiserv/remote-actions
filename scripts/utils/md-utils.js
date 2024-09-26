@@ -173,10 +173,9 @@ const isAbsoluteURL = (url = '') => {
   return url.startsWith('http:') || url.startsWith('https:');
 };
 
-const parseURL = (baseURL = '', path = '') => {
+const parseURL = (path = '', type = 'file') => {
   path = path.replace(/(\.\.\/|\.\/|^\/)/g, '');
-  baseURL = baseURL.replace(/(\/$)/g, '');
-  return `${baseURL}/${path}`;
+  return `https://localhost:8080/api/${type === 'file'? 'download' : 'hosted-image'}/${path}`;
 };
 
 const imgPathParser = () => {
@@ -185,7 +184,20 @@ const imgPathParser = () => {
       type: 'output',
       regex: '<img [^>]*src="(.+?)"',
       replace: function (strChunk, match) {
-        const url = isAbsoluteURL(match) ? match : parseURL("https://localhost:8080", match);
+        const url = isAbsoluteURL(match) ? match : parseURL(match, 'image');
+        return strChunk.replace(match, url);
+      },
+    },
+  ];
+};
+
+const filePathParser = () => {
+  return [
+    {
+      type: 'output',
+      regex: '<a [^>]*href="(.+?)"',
+      replace: function (strChunk, match) {
+        const url = !match.startsWith('download/') ? match : parseURL(match.replace('download/', ''));
         return strChunk.replace(match, url);
       },
     },
@@ -214,7 +226,8 @@ const enrichHTMLFromMarkup = (tenantData) => {
   }));
   const tagsExt = tagsExtension();
   const imgParser = imgPathParser();
-  return [...bindings, ...tagsExt, ...imgParser];
+  const fileParser = filePathParser(tenantData);
+  return [...bindings, ...tagsExt, ...imgParser, ...fileParser];
 };
 
 const showdownHighlight = () => {
