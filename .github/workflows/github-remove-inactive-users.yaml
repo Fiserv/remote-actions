@@ -23,7 +23,7 @@ jobs:
           ORG_NAME="Fiserv"
           EXCLUDED_TEAMS=("Developer Studio Admin" "Developer Studio Test" "Developer-Studio-Support" "cloud-acceleration-center") # Teams to be excluded
           EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
-          TOKEN=${{ secrets.ZIP_GENERATOR_ACTION }}
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
 
           # Function to URL-encode team names to handle spaces
