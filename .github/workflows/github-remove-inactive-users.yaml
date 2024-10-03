@@ -1,0 +1,70 @@
+name: Remove Inactive Users
+
+on:
+  schedule:
+  - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  remove-inactive-users:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Fetch team members and their contributions
+        id: fetch_contributions
+        run: |
+          GITHUB_API_URL="https://api.github.com"
+          ORG_NAME="Fiserv"
+          EXCLUDED_TEAMS=("Developer Studio Admin" "Developer Studio Test" "Developer-Studio-Support" "cloud-acceleration-center") # Teams to be excluded
+          EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
+          TOKEN=${{ secrets.GITHUB_TOKEN }}
+          THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+
+          # Function to URL-encode team names to handle spaces
+          url_encode() {
+            echo "$1" | jq -sRr @uri
+          }
+
+          # Get the list of all members of the organization
+          ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
+
+          # Get members of the excluded teams
+          EXCLUDED_TEAM_MEMBERS=()
+          for TEAM in "${EXCLUDED_TEAMS[@]}"; do
+            ENCODED_TEAM=$(url_encode "$TEAM")
+            TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
+            EXCLUDED_TEAM_MEMBERS+=($(echo "$TEAM_MEMBERS" | jq -r '.[] | .login'))
+          done
+
+          # Get unique list of all excluded members (from teams and specific members)
+          ALL_EXCLUDED_MEMBERS=($(printf "%s\n" "${EXCLUDED_TEAM_MEMBERS[@]}" "${EXCLUDED_MEMBERS[@]}" | sort -u))
+
+          # Get recent activity for each member
+          for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
+            # Skip if the member is in the excluded list
+            if [[ " ${ALL_EXCLUDED_MEMBERS[@]} " =~ " ${MEMBER} " ]]; then
+              echo "$MEMBER is excluded, skipping..."
+              continue
+            fi
+
+            # Fetch the user's events in the last 30 days
+            USER_EVENTS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/users/$MEMBER/events?per_page=100")
+
+            LAST_CONTRIBUTION=$(echo "$USER_EVENTS" | jq -r ".[] | select(.created_at > \"$THIRTY_DAYS_AGO\") | .created_at" | sort -r | head -n 1)
+
+            if [ -z "$LAST_CONTRIBUTION" ]; then
+              echo "$MEMBER has been inactive for over 30 days, removing..."
+              curl -X DELETE -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/memberships/$MEMBER"
+            else
+              echo "$MEMBER has contributed recently: $LAST_CONTRIBUTION"
+            fi
+          done
+
+      - name: Complete the job
+        run: echo "Inactive members removal process completed."
