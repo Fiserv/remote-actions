@@ -7,7 +7,10 @@
     "download": "node download-api-zip.js $path",
     "validate": "node validator-yaml.js $path",
     "markdown": "node md-validator.js $path",
-    "configcheck": "node config-validator.js $path",
+    "markdownlint": "node md-linter.js $path",
+    "configcheck": "node config-validator.js $args",
+    "releasenotes": "node release-notes-validator.js $args",
+    "fileaccess": "node file-access-validator.js $path",
     "test": "node download-api-zip.js reference"
   },
   "author": "",
@@ -19,6 +22,7 @@
     "https": "^1.0.0",
     "js-yaml": "^4.1.0",
     "markdown-it": "^13.0.1",
+    "markdownlint": "^0.34.0",
     "openapi-to-postmanv2": "^4.15.0",
     "showdown": "^2.1.0"
   }

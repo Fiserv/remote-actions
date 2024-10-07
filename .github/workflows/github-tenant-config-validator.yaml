@@ -1,59 +1,50 @@
 name: TenantConfig Validator
 on:
   workflow_call:
-  # Triggers the workflow on push or pull request events but only for the dev , stage and main branch
-  push:
-    branches: [ develop,stage,preview,main ]
-    paths:
-      - 'config/**'     
-  pull_request:
-    branches: [ develop,stage,preview,main ]
-    paths:
-      - 'config/**' 
+  # push:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "config/**"
+  # pull_request:
+  #   branches: [develop, stage, preview, main, previous]
+  #   paths:
+  #     - "config/**"
 
 jobs:
   Tenant-Config-Action:
     runs-on: ubuntu-latest
-    timeout-minutes: 15    
+    timeout-minutes: 15
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}." 
-      - name: Creating new temp sub dir called `tools`
-        run: |
-         mkdir -m 777 tools
-         cd tools
-         pwd
-         ls -la
+      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
-         repository: ${{ github.repository }}
-         path: ${{ github.workspace }}
+          repository: ${{ github.repository }}
+          path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
         with:
-         repository: Fiserv/remote-actions
-         ref: develop
-         path: ${{ github.workspace }}/tools
+          repository: Fiserv/remote-actions
+          ref: main
+          path: ${{ github.workspace }}/tools
       - name: List files in the repository
         run: |
-         cd ${{ github.workspace }}
-         pwd
-         ls -la
-         cd ${{ github.workspace }}/tools
-         pwd
-         ls -la
+          cd ${{ github.workspace }}
+          ls -la
+          cd ${{ github.workspace }}/tools
+          ls -la
       - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: List files in the repository
         run: |
-         pwd
-         ls -la
+          pwd
+          ls -la
 
       - name: Cache node modules
         id: cache-npm
-        uses: actions/cache@v3
+        uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
@@ -71,6 +62,8 @@ jobs:
         run: npm list
 
       - name: Running Tenant Config Validator.....
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: |
           pwd
           cd ${{ github.workspace }}/tools/scripts
@@ -82,23 +75,13 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          result=$(npm run configcheck ${{github.workspace }})
+          result=$(npm run configcheck ${{ github.workspace }} ${{ vars.FISERV_INTERNAL }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
-          if [[ $result == *'VALIDATOR FAILED'* ]] ;then
+          if [[ $result == *'FAILED'* ]] ;then
           echo "Validator failed and exiting the Job..."
           exit 1
           elif [[ $result == *'PASSED'* ]] ;then
           echo "Validator Ran Successfully....🍏"
           fi
       - run: echo "🍏 This job's status is ${{ job.status }}."
-      - name: Show file content
-        run: |
-          pwd
-          ls -la
-      # - name: Commited changes from action runner to remote branch
-      #   uses: stefanzweifel/git-auto-commit-action@v4

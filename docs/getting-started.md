@@ -29,7 +29,9 @@ ___
 Need Help ?
 [FAQ](?path=docs/faq/faq.md)
 
+![Nyan cat](/assets/images/nyan-cat.png)
 
+[Nyan cat](download/assets/files/nyan-cat.txt)
 ___
 
 
