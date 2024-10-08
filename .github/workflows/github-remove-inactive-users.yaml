@@ -16,8 +16,7 @@ jobs:
 
       - name: Debug ORG_MEMBER
         run: |
-          ORG="Fiserv"
-          # ORG_MEMBERS=$(curl -s "https://api.github.com/orgs/$ORG/members")
+          ORG_NAME="Fiserv"
           GITHUB_API_URL="https://api.github.com"
           TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
           ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
