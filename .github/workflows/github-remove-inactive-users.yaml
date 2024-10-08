@@ -14,6 +14,17 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      - name: Debug ORG_MEMBER
+        run: |
+          ORG_NAME="Fiserv"
+          GITHUB_API_URL="https://api.github.com"
+          TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
+          echo "Organization Members:"
+          for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
+            echo "- $MEMBER"
+          done
+
       - name: Fetch team members and their contributions
         id: fetch_contributions
         run: |
@@ -35,8 +46,7 @@ jobs:
           # Get members of the excluded teams
           EXCLUDED_TEAM_MEMBERS=()
           for TEAM in "${EXCLUDED_TEAMS[@]}"; do
-            ENCODED_TEAM=$(url_encode "$TEAM")
-            TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
+            TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$TEAM/members")
             EXCLUDED_TEAM_MEMBERS+=($(echo "$TEAM_MEMBERS" | jq -r '.[] | .login'))
           done
 
