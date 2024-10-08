@@ -21,8 +21,8 @@ jobs:
           echo "Organization Members:"
           echo "$ORG_MEMBERS"
           for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
-              echo "- $MEMBER"
-        done
+            echo "- $MEMBER"
+          done
 
       - name: Fetch team members and their contributions
         id: fetch_contributions
