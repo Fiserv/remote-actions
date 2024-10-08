@@ -18,9 +18,17 @@ jobs:
         run: |
           ORG="Fiserv"
           ORG_MEMBERS=$(curl -s "https://api.github.com/orgs/$ORG/members")
+          TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
           echo "Organization Members:"
           echo "$ORG_MEMBERS"
           for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
+            echo "- $MEMBER"
+          done
+
+          echo "Team Members:"
+          echo "$TEAM_MEMBERS"
+          for MEMBER in $(echo "$TEAM_MEMBERS" | jq -r '.[].login'); do
             echo "- $MEMBER"
           done
 
