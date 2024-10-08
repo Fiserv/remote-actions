@@ -14,6 +14,14 @@ jobs:
       - name: Install jq
         run: sudo apt-get install -y jq
 
+      - name: Debug ORG_MEMBER
+        run: |
+          ORG="Fiserv"
+          ORG_MEMBERS=$(curl -s "https://api.github.com/orgs/$ORG/members")
+          echo "Organization Members:"
+          echo "$ORG_MEMBERS"
+          done
+
       - name: Fetch team members and their contributions
         id: fetch_contributions
         run: |
