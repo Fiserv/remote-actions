@@ -20,7 +20,9 @@ jobs:
           ORG_MEMBERS=$(curl -s "https://api.github.com/orgs/$ORG/members")
           echo "Organization Members:"
           echo "$ORG_MEMBERS"
-          done
+          for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
+              echo "- $MEMBER"
+        done
 
       - name: Fetch team members and their contributions
         id: fetch_contributions
