@@ -32,74 +32,32 @@ jobs:
           TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
 
-          # # Function to URL-encode team names to handle spaces
-          # url_encode() {
-          #   echo "$1" | jq -sRr @uri
-          # }
-
-          # # Get the list of all members of the organization
-          # ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
-
-          # # Get members of the excluded teams
-          # EXCLUDED_TEAM_MEMBERS=()
-          # for TEAM in "${EXCLUDED_TEAMS[@]}"; do
-          #   ENCODED_TEAM=$(url_encode "$TEAM")
-          #   TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
-          #   EXCLUDED_TEAM_MEMBERS+=($(echo "$TEAM_MEMBERS" | jq -r '.[] | .login'))
-          # done
-
-          # # Get unique list of all excluded members (from teams and specific members)
-          # ALL_EXCLUDED_MEMBERS=($(printf "%s\n" "${EXCLUDED_TEAM_MEMBERS[@]}" "${EXCLUDED_MEMBERS[@]}" | sort -u))
-
-          # # Get recent activity for each member
-          # for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
-          #   # Skip if the member is in the excluded list
-          #   if [[ " ${ALL_EXCLUDED_MEMBERS[@]} " =~ " ${MEMBER} " ]]; then
-          #     echo "$MEMBER is excluded, skipping..."
-          #     continue
-          #   fi
-
-          # Function to URL encode a string
+          # Function to URL-encode team names to handle spaces
           url_encode() {
-              local string="$1"
-              local encoded=""
-              for i in $(seq 0 $((${#string} - 1))); do
-                  local char="${string:$i:1}"
-                  case "$char" in
-                      [a-zA-Z0-9.~_-]) encoded+="$char" ;;
-                      *) encoded+=$(printf '%%%02X' "'$char") ;;
-                  esac
-              done
-              echo "$encoded"
+            echo "$1" | jq -sRr @uri
           }
 
+          # Get the list of all members of the organization
+          ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
+
+          # Get members of the excluded teams
           EXCLUDED_TEAM_MEMBERS=()
           for TEAM in "${EXCLUDED_TEAMS[@]}"; do
-              ENCODED_TEAM=$(url_encode "$TEAM")
-              TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
-              
-              # Debugging output
-              echo "TEAM_MEMBERS JSON for team $TEAM: $TEAM_MEMBERS"
-              
-              # Check if TEAM_MEMBERS is a valid JSON array
-              if ! echo "$TEAM_MEMBERS" | jq -e . >/dev/null 2>&1; then
-                  echo "Error fetching team members for team $TEAM. Received response: $TEAM_MEMBERS"
-                  continue
-              fi
-              
-              EXCLUDED_TEAM_MEMBERS+=($(echo "$TEAM_MEMBERS" | jq -r '.[] | .login'))
+            ENCODED_TEAM=$(url_encode "$TEAM")
+            TEAM_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/teams/$ENCODED_TEAM/members")
+            EXCLUDED_TEAM_MEMBERS+=($(echo "$TEAM_MEMBERS" | jq -r '.[] | .login'))
           done
 
-          # Make the list unique and merge with specific excluded members
+          # Get unique list of all excluded members (from teams and specific members)
           ALL_EXCLUDED_MEMBERS=($(printf "%s\n" "${EXCLUDED_TEAM_MEMBERS[@]}" "${EXCLUDED_MEMBERS[@]}" | sort -u))
 
           # Get recent activity for each member
           for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
-              # Skip if the member is in the excluded list
-              if [[ " ${ALL_EXCLUDED_MEMBERS[@]} " =~ " ${MEMBER} " ]]; then
-                  echo "$MEMBER is excluded, skipping..."
-                  continue
-              fi
+            # Skip if the member is in the excluded list
+            if [[ " ${ALL_EXCLUDED_MEMBERS[@]} " =~ " ${MEMBER} " ]]; then
+              echo "$MEMBER is excluded, skipping..."
+              continue
+            fi
 
             # Fetch the user's events in the last 30 days
             USER_EVENTS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/users/$MEMBER/events?per_page=100")
