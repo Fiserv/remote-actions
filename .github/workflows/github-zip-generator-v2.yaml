@@ -123,7 +123,7 @@ jobs:
           add-paths: "assets/files"
 
       - name: Merge Pull Request
-        run: gh pr merge --merge --auto "${{ github.event.inputs.pr_number }}"
+        run: gh pr merge --merge --auto "update-zip-files"
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
 
