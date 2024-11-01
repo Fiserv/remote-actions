@@ -123,11 +123,9 @@ jobs:
           body: "This PR was created automatically by Github ZIP Generator Action."
 
       - name: Merge Pull Request
-        uses: peter-evans/merge-pull-request@main
-        with:
-          token: ${{ secrets.ZIP_GENERATOR_ACTION }}
-          pull-request: ${{ steps.create_pull_request.outputs.pull-request-number }}
-          merge-method: squash
+        run: gh pr merge --merge --auto "${{ github.event.inputs.pr_number }}"
+        env:
+          GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
 
       - name: Upload ZIP Artifacts
         if: failure()
