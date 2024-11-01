@@ -90,7 +90,7 @@ jobs:
           pwd
           ls -la
           cd assets
-          mkdir -k files
+          mkdir -p files
           ls -lah
           mv *.zip files
           ls files
