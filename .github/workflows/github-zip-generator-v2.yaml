@@ -1,8 +1,8 @@
 name: API Specs ZIP Generator
 on:
   workflow_call:
-  push:
-    branches: [develop, main]
+  # push:
+  #   branches: [develop, main]
 
 jobs:
   ZIP-Generator-Actions:
