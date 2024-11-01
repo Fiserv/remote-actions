@@ -1910,7 +1910,7 @@ paths:
       x-proxy-name: getProgramsV2
       x-region:
         - North America
-      x-display: Rewards Admin
+      x-display: Reward Admins
       x-codegen-request-body-name: body
       x-group-name: Loyalty Programs
       x-child-product-name: Operations & Execution
