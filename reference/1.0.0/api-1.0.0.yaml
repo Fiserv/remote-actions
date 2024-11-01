@@ -1918,7 +1918,7 @@ paths:
     post:
       tags:
         - Rewards Admin
-      summary: Get Programs
+      summary: Get Program
       description: |-
         Get a list of programs.
         Optional Fields: clientIdentifier, systemIdentifier, principalIdentifier, agentIdentifier, programCode, effectiveDate, user, type, status, valuePropositionType, clientFilter, pageSize, pageIndex.
