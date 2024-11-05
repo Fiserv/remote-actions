@@ -39,12 +39,6 @@ jobs:
           cd ${{ github.workspace }}/tools
           pwd
           ls -la
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          pwd
-          ls -la
 
       - name: Cache node modules
         id: cache-npm
@@ -52,7 +46,6 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
           path: ~/.npm
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
@@ -90,47 +83,31 @@ jobs:
       - name: Show file content
         run: |
           pwd
-          ls -la
           cd assets
-          ls -lah
-          echo "Setting postBuffer to 104857600"
-          git config --global http.postBuffer 104857600
+          ls -la
+          mkdir -p files
+          mv *.zip files
 
-      - name: Pushing postman.zip file remotely into tenants-data repository.
-        uses: dmnemec/copy_file_to_another_repo_action@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@main
         with:
-          source_file: "${{github.workspace}}/assets/${{ github.event.repository.name }}_postman.zip"
-          destination_repo: "Fiserv/tenants-data"
-          destination_folder: "assets"
-          destination_branch: "${{ github.ref_name }}"
-          user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: "pushing ${{ github.event.repository.name }} postman zip"
+          token: ${{ secrets.ZIP_GENERATOR_ACTION }}
+          commit-message: "Zip Generator Action"
+          branch: update-zip-files
+          title: "Zip Generator Action PR"
+          body: "This PR was created automatically by Github ZIP Generator Action."
+          delete-branch: true
+          add-paths: "assets/files"
 
-      - name: Pushing specs.zip file remotely into tenants-data repository.
-        uses: dmnemec/copy_file_to_another_repo_action@main
+      - name: Merge Pull Request
+        run: gh pr merge --merge --auto "update-zip-files"
         env:
-          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        with:
-          source_file: "${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip"
-          destination_repo: "Fiserv/tenants-data"
-          destination_folder: "assets"
-          destination_branch: "${{ github.ref_name }}"
-          user_email: ${{ vars.ACTION_EADDRESS }}
-          user_name: ${{ vars.ACTION_USERNAME }}
-          commit_message: "pushing ${{ github.event.repository.name }} openapi zip"
+          GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
 
-      - name: Upload ZIP Artifacts
+      - name: Create ZIP Artifacts
         if: failure()
         uses: actions/upload-artifact@main
         with:
           name: ${{ github.event.repository.name }}_${{ github.ref_name }}-zip-files
-          path: ${{ github.workspace }}/assets/${{ github.event.repository.name }}*.zip
+          path: ${{ github.workspace }}/assets/files/${{ github.event.repository.name }}*.zip
 
-      # - name: Upload Specification Zip
-      #   uses: actions/upload-artifact@main
-      #   with:
-      #     name: ${{ github.event.repository.name }}_${{ github.ref_name }}_spec.zip
-      #     path: ${{github.workspace}}/assets/${{ github.event.repository.name }}_spec.zip
