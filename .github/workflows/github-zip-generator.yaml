@@ -93,8 +93,8 @@ jobs:
         with:
           token: ${{ secrets.ZIP_GENERATOR_ACTION }}
           commit-message: "Zip Generator Action"
-          branch: update-zip-files
-          title: "Zip Generator Action - ${{ github.ref }}"
+          branch: "update-zip-files-${{ github.ref_name }}"
+          title: "Zip Generator Action - ${{ github.ref_name }}"
           body: "This PR was created automatically by Github ZIP Generator Action."
           delete-branch: true
           add-paths: "assets/files"
@@ -102,7 +102,7 @@ jobs:
       - name: Merge Pull Request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        run: gh pr merge --merge --auto "update-zip-files-${{ github.ref }}"
+        run: gh pr merge --merge --auto "update-zip-files-${{ github.ref_name }}"
 
       - name: Create ZIP Artifacts
         if: failure()
