@@ -24,7 +24,8 @@ const markdownlinter = async (dir) => {
               line_length: false,
               "no-duplicate-heading": false,
               "first-line-heading": false,
-              "heading-style": false
+              "heading-style": false,
+              "no-inline-html": false,
             },
           };
           markdownlint(options, function callback(err, result) {
