@@ -2,6 +2,7 @@
 
 const showdown = require("showdown");
 const fs = require("fs");
+const he = require("he");
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/docs";
 const {
@@ -77,7 +78,7 @@ const mdHtmlValidator = async (dir) => {
               check = false;
               return;
             } else if (/localhost:8080\/api\/(hosted-image|download)\//g.test(url)) {
-              if (!fs.existsSync(`${args[0]}/${url.substring(url.indexOf("assets/"))}`)) {
+              if (!fs.existsSync(`${args[0]}/${he.decode(url.substring(url.indexOf("assets/")))}`)) {
                 errorMsg(`${url.substring(url.indexOf("assets/"))} - Missing from assets/ (file must be in assets folder or subfolder)`);
                 check = false;
               }
