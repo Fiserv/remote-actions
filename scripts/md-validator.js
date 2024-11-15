@@ -78,8 +78,8 @@ const mdHtmlValidator = async (dir) => {
               check = false;
               return;
             } else if (/localhost:8080\/api\/(hosted-image|download)\//g.test(url)) {
-              if (!fs.existsSync(`${args[0]}/${he.decode(url.substring(url.indexOf("assets/")))}`)) {
-                errorMsg(`${he.decode(url.substring(url.indexOf("assets/")))} - Missing from assets/ (file must be in assets folder or subfolder)`);
+              if (!fs.existsSync(`${args[0]}/${decodeURIComponent(url.substring(url.indexOf("assets/")))}`)) {
+                errorMsg(`${decodeURIComponent(url.substring(url.indexOf("assets/")))} - Missing from assets/ (file must be in assets folder or subfolder)`);
                 check = false;
               }
             }
