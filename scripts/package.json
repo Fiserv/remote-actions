@@ -24,7 +24,6 @@
     "markdown-it": "^13.0.1",
     "markdownlint": "^0.34.0",
     "openapi-to-postmanv2": "^4.15.0",
-    "showdown": "^2.1.0",
-    "he": "^1.2.0"
+    "showdown": "^2.1.0"
   }
 }
