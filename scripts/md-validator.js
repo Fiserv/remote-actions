@@ -2,7 +2,6 @@
 
 const showdown = require("showdown");
 const fs = require("fs");
-const he = require("he");
 const args = process.argv.slice(2);
 const folder = args?.[0] + "/docs";
 const {
