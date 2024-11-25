@@ -5,7 +5,7 @@ on:
 jobs:
   delete_branch:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'update-zip-files')
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'devstudio-update')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
