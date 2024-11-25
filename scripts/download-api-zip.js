@@ -213,7 +213,7 @@ const generatePostmanCollections = (folder, postmanFileName, content) => {
 
     postmanConverter.convert(
       { type: "string", data: content },
-      {},
+      { requestNameSource: 'x-proxy-name' },
       (err, conversionResult) => {
         clearTimeout(timeout);
         if (err !== null) {

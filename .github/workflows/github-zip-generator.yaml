@@ -9,6 +9,7 @@ on:
 jobs:
   ZIP-Generator-Actions:
     runs-on: ubuntu-latest
+    if: github.event.pull_request.head.ref != 'develop' && github.event.pull_request.head.ref != 'stage' && github.event.pull_request.head.ref != 'main' && github.event.pull_request.head.ref != 'preview'
     timeout-minutes: 15
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
