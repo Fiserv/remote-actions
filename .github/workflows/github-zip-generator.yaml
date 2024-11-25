@@ -102,7 +102,7 @@ jobs:
       - name: Merge Pull Request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        run: gh pr merge "update-zip-files-${{ github.ref_name }}" --merge --auto --delete-branch
+        run: gh pr merge "update-zip-files-${{ github.ref_name }}" --merge --auto
 
       - name: Create ZIP Artifacts
         if: failure()
