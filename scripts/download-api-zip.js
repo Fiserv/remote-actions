@@ -17,10 +17,10 @@ const postman_zip = new AdmZip(),
   spec_zip = new AdmZip();
 const specZipFile = args[0]?.includes("/")
   ? args[0].split("/").pop() + "_spec"
-  : "tennat_spec";
+  : "tenant_spec";
 const postmanZipFile = args[0]?.includes("/")
   ? args[0].split("/").pop() + "_postman"
-  : "tennat_postman";
+  : "tenant_postman";
 const Zip_Generator = "ZIP GENERATOR";
 
 const validateDir = async (dir) => {
@@ -116,14 +116,12 @@ const validateSpecExistence = async (dir, tenantData) => {
                     );
                   }
                   if (
-                    (await generateSpecZipCollection(
+                    tenant_repo && fileName && content &&
+                    await generateSpecZipCollection(
                       tenant_repo,
                       fileName,
                       content
-                    )) &&
-                    tenant_repo !== null &&
-                    fileName !== null &&
-                    content !== null
+                    )
                   ) {
                     printMessage(`Spec File : ${fileName} added to Zip`);
                   }
@@ -133,24 +131,19 @@ const validateSpecExistence = async (dir, tenantData) => {
                     : `${fileName}.json`;
 
                   if (
-                    tenant_repo !== null &&
-                    postmanFileName !== null &&
-                    content !== null
-                  ) {
-                    const check = generatePostmanCollections(
+                    tenant_repo && postmanFileName && content &&
+                    generatePostmanCollections(
                       tenant_repo,
                       postmanFileName,
-                      content
+                      yaml.dump(apiJson)
+                  )) {
+                    printMessage(
+                      `Postman Collection: ${fileName} added to Zip`
                     );
-                    if (check) {
-                      printMessage(
-                        `Postman Collection: ${fileName} added to Zip`
-                      );
-                    } else {
-                      warningMsg(
-                        `Unable to create postman Collection for file: ${fileName}`
-                      );
-                    }
+                  } else {
+                    warningMsg(
+                      `Unable to create postman Collection for file: ${fileName}`
+                    );
                   }
                 }
               }
@@ -205,7 +198,6 @@ const generateSpecZipCollection = async (folder, filename, content) => {
 };
 
 const generatePostmanCollections = (folder, postmanFileName, content) => {
-  let check = false;
   try {
     const timeout = setTimeout(() => {
       console.log("Postman conversion timed out");
@@ -236,15 +228,14 @@ const generatePostmanCollections = (folder, postmanFileName, content) => {
             );
           }
           postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`);
-          check = true;
+          return true
         }
       }
     );
   } catch (error) {
     errorMessage("Postman GENERATOR", error);
-    check = false;
   }
-  return check;
+  return false;
 };
 
 const main = async () => {
