@@ -88,6 +88,7 @@ const validateSpecExistence = async (dir, tenantData) => {
                     }
                     if (api["x-proxy-name"]) {
                       check = true;
+                      api['summary'] = api["x-proxy-name"];
                     } else {
                       if (!api.hasOwnProperty("x-proxy-name")) {
                         errorMessage(
@@ -213,7 +214,7 @@ const generatePostmanCollections = (folder, postmanFileName, content) => {
 
     postmanConverter.convert(
       { type: "string", data: content },
-      { requestNameSource: 'x-proxy-name' },
+      {},
       (err, conversionResult) => {
         clearTimeout(timeout);
         if (err !== null) {
