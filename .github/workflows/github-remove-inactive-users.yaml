@@ -18,7 +18,7 @@ jobs:
         run: |
           ORG_NAME="Fiserv"
           GITHUB_API_URL="https://api.github.com"
-          TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          TOKEN=${{ secrets.CLEANUP_TOKEN }}
           ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
           echo "Organization Members:"
           for MEMBER in $(echo "$ORG_MEMBERS" | jq -r '.[].login'); do
@@ -32,7 +32,7 @@ jobs:
           ORG_NAME="Fiserv"
           EXCLUDED_TEAMS=("developer-studio-admin" "developer-studio-test" "developer-studio-support" "cloud-acceleration-center") # Teams to be excluded
           EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
-          TOKEN=${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          TOKEN=${{ secrets.CLEANUP_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
 
           # Function to URL-encode team names to handle spaces
