@@ -9,9 +9,14 @@ on:
 jobs:
   ZIP-Generator-Actions:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.ref != 'develop' && github.event.pull_request.head.ref != 'stage' && github.event.pull_request.head.ref != 'main' && github.event.pull_request.head.ref != 'preview'
     timeout-minutes: 15
     steps:
+      - name: Check for auto-generated ZIP files
+        id: check_zip
+        run: |
+          if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'assets/files/${{ github.event.repository.name }}.*\.zip'; then
+            echo "API zip is already being pushed, skipping generation of new one"
+            exit 1
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
