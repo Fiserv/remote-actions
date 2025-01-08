@@ -79,7 +79,7 @@ jobs:
 
             if [ -z "$LAST_CONTRIBUTION" ]; then
               echo "$MEMBER has been inactive for over 30 days, removing..."
-              curl -X DELETE -H "Accept: application/vnd.github+json" -H "Authorization: Bearer $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/memberships/$MEMBER"
+              curl -X DELETE -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/memberships/$MEMBER"
             else
               echo "$MEMBER has contributed recently: $LAST_CONTRIBUTION"
             fi
