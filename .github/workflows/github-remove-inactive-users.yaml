@@ -34,6 +34,7 @@ jobs:
           EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
           TOKEN=${{ secrets.CLEANUP_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
+          REMOVED_MEMBERS_FILE="removed_members.txt"
 
           # Function to URL-encode team names to handle spaces
           url_encode() {
@@ -80,10 +81,18 @@ jobs:
             if [ -z "$LAST_CONTRIBUTION" ]; then
               echo "$MEMBER has been inactive for over 30 days, removing..."
               curl -X DELETE -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/memberships/$MEMBER"
+              echo "$MEMBER" >> "$REMOVED_MEMBERS_FILE"
             else
               echo "$MEMBER has contributed recently: $LAST_CONTRIBUTION"
             fi
           done
+          echo "::set-output name=removed_members_file::$REMOVED_MEMBERS_FILE"
 
-      - name: Complete the job
-        run: echo "Inactive members removal process completed."
+      - name: Cleanup Summary
+        run: |
+          REMOVED_MEMBERS_FILE="${{ steps.fetch_contributions.outputs.removed_members_file }}"
+          REMOVED_COUNT=$(wc -l < "$REMOVED_MEMBERS_FILE")
+
+          echo "Number of members removed: $REMOVED_COUNT"
+          echo "Removed members:"
+          cat "$REMOVED_MEMBERS_FILE"
