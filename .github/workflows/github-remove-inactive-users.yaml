@@ -86,13 +86,12 @@ jobs:
               echo "$MEMBER has contributed recently: $LAST_CONTRIBUTION"
             fi
           done
-          echo "::set-output name=removed_members_file::$REMOVED_MEMBERS_FILE"
+          REMOVED_USERS=$(cat $REMOVED_MEMBERS_FILE)
+          echo "USERS=$REMOVED_USERS" >> $GITHUB_ENV
 
       - name: Cleanup Summary
         run: |
-          REMOVED_MEMBERS_FILE="${{ steps.fetch_contributions.outputs.removed_members_file }}"
-          REMOVED_COUNT=$(wc -l < "$REMOVED_MEMBERS_FILE")
-
-          echo "Number of members removed: $REMOVED_COUNT"
-          echo "Removed members:"
-          cat "$REMOVED_MEMBERS_FILE"
+          echo "Removed members: $USERS"
+          echo "Cleanup complete!"
+        env:
+          USERS: ${{ env.USERS }}
