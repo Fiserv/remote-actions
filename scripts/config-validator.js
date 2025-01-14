@@ -18,8 +18,6 @@ const ded_validator = "DED VALIDATOR";
 const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
 const description_length = 112;
-let check = true;
-let dedFileExistence = true;
 
 const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
@@ -145,6 +143,7 @@ const validateDir = async (dir, fiserv_resources) => {
 };
 
 const validateDocLinks = async (dir, arr) => {
+  let check = true;
   try {
     arr.forEach(async (obj) => {
       if (obj?.link?.length) {
@@ -161,24 +160,24 @@ const validateDocLinks = async (dir, arr) => {
             });
             if (response.status === 404) {
               errorMsg(`${repo}/contents/${obj.link}?ref=${branch} - Missing`);
-                dedFileExistence = false;
+              check = false;
             } else if (!response.ok) {
-                throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
+              throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
             }
         }
         else if (!fs.existsSync(file)) {
           errorMsg(`${file} - Missing`);
-          dedFileExistence = false;
+          check = false;
         }
       }
       if (obj?.sections) {
-        validateDocLinks(dir, obj?.sections);
+        check = validateDocLinks(dir, obj?.sections) && check;
       }
     });
   } catch (e) {
-    dedFileExistence = false;
+    check = false;
   }
-  return dedFileExistence;
+  return check;
 };
 
 const validateSpecExistence = (dir, tenantData) => {
