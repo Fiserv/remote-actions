@@ -84,6 +84,10 @@ const validateFiles = (dir, arr) => {
         errorMsg(`${file} - Missing access level`);
         validFileAccessDefinition = false;
       }
+      if (obj?.access === "private" && !obj?.groups) {
+        errorMsg(`${file} - Missing groups for private file`);
+        validFileAccessDefinition = false;
+      }
       if (obj?.groups) {
         const improperGroupNames = obj?.groups.filter((x) => x.match(/\W/));
         if (improperGroupNames?.length) {
