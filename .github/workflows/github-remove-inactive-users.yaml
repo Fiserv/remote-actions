@@ -35,6 +35,7 @@ jobs:
           TOKEN=${{ secrets.CLEANUP_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
           REMOVED_MEMBERS_FILE="removed_members.txt"
+          touch $REMOVED_MEMBERS_FILE
 
           # Function to URL-encode team names to handle spaces
           url_encode() {
