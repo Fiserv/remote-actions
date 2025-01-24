@@ -43,7 +43,17 @@ jobs:
           }
 
           # Get the list of all members of the organization
-          ORG_MEMBERS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members")
+          PAGE=1
+          ORG_MEMBERS=""
+          while [ $PAGE -lt 5 ]; do
+            RESPONSE=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/members?role=member&per_page=100&page=$PAGE")
+            if [ "$(echo "$RESPONSE" | jq length)" -eq 0 ]; then
+              break
+            fi
+            ORG_MEMBERS="$ORG_MEMBERS$(echo "$RESPONSE" | jq -c '.[]')"
+            PAGE=$((PAGE + 1))
+          done
+          ORG_MEMBERS=$(echo "$ORG_MEMBERS" | jq -s '.')
 
           # Get members of the excluded teams
           EXCLUDED_TEAM_MEMBERS=()
