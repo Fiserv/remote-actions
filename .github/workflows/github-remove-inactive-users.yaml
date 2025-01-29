@@ -1,8 +1,8 @@
 name: Remove Inactive Users
 
 on:
-  schedule:
-  - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
+  # schedule:
+  # - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
   workflow_dispatch:  # Allows manual triggering
     inputs:
       excluded_members:
@@ -35,7 +35,7 @@ jobs:
         run: |
           GITHUB_API_URL="https://api.github.com"
           ORG_NAME="Fiserv"
-          EXCLUDED_TEAMS=("developer-studio-admin" "developer-studio-test" "developer-studio-support" "cloud-acceleration-center") # Teams to be excluded
+          EXCLUDED_TEAMS=("developer-studio-admin" "developer-studio-test" "developer-studio-support" "cloud-acceleration-center" "TTPPackage") # Teams to be excluded
           EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
           INPUT_EXCLUDED_MEMBERS="${{ github.event.inputs.excluded_members }}"
           TOKEN=${{ secrets.CLEANUP_TOKEN }}
