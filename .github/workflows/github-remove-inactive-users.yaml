@@ -1,9 +1,14 @@
 name: Remove Inactive Users
 
 on:
-  schedule:
-  - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
+  # schedule:
+  # - cron: '0 0 * * 0'  # Runs every Sunday at midnight UTC
   workflow_dispatch:  # Allows manual triggering
+    inputs:
+      excluded_members:
+        description: 'Comma-separated list of members to exclude'
+        required: false
+        default: ''
 
 jobs:
   remove-inactive-users:
@@ -30,12 +35,19 @@ jobs:
         run: |
           GITHUB_API_URL="https://api.github.com"
           ORG_NAME="Fiserv"
-          EXCLUDED_TEAMS=("developer-studio-admin" "developer-studio-test" "developer-studio-support" "cloud-acceleration-center") # Teams to be excluded
+          EXCLUDED_TEAMS=("developer-studio-admin" "developer-studio-test" "developer-studio-support" "cloud-acceleration-center" "TTPPackage") # Teams to be excluded
           EXCLUDED_MEMBERS=("tomeck" "pavanjoshi12") # Specific users to be excluded
+          INPUT_EXCLUDED_MEMBERS="${{ github.event.inputs.excluded_members }}"
           TOKEN=${{ secrets.CLEANUP_TOKEN }}
           THIRTY_DAYS_AGO=$(date --date='30 days ago' +"%Y-%m-%dT%H:%M:%SZ")
           REMOVED_MEMBERS_FILE="removed_members.txt"
           touch $REMOVED_MEMBERS_FILE
+
+          # Convert the comma-separated string to an array
+          IFS=',' read -r -a INPUT_EXCLUDED_MEMBERS_ARRAY <<< "$INPUT_EXCLUDED_MEMBERS"
+
+          # Combine the hardcoded and input excluded members
+          EXCLUDED_MEMBERS=("${EXCLUDED_MEMBERS[@]}" "${INPUT_EXCLUDED_MEMBERS_ARRAY[@]}")
 
           # Function to URL-encode team names to handle spaces
           url_encode() {
@@ -74,17 +86,7 @@ jobs:
               continue
             fi
 
-            # Fetch the user's membership details
-            USER_MEMBERSHIP=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/orgs/$ORG_NAME/memberships/$MEMBER")
-            JOIN_DATE=$(echo "$USER_MEMBERSHIP" | jq -r '.created_at')
-
-            # Check if the member has been part of the org for more than 30 days
-            if [[ "$JOIN_DATE" > "$THIRTY_DAYS_AGO" ]]; then
-              echo "$MEMBER has been a member for less than 30 days, skipping..."
-              continue
-            fi
-
-            # Fetch the user's events in the last 30 days
+            # Fetch user's 10 most recent events
             USER_EVENTS=$(curl -s -H "Authorization: token $TOKEN" "$GITHUB_API_URL/users/$MEMBER/events?per_page=10")
 
             LAST_CONTRIBUTION=$(echo "$USER_EVENTS" | jq -r ".[] | select(.created_at > \"$THIRTY_DAYS_AGO\") | .created_at" | sort -r | head -n 1)
