@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@main
         with:
           repository: ${{ github.repository }}
-          ref: ${{ github.ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
           path: ${{ github.workspace }}
       - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
         uses: actions/checkout@main
