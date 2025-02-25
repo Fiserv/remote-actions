@@ -87,7 +87,7 @@ const validateDir = async (dir, fiserv_resources) => {
         }
 
         productUrls.forEach(p => {
-          if (!data.product.p.includes(data.name)) {
+          if (!data.product[p].includes(data.name)) {
             errorMsg(
               `Field "product.${p}" should be set to product name`
             );
