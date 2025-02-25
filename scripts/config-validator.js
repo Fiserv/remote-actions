@@ -66,6 +66,8 @@ const validateDir = async (dir, fiserv_resources) => {
         const valid_solutions = fiserv_resources === "true"
           ? ["fiserv-resources"]
           : ["merchants", "financial-institutions", "fintech", "carat"];
+        const productUrls = ['apiSpecification', 'layout', 'documentation', 'documenttree', 'documenttreeV2', 'sandbox'];
+
         check = validateSpecExistence(args?.[0], data);
         if (data?.name !== "Support") {
           if (!data?.solution?.length) {
@@ -83,6 +85,15 @@ const validateDir = async (dir, fiserv_resources) => {
             }
           }
         }
+
+        productUrls.forEach(p => {
+          if (!data.product.p.includes(data.name)) {
+            errorMsg(
+              `Field "product.${p}" should be set to product name`
+            );
+            check = false;
+          }
+        })
 
         if (!data?.getStartedFilePath) {
           errorMsg(
