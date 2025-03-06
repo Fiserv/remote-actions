@@ -249,8 +249,16 @@ const sortVersionsDescending = (versions) => {
     const aParts = a.split(".");
     const bParts = b.split(".");
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-      if (parseInt(bParts[i] || 0) !== parseInt(aParts[i] || 0)) {
-        return parseInt(bParts[i] || 0) - parseInt(aParts[i] || 0);
+      const a = aParts[i] || "0";
+      const b = bParts[i] || "0";
+
+      if (a.length != b.length) {
+        const maxLength = Math.max(a.length, b.length);
+        a = a.padEnd(maxLength, 0);
+        b = b.padEnd(maxLength, 0);
+      }
+      if (parseInt(a) !== parseInt(b)) {
+        return parseInt(b) - parseInt(a);
       }
     }
     return 0;
