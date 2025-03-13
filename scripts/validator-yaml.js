@@ -184,7 +184,7 @@ const validateIndexBody = (
     );
     xFieldsCheck = false;
   }
-  if (body.xProxyName.length > 0 && /[<>/\\]/.test(body.xGroupName)) {
+  if (body.xGroupName.length > 0 && /[<>/\\]/.test(body.xGroupName)) {
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Slashes not allowed in 'x-group-name' - ${body.xGroupName}`
