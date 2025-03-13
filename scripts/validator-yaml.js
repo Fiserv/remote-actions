@@ -176,14 +176,22 @@ const validateIndexBody = (
     return false;
   }
 
-  if (body.xProxyName.length > 0 && /^[^A-Za-z]/.test(body.xProxyName)) {
+  let xFieldsCheck = true;
+  if (body.xProxyName.length > 0 && /[<>/\\]/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
-      `File :${fileName} API-Path:${path} Error: Non-alphabetical character at start of 'x-proxy-name' - ${body.xProxyName}`
+      `File :${fileName} API-Path:${path} Error: Slashes not allowed in 'x-proxy-name' - ${body.xProxyName}`
     );
-    return false;
+    xFieldsCheck = false;
   }
-  return true;
+  if (body.xProxyName.length > 0 && /[<>/\\]/.test(body.xGroupName)) {
+    errorMessage(
+      YAML_VALIDATOR,
+      `File :${fileName} API-Path:${path} Error: Slashes not allowed in 'x-group-name' - ${body.xGroupName}`
+    );
+    xFieldsCheck = false;
+  }
+  return xFieldsCheck;
 };
 
 const hasAPIs = async (dir) => {
