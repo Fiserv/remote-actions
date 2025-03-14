@@ -177,17 +177,18 @@ const validateIndexBody = (
   }
 
   let xFieldsCheck = true;
-  if (body.xProxyName.length > 0 && /[<>/\\]/.test(body.xProxyName)) {
+  xFieldsCheck
+  if (body.xProxyName.length > 0 && /^\W/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
-      `File :${fileName} API-Path:${path} Error: Slashes not allowed in 'x-proxy-name' - ${body.xProxyName}`
+      `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-proxy-name' - ${body.xProxyName}`
     );
     xFieldsCheck = false;
   }
-  if (body.xGroupName.length > 0 && /[<>/\\]/.test(body.xGroupName)) {
+  if (body.xGroupName.length > 0 && /^\W/.test(body.xGroupName)) {
     errorMessage(
       YAML_VALIDATOR,
-      `File :${fileName} API-Path:${path} Error: Slashes not allowed in 'x-group-name' - ${body.xGroupName}`
+      `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-group-name' - ${body.xGroupName}`
     );
     xFieldsCheck = false;
   }
