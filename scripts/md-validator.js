@@ -25,7 +25,7 @@ converter.addExtension(() => {
   return [
     {
       type: "output",
-      regex: /<a\shref[^>]+>/g,
+      regex: /<a.*?href.+>/g,
       replace: function (text) {
         const url = text.match(/"(.*?)"/)[1];
         if (url.startsWith("http:") || url.startsWith("https:")) {
