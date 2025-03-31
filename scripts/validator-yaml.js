@@ -16,6 +16,8 @@ const {
 const { enrichHTMLFromMarkup, showdownHighlight } = require("./utils/md-utils");
 const { exit } = require("process");
 
+const apis = [];
+
 const validateDir = async (dir) => {
   let check = false;
 
@@ -191,6 +193,17 @@ const validateIndexBody = (
       `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-group-name' - ${body.xGroupName}`
     );
     xFieldsCheck = false;
+  }
+
+  const apiIndexKey = `${body.path}_${body.requestType}_${version}`;
+  if (apis.includes(apiIndexKey)) {
+    errorMessage(
+      YAML_VALIDATOR,
+      `File: ${fileName} API: ${path} - Duplicate API detected.`
+    );
+    xFieldsCheck = false;
+  } else {
+    apis.push(apiIndexKey);
   }
   return xFieldsCheck;
 };
