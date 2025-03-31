@@ -14,16 +14,18 @@ const {
   provideReferenceFolder,
 } = require("./utils/tools");
 const { enrichHTMLFromMarkup, showdownHighlight } = require("./utils/md-utils");
-const { exit } = require("process");
 
-const validateDir = async (dir) => {
+const validateDir = async (dir, apiList) => {
   let check = false;
 
-  fs.readdir(dir, { withFileTypes: true }, (err, files) => {
+  fs.readdir(dir, { withFileTypes: true }, (_, files) => {
     files?.forEach(async (file) => {
       if (file?.isDirectory()) {
-        validateDir(`${dir}/${file.name}`);
+        validateDir(`${dir}/${file.name}`, apiList.filter(v => v.version?.includes(file.name))?.[0]?.apiSpecFileNames || apiList.filter(v => v.includes(file.name)).map(v => v.replace(/^[^/]*\//, '')));
       } else if (/\.yaml$/.test(file.name)) {
+        if (!apiList?.includes(file.name.split(".yaml")[0])) {
+          return;
+        }
         try {
           let fileName = `${dir}/${file.name}`;
           const content = fs.readFileSync(fileName, "utf8");
@@ -36,7 +38,7 @@ const validateDir = async (dir) => {
           const parsedData = await SwaggerParser.validate(apiJson);
 
           if (parsedData) {
-            check = await parseAPIData(fileName, parsedData, apiJson);
+            check = await parseAPIData(fileName, parsedData, apiJson, apiList);
           }
         } catch (e) {
           errorMessage(YAML_VALIDATOR, `File : ${file.name} : FAILED`);
@@ -197,7 +199,6 @@ const validateIndexBody = (
 
 const hasAPIs = async (dir) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
-  let check = false;
   for (const file of files) {
     if (file?.name === "tenant.json") {
       try {
@@ -205,25 +206,24 @@ const hasAPIs = async (dir) => {
         const content = await fs.promises.readFile(fileName, "utf8");
         const tenantData = JSON.parse(content);
         if (tenantData?.apiVersions && tenantData?.apiVersions.length > 0) {
-          return true;
+          return tenantData?.apiVersions;
         }
       } catch (e) {
         errorMessage(YAML_VALIDATOR, e?.message);
-        check = false;
       }
     }
   }
-  return check;
+  return;
 };
 
 const main = async () => {
   try {
     if (args?.length > 0) {
       // Check for API version in tenant configuration file
-      const checkAPIs = await hasAPIs(folder + "/config");
-      if (checkAPIs) {
+      const apiList = await hasAPIs(folder + "/config");
+      if (apiList) {
         const refFolder = provideReferenceFolder(folder);
-        await validateDir(refFolder);
+        await validateDir(refFolder, apiList);
       } else {
         printMessage("SKIPPED");
       }
