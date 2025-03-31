@@ -16,7 +16,7 @@ const {
 const { enrichHTMLFromMarkup, showdownHighlight } = require("./utils/md-utils");
 const { exit } = require("process");
 
-const apis = [];
+const apis = {};
 
 const validateDir = async (dir) => {
   let check = false;
@@ -196,14 +196,14 @@ const validateIndexBody = (
   }
 
   const apiIndexKey = `${body.path}_${body.requestType}_${version}`;
-  if (apis.includes(apiIndexKey)) {
+  if (apis[apiIndexKey]) {
     errorMessage(
       YAML_VALIDATOR,
-      `File: ${fileName} API: ${path} - Duplicate API detected.`
+      `File: ${fileName} API: ${path} - Duplicate API detected in ${apis[apiIndexKey]}`
     );
     xFieldsCheck = false;
   } else {
-    apis.push(apiIndexKey);
+    apis[apiIndexKey] = fileName;
   }
   return xFieldsCheck;
 };
