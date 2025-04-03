@@ -15,39 +15,37 @@ const {
 } = require("./utils/tools");
 const { enrichHTMLFromMarkup, showdownHighlight } = require("./utils/md-utils");
 
-const apis = {};
-
 const validateDir = async (dir, apiList) => {
-  let check = false;
+  if (!apiList?.length || !apiList[0]?.apiSpecFileNames?.length) {
+    errorMessage(YAML_VALIDATOR, "No API version found in tenant.json");
+    return false;
+  }
 
-  fs.readdir(dir, { withFileTypes: true }, (_, files) => {
-    files?.forEach(async (file) => {
-      if (file?.isDirectory()) {
-        validateDir(`${dir}/${file.name}`, apiList.filter(v => v.version?.includes(file.name))?.[0]?.apiSpecFileNames || apiList.filter(v => v.includes(file.name)).map(v => v.replace(/^[^/]*\//, '')));
-      } else if (/\.yaml$/.test(file.name)) {
-        if (!apiList?.includes(file.name.split(".yaml")[0])) {
-          return;
+  let check = true;
+  apiList.forEach((version) => {
+    let checkedApis = {};
+    version.apiSpecFileNames.forEach(async (fileName) => {
+      let file = `${dir}/${version.version}/${fileName}.yaml`;
+      if (!fs.existsSync(file)) {
+        errorMsg(`${file} - Missing`);
+        return;
+      }
+      try {
+        const content = fs.readFileSync(file, "utf8");
+        const apiJson = yaml.load(content);
+        const tenantName = args[0].split("/").pop();
+        file = file.split(`/${tenantName}/`)[1];
+        if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
+          errorMessage(YAML_VALIDATOR, "No path provided!");
         }
-        try {
-          let fileName = `${dir}/${file.name}`;
-          const content = fs.readFileSync(fileName, "utf8");
-          const apiJson = yaml.load(content);
-          const tenantName = args[0].split("/").pop();
-          fileName = fileName.split(`/${tenantName}/`)[1];
-          if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
-            errorMessage(YAML_VALIDATOR, "No path provided!");
-          }
-          const parsedData = await SwaggerParser.validate(apiJson);
+        const parsedData = await SwaggerParser.validate(apiJson);
 
-          if (parsedData) {
-            check = await parseAPIData(fileName, parsedData, apiJson, apiList);
-          }
-        } catch (e) {
-          errorMessage(YAML_VALIDATOR, `File : ${file.name} : FAILED`);
-          errorMsg(`Error: ${e?.message}`);
+        if (parsedData) {
+          check &= parseAPIData(file, parsedData, apiJson, checkedApis);
         }
-      } else {
-        errorMessage(YAML_VALIDATOR, `Not a YAML Spec file : ${file.name}`);
+      } catch (e) {
+        errorMessage(YAML_VALIDATOR, `File : ${fileName} : FAILED`);
+        errorMsg(`Error: ${e?.message}`);
       }
     });
   });
@@ -55,8 +53,8 @@ const validateDir = async (dir, apiList) => {
   return check;
 };
 
-const parseAPIData = async (fileName, parsedData, apiJson) => {
-  let check = false;
+const parseAPIData = (fileName, parsedData, apiJson, checkedApis) => {
+  let check = true;
   try {
     for (const [path, obj] of Object.entries(apiJson.paths)) {
       for (const [reqType, api] of Object.entries(obj)) {
@@ -64,24 +62,22 @@ const parseAPIData = async (fileName, parsedData, apiJson) => {
           continue;
         }
         if (!api["x-proxy-name"]) {
-          if (!api.hasOwnProperty("x-proxy-name")) {
-            errorMessage(
-              YAML_VALIDATOR,
-              `File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`
-            );
-          }
+          errorMessage(
+            YAML_VALIDATOR,
+            `File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`
+          );
           check = false;
-          return;
         }
         const version = fileName.split("/")[1];
-        check = validateIndexBody(
+        check &= validateIndexBody(
           fileName,
           parsedData,
           apiJson,
           path,
           reqType,
           api,
-          version
+          version,
+          checkedApis
         );
       }
     }
@@ -103,7 +99,8 @@ const validateIndexBody = (
   path,
   reqType,
   api,
-  version
+  version,
+  checkedApis
 ) => {
   try {
     const pathJSON = yamlJSONData.paths[path][reqType];
@@ -181,7 +178,6 @@ const validateIndexBody = (
   }
 
   let xFieldsCheck = true;
-  xFieldsCheck
   if (body.xProxyName.length > 0 && /^\W/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
@@ -198,15 +194,16 @@ const validateIndexBody = (
   }
 
   const apiIndexKey = `${body.path}_${body.requestType}_${version}`;
-  if (apis[apiIndexKey]) {
+  if (checkedApis[apiIndexKey]) {
     errorMessage(
       YAML_VALIDATOR,
-      `File: ${fileName} API: ${path} - Duplicate API detected in ${apis[apiIndexKey]}`
+      `File: ${fileName} API: ${path} - Duplicate API detected in ${checkedApis[apiIndexKey]}`
     );
     xFieldsCheck = false;
   } else {
-    apis[apiIndexKey] = fileName;
+    checkedApis[apiIndexKey] = fileName;
   }
+
   return xFieldsCheck;
 };
 
