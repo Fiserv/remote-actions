@@ -193,7 +193,7 @@ const validateIndexBody = (
     xFieldsCheck = false;
   }
 
-  const apiIndexKey = `${body.path}_${body.requestType}_${version}`;
+  const apiIndexKey = `${body.path}_${body.requestType}_${version}_${body.xCore}`;
   if (checkedApis[apiIndexKey]) {
     errorMessage(
       YAML_VALIDATOR,
