@@ -235,7 +235,7 @@ const validateSpecExistence = (dir, tenantData) => {
       if (sortedVersions.length > 0) {
         if (sortedVersions[0] != MajorVersion) {
           errorMsg(`Incorrect API major version assignment : ${MajorVersion}.
-          Please use correct versioning pattern (use Major, Minor and Patch) suggested Major version: ${sortedVersions[0]}`);
+  Please use correct versioning pattern (use Major, Minor and Patch) suggested Major version: ${sortedVersions[0]}`);
           specExistence = false;
         }
       }
@@ -249,16 +249,11 @@ const sortVersionsDescending = (versions) => {
     const aParts = a.split(".");
     const bParts = b.split(".");
     for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
-      let a = aParts[i] || "0";
-      let b = bParts[i] || "0";
+      let a = parseInt(aParts[i] || "0");
+      let b = parseInt(bParts[i] || "0");
 
-      if (a.length != b.length) {
-        const maxLength = Math.max(a.length, b.length);
-        a = a.padEnd(maxLength, 0);
-        b = b.padEnd(maxLength, 0);
-      }
-      if (parseInt(a) !== parseInt(b)) {
-        return parseInt(b) - parseInt(a);
+      if (a !== b) {
+        return b - a;
       }
     }
     return 0;
