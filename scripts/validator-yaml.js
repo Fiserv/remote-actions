@@ -21,7 +21,6 @@ const validateDir = async (dir, apiList) => {
     return false;
   }
 
-  let check = true;
   apiList.forEach((version) => {
     let checkedApis = {};
     version.apiSpecFileNames.forEach(async (fileName) => {
@@ -43,12 +42,12 @@ const validateDir = async (dir, apiList) => {
             YAML_VALIDATOR,
             `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned between 3.0.0 and 3.0.3`
           );
-          return false;
+          return;
         }
         const validatedJson = await SwaggerParser.validate(apiJson);
 
         if (validatedJson) {
-          check &= parseAPIData(file, validatedJson, checkedApis);
+          parseAPIData(file, validatedJson, checkedApis);
         }
       } catch (e) {
         errorMessage(YAML_VALIDATOR, `File : ${fileName} : FAILED`);
@@ -57,7 +56,7 @@ const validateDir = async (dir, apiList) => {
     });
   });
 
-  return check;
+  return true;
 };
 
 const parseAPIData = (fileName, apiJson, checkedApis) => {
