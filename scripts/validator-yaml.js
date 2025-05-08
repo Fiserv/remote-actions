@@ -38,10 +38,17 @@ const validateDir = async (dir, apiList) => {
         if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
           errorMessage(YAML_VALIDATOR, "No path provided!");
         }
-        const parsedData = await SwaggerParser.validate(apiJson);
+        if (!apiJson?.openapi || apiJson.openapi < "3.0.0" || apiJson.openapi > "3.0.3") {
+          errorMessage(
+            YAML_VALIDATOR,
+            `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned between 3.0.0 and 3.0.3`
+          );
+          return false;
+        }
+        const validatedJson = await SwaggerParser.validate(apiJson);
 
-        if (parsedData) {
-          check &= parseAPIData(file, parsedData, apiJson, checkedApis);
+        if (validatedJson) {
+          check &= parseAPIData(file, validatedJson, checkedApis);
         }
       } catch (e) {
         errorMessage(YAML_VALIDATOR, `File : ${fileName} : FAILED`);
@@ -53,7 +60,7 @@ const validateDir = async (dir, apiList) => {
   return check;
 };
 
-const parseAPIData = (fileName, parsedData, apiJson, checkedApis) => {
+const parseAPIData = (fileName, apiJson, checkedApis) => {
   let check = true;
   try {
     for (const [path, obj] of Object.entries(apiJson.paths)) {
@@ -71,7 +78,6 @@ const parseAPIData = (fileName, parsedData, apiJson, checkedApis) => {
         const version = fileName.split("/")[1];
         check &= validateIndexBody(
           fileName,
-          parsedData,
           apiJson,
           path,
           reqType,
@@ -95,7 +101,6 @@ const parseAPIData = (fileName, parsedData, apiJson, checkedApis) => {
 const validateIndexBody = (
   fileName,
   yamlData,
-  yamlJSONData,
   path,
   reqType,
   api,
@@ -103,7 +108,7 @@ const validateIndexBody = (
   checkedApis
 ) => {
   try {
-    const pathJSON = yamlJSONData.paths[path][reqType];
+    const pathJSON = yamlData.paths[path][reqType];
     const converter = new showdown.Converter({
       ghCompatibleHeaderId: true,
       emoji: true,
