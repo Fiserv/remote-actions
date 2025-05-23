@@ -30,7 +30,7 @@ const validateDir = async (dir, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const apiJson = yaml.load(content);
-        check = validateDocLinks(args?.[0], apiJson);
+        check = await validateDocLinks(args?.[0], apiJson);
       } catch (e) {
         errorMessage(ded_validator, e?.message);
         check = false;
@@ -38,7 +38,7 @@ const validateDir = async (dir, fiserv_resources) => {
       if (check) {
         printMessage(`${ded_validator} : PASSED`);
       } else {
-        errorMessage(ded_validator, "FAILED");
+        errorMessage(ded_validator);
       }
     }
 
@@ -54,7 +54,7 @@ const validateDir = async (dir, fiserv_resources) => {
       if (check) {
         printMessage(`${pdl_validator} : PASSED`);
       } else {
-        errorMessage(pdl_validator, "FAILED");
+        errorMessage(pdl_validator);
       }
     }
 
@@ -86,14 +86,14 @@ const validateDir = async (dir, fiserv_resources) => {
           }
         }
 
-        productUrls.forEach(p => {
+       for (const p of productUrls) {
           if (!data.product[p]?.includes(data.name)) {
             errorMsg(
               `Field "product.${p}" should be set to product name`
             );
             check = false;
           }
-        })
+        };
 
         if (!data?.getStartedFilePath) {
           errorMsg(
@@ -156,7 +156,7 @@ const validateDir = async (dir, fiserv_resources) => {
 const validateDocLinks = async (dir, arr) => {
   let check = true;
   try {
-    arr.forEach(async (obj) => {
+    for (const obj of arr) {
       if (obj?.link?.length) {
         const file = `${dir}/${obj.link}`;
         if (obj.link.includes("branch")) {
@@ -182,9 +182,9 @@ const validateDocLinks = async (dir, arr) => {
         }
       }
       if (obj?.sections) {
-        check = validateDocLinks(dir, obj?.sections) && check;
+        check = await validateDocLinks(dir, obj?.sections) && check;
       }
-    });
+    };
   } catch (e) {
     check = false;
   }
