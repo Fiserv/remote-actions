@@ -22,6 +22,10 @@ const warningMsg = (message) => {
   console.log(`\x1b[35m Warning : ${message} \x1b[0m`);
 };
 
+const exceptionMsg = (type, message = "") => {
+  console.log(` \x1b[33m ${type} : ${message} \x1b[0m`);
+};
+
 const errorMsg = (message) => {
   console.log(`\x1b[31m ${message} \x1b[0m`);
 };
@@ -57,4 +61,5 @@ module.exports = {
   printMessage,
   provideReferenceFolder,
   warningMsg,
+  exceptionMsg,
 };
