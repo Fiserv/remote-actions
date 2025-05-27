@@ -163,7 +163,8 @@ const validateDocLinks = async (dir, arr) => {
   try {
     for (const obj of arr) {
       if (obj?.link?.length) {
-        const file = `${dir}/${obj.link.replace(/\#[\w]+/, '')}`;
+        const file = `${dir}/${obj.link.replace(/\#[\w-]+/, '')}`;
+        console.log(file);
         if (obj.link.includes("branch")) {
           const repo = dir.match(/[^/]+$/)?.[0];
           const branch = obj.link.match(/branch=(.+)&?/)?.[1];
