@@ -11,12 +11,14 @@ const fiserv_resources = args?.[1] || "false";
 const {
   errorMessage,
   errorMsg,
+  exceptionMsg,
   printMessage,
   provideReferenceFolder,
 } = require("./utils/tools");
 const ded_validator = "DED VALIDATOR";
 const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
+const file_check = [false, false, false];
 const description_length = 112;
 
 const validateDir = async (dir, fiserv_resources) => {
@@ -26,6 +28,7 @@ const validateDir = async (dir, fiserv_resources) => {
     let check = true;
 
     if (file?.name === "document-explorer-definition.yaml") {
+      file_check[0] = true;
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
@@ -43,6 +46,7 @@ const validateDir = async (dir, fiserv_resources) => {
     }
 
     if (file?.name === "product-layout.yaml") {
+      file_check[1] = true;
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
@@ -59,6 +63,7 @@ const validateDir = async (dir, fiserv_resources) => {
     }
 
     if (file?.name === "tenant.json") {
+      file_check[2] = true;
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
@@ -158,7 +163,7 @@ const validateDocLinks = async (dir, arr) => {
   try {
     for (const obj of arr) {
       if (obj?.link?.length) {
-        const file = `${dir}/${obj.link}`;
+        const file = `${dir}/${obj.link.replace(/\#[\w]+/, '')}`;
         if (obj.link.includes("branch")) {
           const repo = dir.match(/[^/]+$/)?.[0];
           const branch = obj.link.match(/branch=(.+)&?/)?.[1];
@@ -274,6 +279,28 @@ const main = async () => {
     }
   } catch (e) {
     errorMessage("Tenant Config VALIDATOR", e.message);
+  }
+
+  if (file_check.includes(false)) {
+    file_check.forEach((check, index) => {
+      if (!check) {
+        switch (index) {
+          case 0:
+            exceptionMsg(ded_validator, "MISSING");
+            break;
+          case 1:
+            exceptionMsg(pdl_validator, "MISSING");
+            break;
+          case 2:
+            exceptionMsg(tenant_config_validator, "MISSING");
+            break;
+        }
+      }
+    });
+    errorMessage(
+      "Tenant Config VALIDATOR",
+      "Some files are missing in the tenant config folder. Please check the folder structure."
+    );
   }
 };
 
