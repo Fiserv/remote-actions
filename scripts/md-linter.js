@@ -26,6 +26,7 @@ const markdownlinter = async (dir) => {
               "first-line-heading": false,
               "heading-style": false,
               "no-inline-html": false,
+              "no-bare-urls": false,
             },
           };
           markdownlint(options, function callback(err, result) {
