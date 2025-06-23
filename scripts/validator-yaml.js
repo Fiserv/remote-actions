@@ -182,10 +182,10 @@ const validateIndexBody = (
   }
 
   let xFieldsCheck = true;
-  if (body.xProxyName.length > 0 && /^\W/.test(body.xProxyName)) {
+  if (body.xProxyName.length > 0 && /^[^A-Za-z]/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
-      `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-proxy-name' - ${body.xProxyName}`
+      `File :${fileName} API-Path:${path} Error: Non-alphabetical character at start of 'x-proxy-name' - ${body.xProxyName}`
     );
     xFieldsCheck = false;
   }
