@@ -60,7 +60,7 @@ const mdHtmlValidator = async (dir) => {
         check = mdHtmlValidator(`${dir}/${file.name}`);
         return;
       }
-      if (/\.md$/.test(file?.name)) {
+      if (/\.md$/.test(file?.name) || /\.mdx$/.test(file?.name)){
         try {
           let check = true;
           let fileName = `${dir}/${file.name}`;
