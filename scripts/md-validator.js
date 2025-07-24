@@ -3,7 +3,8 @@
 const showdown = require("showdown");
 const fs = require("fs");
 const args = process.argv.slice(2);
-const folder = args?.[0] + "/docs";
+const docsFolder = args?.[0] + "/docs";
+const recipesFolder = args?.[0] + "/recipes";
 const {
   enrichHTMLFromMarkup,
   showdownHighlight,
@@ -85,7 +86,8 @@ const mdHtmlValidator = async (dir) => {
           urlsArr = [];
 
           if (check) {
-            printMessage(`${fileName.split('/docs/')[1]} - HTML VALIDATOR PASSED`);
+            const relativePath = dir.slice(dir.indexOf("docs") !== -1 ? dir.indexOf("docs") : dir.indexOf("recipes"));
+            printMessage(`${relativePath}/${fileName.split('/').pop()} - HTML VALIDATOR PASSED`);
           } else {
             errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`);
           }
@@ -105,7 +107,8 @@ const main = async () => {
   try {
     printMessage(`External Dir ---->>> ${args}`);
     if (args?.length > 0) {
-      mdHtmlValidator(folder);
+      mdHtmlValidator(docsFolder);
+      mdHtmlValidator(recipesFolder);
     } else {
       errorMessage("MD VALIDATOR", "No Path for docs dir. defined");
     }

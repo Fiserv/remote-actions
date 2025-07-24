@@ -20,28 +20,31 @@ const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
 const file_check = [false, false, false];
 const description_length = 112;
+const explorerDefinitionRegex = /^(document|recipe)-explorer-definition\.yaml$/;
 
 const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
   for (const file of files) {
     let check = true;
+    let validatorName = "";
 
-    if (file?.name === "document-explorer-definition.yaml") {
+    if (explorerDefinitionRegex.test(file?.name)) {
       file_check[0] = true;
       try {
         const fileName = `${dir}/${file.name}`;
+        validatorName = file.name.slice(0, file.name.lastIndexOf('.'));
         const content = await fs.promises.readFile(fileName, "utf8");
         const apiJson = yaml.load(content);
         check = await validateDocLinks(args?.[0], apiJson);
       } catch (e) {
-        errorMessage(ded_validator, e?.message);
+        errorMessage(validatorName.toUpperCase(), e?.message);
         check = false;
       }
       if (check) {
-        printMessage(`${ded_validator} : PASSED`);
+        printMessage(`${validatorName.toUpperCase()} : PASSED`);
       } else {
-        errorMessage(ded_validator);
+        errorMessage(validatorName.toUpperCase());
       }
     }
 
