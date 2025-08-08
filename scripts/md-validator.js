@@ -34,24 +34,24 @@ converter.addExtension(() => {
         }
         return text;
       },
-    }
+    },
   ];
 }, "externalLink");
 
 converter.addExtension(() => {
   return [
-  {
-    type: 'output',
-    filter: function (htmlContent) {
+    {
+      type: "output",
+      filter: function (htmlContent) {
         const imgRegex = /<img.*?src=["'](.*?)["']/g;
         let match;
         while ((match = imgRegex.exec(htmlContent)) !== null) {
           urlsArr.push(match[1]);
         }
         return htmlContent;
-    }
-  }
-  ]
+      },
+    },
+  ];
 }, "extractImageUrls");
 
 const mdHtmlValidator = async (dir) => {
@@ -68,17 +68,37 @@ const mdHtmlValidator = async (dir) => {
           const content = fs.readFileSync(fileName, "utf8");
           converter.makeHtml(content);
 
-          urlsArr.forEach(url => {
-            if (/raw\.githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(url)) {
+          urlsArr.forEach((url) => {
+            if (
+              /raw\.githubusercontent|github\.com\/Fiserv.*(\/raw\/|\/files\/)/.test(
+                url
+              )
+            ) {
               if (/\.(png|jpg|jpeg|gif|tiff)$/.test(url))
-                errorMsg(`> ${url} is a raw github image link. Please utilize '/assets/images' instead.`);
+                errorMsg(
+                  `> ${url} is a raw github image link. Please utilize '/assets/images' instead.`
+                );
               else
-                errorMsg(`> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`);
+                errorMsg(
+                  `> ${url} is a github fetch link. Please utilize '/assets' instead for file uploads.`
+                );
               check = false;
               return;
-            } else if (/localhost:8080\/api\/(hosted-image|download)\//g.test(url)) {
-              if (!fs.existsSync(`${args[0]}/${decodeURIComponent(url.substring(url.indexOf("assets/")))}`)) {
-                errorMsg(`${decodeURIComponent(url.substring(url.indexOf("assets/")))} - Missing from assets/ (file must be in assets folder or subfolder)`);
+            } else if (
+              /localhost:8080\/api\/(hosted-image|download)\//g.test(url)
+            ) {
+              if (
+                !fs.existsSync(
+                  `${args[0]}/${decodeURIComponent(
+                    url.substring(url.indexOf("assets/"))
+                  )}`
+                )
+              ) {
+                errorMsg(
+                  `${decodeURIComponent(
+                    url.substring(url.indexOf("assets/"))
+                  )} - Missing from assets/ (file must be in assets folder or subfolder)`
+                );
                 check = false;
               }
             }
@@ -86,17 +106,37 @@ const mdHtmlValidator = async (dir) => {
           urlsArr = [];
 
           if (check) {
-            const relativePath = dir.slice(dir.indexOf("docs") !== -1 ? dir.indexOf("docs") : dir.indexOf("recipes"));
-            printMessage(`${relativePath}/${fileName.split('/').pop()} - HTML VALIDATOR PASSED`);
+            const relativePath = dir.slice(
+              dir.indexOf("docs") !== -1
+                ? dir.indexOf("docs")
+                : dir.indexOf("recipes")
+            );
+            printMessage(
+              `${relativePath}/${fileName
+                .split("/")
+                .pop()} - HTML VALIDATOR PASSED`
+            );
           } else {
-            errorMessage('HTML VALIDATOR', `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`);
+            errorMessage(
+              "HTML VALIDATOR",
+              `PLEASE FIX LINK RELATED ISSUES WITHIN THE FILE : ${
+                fileName.split("/docs/")[1]
+              }`
+            );
           }
         } catch (e) {
           errorMessage("HTML VALIDATOR", e.message);
           urlsArr = [];
         }
+      } else if (file?.name === "config.yaml") {
+        return;
       } else {
-        errorMessage("HTML VALIDATOR", `${`${dir}/${file?.name}`.split('/docs/')[1]} is an invalid subdir/markdown file`);
+        errorMessage(
+          "HTML VALIDATOR",
+          `${
+            `${dir}/${file?.name}`.split("/docs/")[1]
+          } is an invalid subdir/markdown file`
+        );
         urlsArr = [];
       }
     });
