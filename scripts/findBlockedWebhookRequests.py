@@ -51,46 +51,41 @@ def main():
 
     # Step 4: Find blocked webhooks
     num_blocked = 0
-    most_recent_delivery = {}
+    most_recently_processed_delivery = {}
     for delivery_obj in deliveries:
         delivery = delivery_obj["delivery"]
         detail = delivery_obj["details"]
-        delivery_id = delivery.get("id")
-        print(f"Processing delivery id: {delivery_id}")
-        delivery_ts = get_delivery_timestamp(detail)
-        print(f"Delivery timestamp: {delivery_ts}")
-        # No need to check if delivery_ts exists, always present
-        # Only process deliveries newer than the most recent processed
-        if ("ts" not in most_recent_delivery or most_recent_delivery["ts"] is None or delivery_ts > most_recent_delivery["ts"]):
-            print("Updating most recent delivery")
-            most_recent_delivery["ts"] = delivery_ts
-            most_recent_delivery["id"] = delivery_id
-            headers = detail.get("request", {}).get("headers", {})
-            gitHubDeliveryId = headers.get("X-GitHub-Delivery")
-            print(f"Most recent delivery updated: {gitHubDeliveryId}, {most_recent_delivery['id']}, {most_recent_delivery['ts']}")
-
-            print("Determing if this delivery is blocked...")
-            statusCode = delivery.get("status_code")
-            if statusCode == 200:
-                num_blocked += 1
-                # Retrieve the delivery details and gather relevant information
-                responsePayload = detail.get("response", {}).get("payload", {})
-                requestPayload = detail.get("request", {}).get("payload", {})
-                # Regular expressions to extract the values required by security team to find the offending text in the request
-                transid = re.search(r"_event_transid='([^']+)'", responsePayload)
-                clientip = re.search(r"_event_clientip='([^']+)'", responsePayload)
-                clientport = re.search(r"_event_clientport='([^']+)'", responsePayload)
-                # Log applicable information
-                print("************** Blocked webhook request **************")
-                print(f"webhook: {target_url}")
-                print(f"GitHub delivery Id: {gitHubDeliveryId}")
-                print("Timestamp: " + requestPayload.get("head_commit", {}).get("timestamp", {}))
-                print("transid:", transid.group(1) if transid else None)
-                print("clientip:", clientip.group(1) if clientip else None)
-                print("clientport:", clientport.group(1) if clientport else None)
-                print("request payload: " + json.dumps(requestPayload, indent=4))
-                print("*****************************************************")
+        headers = detail.get("request", {}).get("headers", {})
+        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+        print(f"Processing delivery id: {gitHubDeliveryId}, {printable_date_time(detail)}")
+        statusCode = delivery.get("status_code")
+        if statusCode == 200:
+            num_blocked += 1
+            # Retrieve the delivery details and gather relevant information
+            responsePayload = detail.get("response", {}).get("payload", {})
+            requestPayload = detail.get("request", {}).get("payload", {})
+            # Regular expressions to extract the values required by security team to find the offending text in the request
+            transid = re.search(r"_event_transid='([^']+)'", responsePayload)
+            clientip = re.search(r"_event_clientip='([^']+)'", responsePayload)
+            clientport = re.search(r"_event_clientport='([^']+)'", responsePayload)
+            # Log applicable information
+            print("************** Blocked webhook request **************")
+            print(f"webhook: {target_url}")
+            print(f"GitHub delivery Id: {gitHubDeliveryId}")
+            print("Timestamp: " + requestPayload.get("head_commit", {}).get("timestamp", {}))
+            print("transid:", transid.group(1) if transid else None)
+            print("clientip:", clientip.group(1) if clientip else None)
+            print("clientport:", clientport.group(1) if clientport else None)
+            print("request payload: " + json.dumps(requestPayload, indent=4))
+            print("*****************************************************")
+        most_recently_processed_delivery = delivery_obj
     print(f"Total number of blocked webhooks: {num_blocked}")
+    
+    detail = most_recently_processed_delivery["details"]
+    headers = detail.get("request", {}).get("headers", {})
+    gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+    delivery_date = printable_date_time(detail)
+    print(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}")
 
 def fetch_all_deliveries(deliveries_url):
   per_page = 100  # Max is 100
@@ -116,6 +111,11 @@ def fetch_all_deliveries(deliveries_url):
 
   return all_deliveries
 
+"""
+get_delivery_timestamp takes a delivery detail object and extracts the timestamp from the head_commit.
+The timestamp from the head_commit is the timestamp of the most recent commit in the push that triggered the webhook.
+It is not the timestamp of the delivery itself -- this is not available in the GitHub API or the webhook payload.
+"""
 def get_delivery_timestamp(detail):
     """
     Extracts and parses the timestamp from a delivery object.
@@ -136,63 +136,20 @@ def get_delivery_timestamp(detail):
         dt = datetime.fromisoformat(ts)
         # Normalize to local time
         local_dt = dt.astimezone()
-        print(f"Delivery date-time: {local_dt}")
         epoch_ts = local_dt.timestamp()
         return epoch_ts
     except Exception:
         print(f"Invalid timestamp format: {ts}")
         return None
 
-
-def is_newest_delivery(current_delivery, deliveries):
+def printable_date_time(detail):
     """
-    Returns True if current_delivery is the newest (most recent) among deliveries.
+    Returns a local datetime object for the delivery detail's head_commit timestamp.
     """
-    current_ts = get_delivery_timestamp(current_delivery)
-    if not current_ts:
-        return False
-    for delivery in deliveries:
-        if delivery is current_delivery:
-            continue
-        ts = get_delivery_timestamp(delivery)
-        if ts and ts > current_ts:
-            return False
-    return True
-
-def get_most_recent_deliveryTs(filename="newest_timestamp.json"):
-    """
-    Reads the most recent delivery timestamp from a JSON file and returns it as a datetime object.
-    Handles missing file and invalid structure gracefully.
-    """
-    try:
-        with open(filename, "r") as f:
-            data = json.load(f)
-        ts = data.get("timestamp")
-        if not ts or not isinstance(ts, str):
-            print(f"Warning: {filename} missing or invalid 'timestamp' field.")
-            return None
-        try:
-            return datetime.fromisoformat(ts)
-        except Exception:
-            print(f"Warning: Invalid timestamp format in {filename}: {ts}")
-            return None
-    except FileNotFoundError:
-        print(f"Info: {filename} not found. No previous timestamp available.")
+    epoch_ts = get_delivery_timestamp(detail)
+    if epoch_ts is None:
         return None
-    except Exception as e:
-        print(f"Error reading {filename}: {e}")
-        return None
-  
-
-def needs_processing(delivery, most_recent_delivery, lastProcessedTs):
-    """
-    Returns True if delivery's timestamp is newer than lastProcessedTs.
-    """
-    ts = get_delivery_timestamp(delivery)
-    if ts and (not "ts" in most_recent_delivery or (most_recent_delivery["ts"] is None or delivery_ts > most_recent_delivery["ts"])):
-      return True
-    
-    return False
+    return datetime.fromtimestamp(epoch_ts)
 
 def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
     """
@@ -203,24 +160,25 @@ def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
     for delivery in all_deliveries:
         delivery_id = delivery.get("id")
         detail_url = f"{deliveries_url}/{delivery_id}"
-        print(f"Fetching details for delivery id: {delivery_id}")
         details = requests.get(detail_url, headers=HEADERS).json()
-        print(f"Fetched details for delivery id: {delivery_id}")
-        #head_commit = details.get("request", {}).get("payload", {}).get("head_commit", {})
+        headers = details.get("request", {}).get("headers", {})
+        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
         payload = details.get("request", {}).get("payload", {})
         head_commit = payload.get("head_commit", {})
         if head_commit:
-            print(f"Found head_commit for delivery id {delivery_id}")
             ts = head_commit.get("timestamp")
+            print(f"Found head_commit for delivery id {gitHubDeliveryId}, ts: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
             deliveries_with_details.append({
                 "delivery": delivery,
                 "details": details,
                 "ts": ts
             })
         else:
-            print(f"Skipping delivery id {delivery_id} with no head_commit")
+            print(f"Skipping delivery id {gitHubDeliveryId} with no head_commit")
+
     # Sort by timestamp (oldest first)
     deliveries_with_details.sort(key=lambda x: datetime.fromisoformat(x["ts"]).astimezone().timestamp())
+
     # Remove 'ts' from output for clarity
     return [{"delivery": d["delivery"], "details": d["details"]} for d in deliveries_with_details]
 
