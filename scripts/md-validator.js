@@ -147,7 +147,9 @@ const mdHtmlValidator = async (dir) => {
                 return;
               }
               if (!closeTagRegex.test(content)) {
-                errorMsg(`Line ${line}: Found unclosed <${tag}> tag`);
+                errorMsg(
+                  `Line ${line}: Unclosed <${tag}> tag. Should be \\<${tag}> or have accompanying </${tag}>`
+                );
               }
             });
           }
