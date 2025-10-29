@@ -120,6 +120,15 @@ const mdHtmlValidator = async (dir) => {
                 });
               }
 
+              const curlyMatch = line.match("{{");
+              if (curlyMatch) {
+                openTags.push({
+                  tag: `Line ${idx + 1}: ${curlyMatch.length} improper {{ tag${
+                    curlyMatch.length > 1 ? "s" : ""
+                  }, should be \\\{\\\{`,
+                });
+              }
+
               const tagRegex = /<([A-Za-z0-9]+)[^!/>]*>/g;
               let match;
               while ((match = tagRegex.exec(line)) !== null) {
