@@ -105,7 +105,11 @@ const mdHtmlValidator = async (dir) => {
           });
           urlsArr = [];
 
-          if (/(\<br\s*\>)/gi.test(content) || /<([^!/>]+)>/g.test(content)) {
+          if (
+            /(\<br\s*\>)/gi.test(content) ||
+            /(\<\\\s?br\s*\>)/gi.test(content) ||
+            /<([^!/>]+)>/g.test(content)
+          ) {
             check = false;
             const lines = content.split("\n");
             // Find all opening tags that are not self-closing and do not have a closing tag
@@ -116,6 +120,16 @@ const mdHtmlValidator = async (dir) => {
                 openTags.push({
                   tag: `Line ${idx + 1}: ${brMatch.length} improper <br> tag${
                     brMatch.length > 1 ? "s" : ""
+                  }, should be <br />`,
+                });
+              }
+              const wrongBrMatch = line.match(/(\<\\\s?br\s*\>)/gi);
+              if (wrongBrMatch) {
+                openTags.push({
+                  tag: `Line ${idx + 1}: ${
+                    wrongBrMatch.length
+                  } improper <\ br> tag${
+                    wrongBrMatch.length > 1 ? "s" : ""
                   }, should be <br />`,
                 });
               }
