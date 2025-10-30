@@ -57,7 +57,10 @@ def main():
         detail = delivery_obj["details"]
         headers = detail.get("request", {}).get("headers", {})
         gitHubDeliveryId = headers.get("X-GitHub-Delivery")
-        print(f"Processing delivery id: {gitHubDeliveryId}, {printable_date_time(detail)}")
+        
+        if not delivery_needs_processing(delivery_obj):
+            continue
+
         statusCode = delivery.get("status_code")
         if statusCode == 200:
             num_blocked += 1
@@ -78,14 +81,23 @@ def main():
             print("clientport:", clientport.group(1) if clientport else None)
             print("request payload: " + json.dumps(requestPayload, indent=4))
             print("*****************************************************")
+
         most_recently_processed_delivery = delivery_obj
+        detail = most_recently_processed_delivery["details"]
+        headers = detail.get("request", {}).get("headers", {})
+        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+        timestamp = most_recently_processed_delivery["timestamp"]
+        delivery_date = printable_date_time(detail)
+        print(f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}")
+
     print(f"Total number of blocked webhooks: {num_blocked}")
-    
+
     detail = most_recently_processed_delivery["details"]
     headers = detail.get("request", {}).get("headers", {})
     gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+    timestamp = most_recently_processed_delivery["timestamp"]
     delivery_date = printable_date_time(detail)
-    print(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}")
+    print(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}")
 
 def fetch_all_deliveries(deliveries_url):
   per_page = 100  # Max is 100
@@ -127,29 +139,29 @@ def get_delivery_timestamp(detail):
     if not head_commit:
         print("No head_commit found in delivery")
         return None
-    ts = head_commit.get("timestamp")
-    if not ts:
+    timestamp = head_commit.get("timestamp")
+    if not timestamp:
         print("No timestamp found in delivery")
         return None
     try:
         # Parse ISO 8601 timestamp to aware datetime
-        dt = datetime.fromisoformat(ts)
+        dt = datetime.fromisoformat(timestamp)
         # Normalize to local time
         local_dt = dt.astimezone()
-        epoch_ts = local_dt.timestamp()
-        return epoch_ts
+        epoch_timestamp = local_dt.timestamp()
+        return epoch_timestamp
     except Exception:
-        print(f"Invalid timestamp format: {ts}")
+        print(f"Invalid timestamp format: {timestamp}")
         return None
 
 def printable_date_time(detail):
     """
     Returns a local datetime object for the delivery detail's head_commit timestamp.
     """
-    epoch_ts = get_delivery_timestamp(detail)
-    if epoch_ts is None:
+    epoch_timestamp = get_delivery_timestamp(detail)
+    if epoch_timestamp is None:
         return None
-    return datetime.fromtimestamp(epoch_ts)
+    return datetime.fromtimestamp(epoch_timestamp)
 
 def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
     """
@@ -166,21 +178,66 @@ def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
         payload = details.get("request", {}).get("payload", {})
         head_commit = payload.get("head_commit", {})
         if head_commit:
-            ts = head_commit.get("timestamp")
-            print(f"Found head_commit for delivery id {gitHubDeliveryId}, ts: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
+            timestamp = head_commit.get("timestamp")
+            epoch_timestamp = datetime.fromisoformat(timestamp).astimezone().timestamp()
+            print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
             deliveries_with_details.append({
                 "delivery": delivery,
                 "details": details,
-                "ts": ts
+                "timestamp": epoch_timestamp
             })
         else:
-            print(f"Skipping delivery id {gitHubDeliveryId} with no head_commit")
+            print(f"Skipping delivery {gitHubDeliveryId} with no head_commit")
 
     # Sort by timestamp (oldest first)
-    deliveries_with_details.sort(key=lambda x: datetime.fromisoformat(x["ts"]).astimezone().timestamp())
+    deliveries_with_details.sort(key=lambda x: x["timestamp"])
 
-    # Remove 'ts' from output for clarity
-    return [{"delivery": d["delivery"], "details": d["details"]} for d in deliveries_with_details]
+    return [{"delivery": d["delivery"], "details": d["details"], "timestamp": d["timestamp"]} for d in deliveries_with_details]
+
+def read_most_recently_processed():
+  filepath = "webhooks/most_recently_processed.json"
+  try:
+    with open(filepath, "r") as f:
+      data = json.load(f)
+    return {
+      "delivery_id": data.get("delivery_id"),
+      "timestamp": data.get("timestamp")
+    }
+  except FileNotFoundError:
+    print(f"File not found: {filepath}")
+    return {"delivery_id": None, "timestamp": 0}
+  except json.JSONDecodeError:
+    print(f"Invalid JSON in file: {filepath}")
+    return {"delivery_id": None, "timestamp": 0}
+  except Exception as e:
+   print(f"Error reading {filepath}: {e}")
+   return {"delivery_id": None, "timestamp": 0}
+
+def update_most_recently_processed(filepath, delivery_id, ts):
+  with open(filepath, "w") as f:
+    json.dump({"delivery_id": delivery_id, "timestamp": ts}, f)
+
+def delivery_needs_processing(delivery_obj):
+  details = delivery_obj["details"]
+  headers = details.get("request", {}).get("headers", {})
+  id = headers.get("X-GitHub-Delivery")
+  timestamp = delivery_obj["timestamp"]
+
+  most_recently_processed_data = read_most_recently_processed()
+  most_recently_processed_timestamp = most_recently_processed_data.get('timestamp', 0)
+
+  try:
+    most_recently_processed_timestamp = float(most_recently_processed_timestamp)
+  except (TypeError, ValueError):
+    most_recently_processed_timestamp = 0.0
+
+  if timestamp > most_recently_processed_timestamp:
+    print(f"Delivery {id} ({printable_date_time(details)}) needs processing (timestamp: {timestamp} > most recent timestamp: {most_recently_processed_timestamp})")
+    return True
+
+  print(f"Delivery {id} ({printable_date_time(details)}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})")
+  return False
+ 
 
 if __name__ == "__main__":
     main()
