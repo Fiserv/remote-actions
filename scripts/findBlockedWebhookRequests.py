@@ -20,14 +20,21 @@ HEADERS = {
     "Accept": "application/vnd.github+json"
 }
 
+MOST_RECENTLY_PROCESSED_BASE_FILEPATH = "webhooks/most_recently_processed"
+MOST_RECENTLY_PROCESSED_FILEPATH = ""
+
+env = ""
 def main():
-    if len(sys.argv) != 2 or sys.argv[1] not in WEBHOOK_URLS:
+    env = sys.argv[1]
+    if len(sys.argv) != 2 or env not in WEBHOOK_URLS:
         print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod]")
         sys.exit(1)
 
     env = sys.argv[1]
     target_url = WEBHOOK_URLS[env]
 
+    MOST_RECENTLY_PROCESSED_FILEPATH = f"{MOST_RECENTLY_PROCESSED_BASE_FILEPATH}_{env}.json"
+    
     # Step 1: Get all Fiserv org webhooks
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
     hooks = requests.get(hooks_url, headers=HEADERS).json()
@@ -44,10 +51,10 @@ def main():
 
     # Step 3: Get deliveries for the webhook
     deliveries_url = f"https://api.github.com/orgs/Fiserv/hooks/{hook_id}/deliveries"
-    all_deliveries = fetch_all_deliveries(deliveries_url)
-    print(f"Total number of deliveries: {len(all_deliveries)}")
+    deliveries = fetch_all_deliveries(deliveries_url)
+    print(f"Total number of deliveries: {len(deliveries)}")
 
-    deliveries = get_sorted_deliveries_with_details(all_deliveries, deliveries_url)
+    #deliveries = get_sorted_deliveries_with_details(all_deliveries, deliveries_url)
 
     # Step 4: Find blocked webhooks
     num_blocked = 0
@@ -58,7 +65,7 @@ def main():
         headers = detail.get("request", {}).get("headers", {})
         gitHubDeliveryId = headers.get("X-GitHub-Delivery")
         
-        if not delivery_needs_processing(delivery_obj):
+        if not delivery_needs_processing(delivery_obj, env):
             continue
 
         statusCode = delivery.get("status_code")
@@ -83,12 +90,7 @@ def main():
             print("*****************************************************")
 
         most_recently_processed_delivery = delivery_obj
-        detail = most_recently_processed_delivery["details"]
-        headers = detail.get("request", {}).get("headers", {})
-        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
-        timestamp = most_recently_processed_delivery["timestamp"]
-        delivery_date = printable_date_time(detail)
-        print(f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}")
+        update_most_recently_processed(most_recently_processed_delivery)
 
     print(f"Total number of blocked webhooks: {num_blocked}")
 
@@ -102,14 +104,34 @@ def main():
 def fetch_all_deliveries(deliveries_url):
   per_page = 100  # Max is 100
   next_url = deliveries_url + f"?per_page={per_page}"
-  all_deliveries = []
+  all_deliveries_with_details = []
 
   while next_url:
       response = requests.get(next_url, headers=HEADERS)
       deliveries = response.json()
-      all_deliveries.extend(deliveries)
+      deliveries_with_details = []
+      for delivery in deliveries:
+        delivery_id = delivery.get("id")
+        detail_url = f"{deliveries_url}/{delivery_id}"
+        details = requests.get(detail_url, headers=HEADERS).json()
+        headers = details.get("request", {}).get("headers", {})
+        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+        payload = details.get("request", {}).get("payload", {})
+        head_commit = payload.get("head_commit", {})
+        if head_commit:
+          timestamp = head_commit.get("timestamp")
+          epoch_timestamp = datetime.fromisoformat(timestamp).astimezone().timestamp()
+          print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
+          deliveries_with_details.append({
+            "delivery": delivery,
+            "details": details,
+            "timestamp": epoch_timestamp
+          })
+          all_deliveries_with_details.extend(deliveries_with_details)
+        else:
+          print(f"Skipping delivery {gitHubDeliveryId} with no head_commit")
 
-      print(f"Added {len(deliveries)} deliveries")
+      print(f"Added {len(deliveries_with_details)} deliveries")
 
       # Get the URL for the next page of deliveries
       link_header = response.headers.get("Link", "")
@@ -121,7 +143,7 @@ def fetch_all_deliveries(deliveries_url):
                   next_url = part.split(";")[0].strip().strip("<>")
                   break
 
-  return all_deliveries
+  return all_deliveries_with_details
 
 """
 get_delivery_timestamp takes a delivery detail object and extracts the timestamp from the head_commit.
@@ -186,6 +208,9 @@ def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
                 "details": details,
                 "timestamp": epoch_timestamp
             })
+            response = details.get("response", {})
+            print(f"response: {response}")
+
         else:
             print(f"Skipping delivery {gitHubDeliveryId} with no head_commit")
 
@@ -195,30 +220,35 @@ def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
     return [{"delivery": d["delivery"], "details": d["details"], "timestamp": d["timestamp"]} for d in deliveries_with_details]
 
 def read_most_recently_processed():
-  filepath = "webhooks/most_recently_processed.json"
   try:
-    with open(filepath, "r") as f:
+    with open(MOST_RECENTLY_PROCESSED_FILEPATH, "r") as f:
       data = json.load(f)
     return {
       "delivery_id": data.get("delivery_id"),
       "timestamp": data.get("timestamp")
     }
   except FileNotFoundError:
-    print(f"File not found: {filepath}")
+    print(f"File not found: {MOST_RECENTLY_PROCESSED_FILEPATH}")
     return {"delivery_id": None, "timestamp": 0}
   except json.JSONDecodeError:
-    print(f"Invalid JSON in file: {filepath}")
+    print(f"Invalid JSON in file: {MOST_RECENTLY_PROCESSED_FILEPATH}")
     return {"delivery_id": None, "timestamp": 0}
   except Exception as e:
-   print(f"Error reading {filepath}: {e}")
+   print(f"Error reading {MOST_RECENTLY_PROCESSED_FILEPATH}: {e}")
    return {"delivery_id": None, "timestamp": 0}
 
-def update_most_recently_processed(filepath, delivery_id, ts):
-  with open(filepath, "w") as f:
-    json.dump({"delivery_id": delivery_id, "timestamp": ts}, f)
+def update_most_recently_processed(most_recently_processed_delivery):
+  detail = most_recently_processed_delivery["details"]
+  headers = detail.get("request", {}).get("headers", {})
+  gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+  timestamp = most_recently_processed_delivery["timestamp"]
+  delivery_date = printable_date_time(detail)
+  print(f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, date-time: {delivery_date}, timestamp: {timestamp}")
 
-def delivery_needs_processing(delivery_obj):
-  details = delivery_obj["details"]
+  with open(MOST_RECENTLY_PROCESSED_FILEPATH, "w") as f:
+    json.dump({"delivery_id": gitHubDeliveryId, "timestamp": ts}, f)
+
+def delivery_needs_processing(delivery, details):
   headers = details.get("request", {}).get("headers", {})
   id = headers.get("X-GitHub-Delivery")
   timestamp = delivery_obj["timestamp"]
