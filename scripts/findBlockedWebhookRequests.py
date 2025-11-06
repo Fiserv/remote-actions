@@ -20,6 +20,13 @@ HEADERS = {
     "Accept": "application/vnd.github+json"
 }
 
+ENV_BRANCHES = {
+    "dev": "develop",
+    "qa": "develop",
+    "stage": "stage",
+    "prod": "main"
+}
+
 MOST_RECENTLY_PROCESSED_BASE_FILEPATH = "webhooks/most_recently_processed"
 TIMED_OUT_DELIVERIES_BASE_FILEPATH = "webhooks/timed_out_deliveries"
 
@@ -81,7 +88,7 @@ def main():
         # Check for deliveries that timed out (empty response)
         if response.get("headers", {}) == {} and response.get("payload", "") == "":
           print(f"Delivery {gitHubDeliveryId} timed out (empty response).")
-          save_timeout_delivery(current_delivery_obj, timed_out_filepath)
+          save_timeout_delivery(current_delivery_obj, timed_out_filepath, env)
           continue
 
         statusCode = current_delivery.get("status_code")
@@ -123,12 +130,17 @@ def main():
       delivery_date = printable_date_time(current_delivery_detail)
       print(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}")
 
-def save_timeout_delivery(delivery, timed_out_filepath):
+def save_timeout_delivery(delivery, timed_out_filepath, env):
   details = delivery["details"]
   headers = details.get("request", {}).get("headers", {})
   delivery_id = headers.get("X-GitHub-Delivery")
   payload = details.get("request", {}).get("payload", {})
+  branch = payload.get('ref', '').replace('refs/heads/', '')
   timestamp = get_delivery_timestamp(details)
+
+  if branch != ENV_BRANCHES[env]:
+    print(f"Skipping timed-out delivery {delivery_id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'")
+    return
 
   print(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}")
 
