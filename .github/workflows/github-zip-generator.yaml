@@ -96,20 +96,21 @@ jobs:
           mv *.zip files
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@main
-        with:
-          token: ${{ secrets.ZIP_GENERATOR_ACTION }}
-          commit-message: "Zip Generator Action"
-          branch: "devstudio-update-zip-files-${{ github.ref_name }}"
-          title: "Zip Generator Action - ${{ github.ref_name }}"
-          body: "This PR was created automatically by Github ZIP Generator Action."
-          delete-branch: true
-          add-paths: "assets/files"
+        env:
+          GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git checkout -b devstudio-update-zip-files-${{ github.ref_name }}
+          git add assets/files/*.zip
+          git commit -m "Update zip files" || echo "No changes to commit"
+          git push origin devstudio-update-zip-files-${{ github.ref_name }} || echo "No changes to push"
+          gh pr create --base ${{ github.ref_name }} --head devstudio-update-zip-files-${{ github.ref_name }} --title "Zip Generator Action - ${{ github.ref_name }}" --body "This PR was created automatically by Github ZIP Generator Action."
 
       - name: Merge Pull Request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
-        run: gh pr merge "devstudio-update-zip-files-${{ github.ref_name }}" --merge --auto
+        run: gh pr merge "devstudio-update-zip-files-${{ github.ref_name }}" --merge --auto --delete-branch
 
       - name: Create ZIP Artifacts
         if: failure()
