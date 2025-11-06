@@ -74,14 +74,15 @@ def main():
         
         print(f"Processing delivery id: {gitHubDeliveryId}")
 
-        # Check for deliveries that timed out (empty response)
-        if response.get("headers", {}) == {} and response.get("payload", "") == "":
-            save_timeout_delivery(current_delivery_obj, timed_out_filepath)
-            continue
-    
         # Determine if the delivery is newer than the last-most-recently-processed delivery
         if not delivery_needs_processing(last_most_recently_processed_timestamp, current_delivery_obj):
             continue
+
+        # Check for deliveries that timed out (empty response)
+        if response.get("headers", {}) == {} and response.get("payload", "") == "":
+          print(f"Delivery {gitHubDeliveryId} timed out (empty response).")
+          save_timeout_delivery(current_delivery_obj, timed_out_filepath)
+          continue
 
         statusCode = current_delivery.get("status_code")
         if statusCode == 200:
@@ -168,12 +169,14 @@ def fetch_all_deliveries(deliveries_url):
         details = requests.get(detail_url, headers=HEADERS).json()
         headers = details.get("request", {}).get("headers", {})
         gitHubDeliveryId = headers.get("X-GitHub-Delivery")
+        signature =  headers.get("X-Hub-Signature-256")
         payload = details.get("request", {}).get("payload", {})
         head_commit = payload.get("head_commit", {})
         if head_commit:
           timestamp = head_commit.get("timestamp")
           epoch_timestamp = datetime.fromisoformat(timestamp).astimezone().timestamp()
           print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
+          print(f"signature: {signature}, delivery id: {gitHubDeliveryId}")
           deliveries_with_details.append({
             "delivery": delivery,
             "details": details,
