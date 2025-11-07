@@ -105,7 +105,7 @@ def main():
             print("************** Blocked webhook request **************")
             print(f"webhook: {target_url}")
             print(f"GitHub delivery Id: {gitHubDeliveryId}")
-            print("Timestamp: " + get_delivery_timestamp(current_delivery_detail))
+            print("Timestamp: " + str(get_delivery_timestamp(current_delivery_detail)))
             print("transid:", transid.group(1) if transid else None)
             print("clientip:", clientip.group(1) if clientip else None)
             print("clientport:", clientport.group(1) if clientport else None)
@@ -187,7 +187,7 @@ def fetch_all_deliveries(deliveries_url):
         if head_commit:
           timestamp = head_commit.get("timestamp")
           epoch_timestamp = datetime.fromisoformat(timestamp).astimezone().timestamp()
-          print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
+          print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {get_delivery_timestamp(details)}, {datetime.fromtimestamp(get_delivery_timestamp(details))}")
           print(f"signature: {signature}, delivery id: {gitHubDeliveryId}")
           deliveries_with_details.append({
             "delivery": delivery,
