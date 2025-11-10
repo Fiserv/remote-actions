@@ -110,7 +110,6 @@ const mdHtmlValidator = async (dir) => {
             /(\<\\\s?br\s*\>)/gi.test(content) ||
             /<([^!/>]+)>/g.test(content)
           ) {
-            check = false;
             const lines = content.split("\n");
             // Find all opening tags that are not self-closing and do not have a closing tag
             const openTags = [];
@@ -122,6 +121,7 @@ const mdHtmlValidator = async (dir) => {
                     brMatch.length > 1 ? "s" : ""
                   }, should be <br />`,
                 });
+                check = false;
               }
               const wrongBrMatch = line.match(/(\<\\\s?br\s*\>)/gi);
               if (wrongBrMatch) {
@@ -132,6 +132,7 @@ const mdHtmlValidator = async (dir) => {
                     wrongBrMatch.length > 1 ? "s" : ""
                   }, should be <br />`,
                 });
+                check = false;
               }
 
               const curlyMatch = line.match("{{");
@@ -141,6 +142,7 @@ const mdHtmlValidator = async (dir) => {
                     curlyMatch.length > 1 ? "s" : ""
                   }, should be \\\{\\\{`,
                 });
+                check = false;
               }
 
               const tagRegex = /<([A-Za-z0-9]+)[^!/>]*>/g;
@@ -173,6 +175,7 @@ const mdHtmlValidator = async (dir) => {
                 errorMsg(
                   `Line ${line}: Unclosed <${tag}> tag. Should be \\\<${tag}> or have accompanying </${tag}>`
                 );
+                check = false;
               }
             });
           }
