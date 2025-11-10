@@ -105,6 +105,78 @@ const mdHtmlValidator = async (dir) => {
           });
           urlsArr = [];
 
+          if (
+            /(\<br\s*\>)/gi.test(content) ||
+            /(\<\\\s?br\s*\>)/gi.test(content) ||
+            /<([^!/>]+)>/g.test(content)
+          ) {
+            check = false;
+            const lines = content.split("\n");
+            // Find all opening tags that are not self-closing and do not have a closing tag
+            const openTags = [];
+            lines.forEach((line, idx) => {
+              const brMatch = line.match(/(\<br\s*\>)/gi);
+              if (brMatch) {
+                openTags.push({
+                  tag: `Line ${idx + 1}: ${brMatch.length} improper <br> tag${
+                    brMatch.length > 1 ? "s" : ""
+                  }, should be <br />`,
+                });
+              }
+              const wrongBrMatch = line.match(/(\<\\\s?br\s*\>)/gi);
+              if (wrongBrMatch) {
+                openTags.push({
+                  tag: `Line ${idx + 1}: ${
+                    wrongBrMatch.length
+                  } improper <\ br> tag${
+                    wrongBrMatch.length > 1 ? "s" : ""
+                  }, should be <br />`,
+                });
+              }
+
+              const curlyMatch = line.match("{{");
+              if (curlyMatch) {
+                openTags.push({
+                  tag: `Line ${idx + 1}: ${curlyMatch.length} improper {{ tag${
+                    curlyMatch.length > 1 ? "s" : ""
+                  }, should be \\\{\\\{`,
+                });
+              }
+
+              const tagRegex = /<([A-Za-z0-9]+)[^!/>]*>/g;
+              let match;
+              while ((match = tagRegex.exec(line)) !== null) {
+                if (match[1].toLowerCase() === "br") continue;
+                const before = line.slice(0, match.index);
+                const after = line.slice(match.index + match[0].length);
+                const hasSingleQuotes =
+                  before.includes("'") && after.includes("'");
+                const hasDoubleQuotes =
+                  before.includes('"') && after.includes('"');
+                const hasBackticks =
+                  before.includes("`") && after.includes("`");
+                if (!(hasSingleQuotes || hasDoubleQuotes || hasBackticks)) {
+                  openTags.push({ tag: match[1], line: idx + 1 });
+                }
+              }
+            });
+
+            // Check for missing closing tags
+            openTags.forEach(({ tag, line }) => {
+              const closeTagRegex = new RegExp(`<\\/${tag}>`, "i");
+              // const selfCloseTagRegex = new RegExp(`<${tag}[^>]*\\/?>`, "i");
+              if (!line) {
+                errorMsg(tag);
+                return;
+              }
+              if (!closeTagRegex.test(content)) {
+                errorMsg(
+                  `Line ${line}: Unclosed <${tag}> tag. Should be \\\<${tag}> or have accompanying </${tag}>`
+                );
+              }
+            });
+          }
+
           if (check) {
             const relativePath = dir.slice(
               dir.indexOf("docs") !== -1

@@ -54,6 +54,17 @@ const validateDir = async (dir, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         yaml.load(content);
+
+        // Add improper <br> tag checks
+        if (
+          /(\<br\s*\>)/gi.test(content) ||
+          /(\<\\\s?br\s*\>)/gi.test(content)
+        ) {
+          errorMsg(
+            `${fileName} contains improper <br> tags. Use <br /> instead.`
+          );
+          check = false;
+        }
       } catch (e) {
         errorMessage(pdl_validator, e?.message);
         check = false;
