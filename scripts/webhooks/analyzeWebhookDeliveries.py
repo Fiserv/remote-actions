@@ -29,6 +29,7 @@ ENV_BRANCHES = {
 
 MOST_RECENTLY_PROCESSED_BASE_FILEPATH = "persistence/most_recently_processed"
 TIMED_OUT_DELIVERIES_BASE_FILEPATH = "persistence/timed_out_deliveries"
+BLOCKED_DELIVERIES_BASE_FILEPATH = "persistence/blocked_delivery"
 
 def main():
     env = sys.argv[1]
@@ -43,6 +44,7 @@ def main():
     most_recently_processed_filepath = f"{MOST_RECENTLY_PROCESSED_BASE_FILEPATH}_{env}.json"
     today_str = datetime.now().strftime("%m-%d-%Y")
     timed_out_filepath = f"{TIMED_OUT_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}.json"
+    blocked_delivery_filepath = f"{BLOCKED_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}"
 
     # Step 1: Get all Fiserv org webhooks
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
@@ -94,23 +96,7 @@ def main():
         statusCode = current_delivery.get("status_code")
         if statusCode == 200:
             num_blocked += 1
-            # Retrieve the delivery details and gather relevant information
-            responsePayload = current_delivery_detail.get("response", {}).get("payload", {})
-            requestPayload = current_delivery_detail.get("request", {}).get("payload", {})
-            # Regular expressions to extract the values required by security team to find the offending text in the request
-            transid = re.search(r"_event_transid='([^']+)'", responsePayload)
-            clientip = re.search(r"_event_clientip='([^']+)'", responsePayload)
-            clientport = re.search(r"_event_clientport='([^']+)'", responsePayload)
-            # Log applicable information
-            print("************** Blocked webhook request **************")
-            print(f"webhook: {target_url}")
-            print(f"GitHub delivery Id: {gitHubDeliveryId}")
-            print("Timestamp: " + str(get_delivery_timestamp(current_delivery_detail)))
-            print("transid:", transid.group(1) if transid else None)
-            print("clientip:", clientip.group(1) if clientip else None)
-            print("clientport:", clientport.group(1) if clientport else None)
-            print("request payload: " + json.dumps(requestPayload, indent=4))
-            print("*****************************************************")
+            save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryId, current_delivery_detail)
 
         if not most_recently_processed_delivery or get_delivery_timestamp(current_delivery_detail) > most_recently_processed_delivery["timestamp"]:
           most_recently_processed_delivery = current_delivery_obj
@@ -129,6 +115,30 @@ def main():
       timestamp = most_recently_processed_delivery["timestamp"]
       delivery_date = printable_date_time(current_delivery_detail)
       print(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}")
+
+def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryId, current_delivery_detail):
+    persistence_filename = f"{blocked_delivery_filepath}_{gitHubDeliveryId}.log"
+    responsePayload = current_delivery_detail.get("response", {}).get("payload", {})
+    requestPayload = current_delivery_detail.get("request", {}).get("payload", {})
+    transid = re.search(r"_event_transid='([^']+)'", responsePayload)
+    clientip = re.search(r"_event_clientip='([^']+)'", responsePayload)
+    clientport = re.search(r"_event_clientport='([^']+)'", responsePayload)
+    log_lines = [
+        "************** Blocked webhook request **************",
+        f"webhook: {target_url}",
+        f"GitHub delivery Id: {gitHubDeliveryId}",
+        "Timestamp: " + str(get_delivery_timestamp(current_delivery_detail)),
+        f"transid: {transid.group(1) if transid else None}",
+        f"clientip: {clientip.group(1) if clientip else None}",
+        f"clientport: {clientport.group(1) if clientport else None}",
+        "request payload: " + json.dumps(requestPayload, indent=4),
+        "*****************************************************"
+    ]
+    # Log to stdout and file
+    with open(persistence_filename, "w") as f:
+        for line in log_lines:
+            print(f"Writing to {persistence_filename}: {line}")
+            f.write(line + "\n")
 
 def save_timeout_delivery(delivery, timed_out_filepath, env):
   details = delivery["details"]
