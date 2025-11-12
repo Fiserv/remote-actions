@@ -12,7 +12,7 @@ const markdownlinter = async (dir) => {
         markdownlinter(`${dir}/${file.name}`);
         return;
       }
-      if (/\.md$/.test(file?.name)) {
+      if (/\.mdx?$/.test(file?.name)) {
         try {
           let fileName = `${dir}/${file.name}`;
           const options = {
@@ -34,11 +34,13 @@ const markdownlinter = async (dir) => {
               if (result?.toString().length > 0) {
                 errorMessage(
                   "MD LINTER",
-                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${fileName.split('/docs/')[1]}`
+                  `PLEASE CHECK FOLLOWING LINTER ISSUES WITHIN THE FILE : ${
+                    fileName.split("/docs/")[1]
+                  }`
                 );
-                errorMsg(result.toString().replace(/.*\.md:/g, 'Line'));
+                errorMsg(result.toString().replace(/.*\.md:/g, "Line"));
               } else {
-                printMessage(`${fileName.split('/docs/')[1]} - LINTER PASSED`);
+                printMessage(`${fileName.split("/docs/")[1]} - LINTER PASSED`);
               }
             }
           });
@@ -48,7 +50,9 @@ const markdownlinter = async (dir) => {
       } else {
         errorMessage(
           "MD LINTER",
-          `${`${dir}/${file.name}`.split('/docs/')[1]} has an invalid format or file extension`
+          `${
+            `${dir}/${file.name}`.split("/docs/")[1]
+          } has an invalid format or file extension`
         );
       }
     });
