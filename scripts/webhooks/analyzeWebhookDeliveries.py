@@ -67,6 +67,7 @@ def main():
     deliveries = fetch_all_deliveries(deliveries_url, activity_log_filepath)
 
     # Step 4: Find blocked webhooks
+    num_timed_out = 0
     num_blocked = 0
     most_recently_processed_delivery = {}
     num_processed = 0
@@ -93,6 +94,7 @@ def main():
         if response.get("headers", {}) == {} and response.get("payload", "") == "":
           update_activity_log(f"Delivery {gitHubDeliveryId} timed out (empty response).", activity_log_filepath)
           save_timeout_delivery(current_delivery_obj, timed_out_filepath, env, activity_log_filepath)
+          num_timed_out += 1
           continue
 
         statusCode = current_delivery.get("status_code")
@@ -109,6 +111,7 @@ def main():
 
     update_activity_log(f"Total number of deliveries processed: {num_processed}", activity_log_filepath)
     update_activity_log(f"Total number of blocked webhooks: {num_blocked}", activity_log_filepath)
+    update_activity_log(f"Total number of timed_out webhooks: {num_timed_out}", activity_log_filepath)
 
     if num_processed > 0:
       current_delivery_detail = most_recently_processed_delivery["details"]
