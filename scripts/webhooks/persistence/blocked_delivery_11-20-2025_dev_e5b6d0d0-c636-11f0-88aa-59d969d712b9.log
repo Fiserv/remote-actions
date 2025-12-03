@@ -1,0 +1,2191 @@
+************** Blocked webhook request **************
+webhook: https://dev-developer.fiserv.com/api/git-webhook
+GitHub delivery Id: e5b6d0d0-c636-11f0-88aa-59d969d712b9
+Timestamp: 1763659210.0
+transid: 2910974335
+clientip: 140.82.115.86
+clientport: 4420
+request payload: {
+    "ref": "refs/heads/feature/ddp-documentation",
+    "before": "3661a03a217390004a016c5aa931a7bbbd6aee24",
+    "after": "12210cac3201938f6e351441b70935a8064f07ad",
+    "repository": {
+        "id": 450724959,
+        "node_id": "R_kgDOGt2EXw",
+        "name": "digital-disbursements",
+        "full_name": "Fiserv/digital-disbursements",
+        "private": true,
+        "owner": {
+            "name": "Fiserv",
+            "email": "alvin.cho22@gmail.com",
+            "login": "Fiserv",
+            "id": 43011046,
+            "node_id": "MDEyOk9yZ2FuaXphdGlvbjQzMDExMDQ2",
+            "avatar_url": "https://avatars.githubusercontent.com/u/43011046?v=4",
+            "gravatar_id": "",
+            "url": "https://api.github.com/users/Fiserv",
+            "html_url": "https://github.com/Fiserv",
+            "followers_url": "https://api.github.com/users/Fiserv/followers",
+            "following_url": "https://api.github.com/users/Fiserv/following{/other_user}",
+            "gists_url": "https://api.github.com/users/Fiserv/gists{/gist_id}",
+            "starred_url": "https://api.github.com/users/Fiserv/starred{/owner}{/repo}",
+            "subscriptions_url": "https://api.github.com/users/Fiserv/subscriptions",
+            "organizations_url": "https://api.github.com/users/Fiserv/orgs",
+            "repos_url": "https://api.github.com/users/Fiserv/repos",
+            "events_url": "https://api.github.com/users/Fiserv/events{/privacy}",
+            "received_events_url": "https://api.github.com/users/Fiserv/received_events",
+            "type": "Organization",
+            "user_view_type": "public",
+            "site_admin": false
+        },
+        "html_url": "https://github.com/Fiserv/digital-disbursements",
+        "description": "This repository is created for GBS's team Digital Disbursement Product",
+        "fork": false,
+        "url": "https://api.github.com/repos/Fiserv/digital-disbursements",
+        "forks_url": "https://api.github.com/repos/Fiserv/digital-disbursements/forks",
+        "keys_url": "https://api.github.com/repos/Fiserv/digital-disbursements/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/Fiserv/digital-disbursements/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/Fiserv/digital-disbursements/teams",
+        "hooks_url": "https://api.github.com/repos/Fiserv/digital-disbursements/hooks",
+        "issue_events_url": "https://api.github.com/repos/Fiserv/digital-disbursements/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/Fiserv/digital-disbursements/events",
+        "assignees_url": "https://api.github.com/repos/Fiserv/digital-disbursements/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/Fiserv/digital-disbursements/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/Fiserv/digital-disbursements/tags",
+        "blobs_url": "https://api.github.com/repos/Fiserv/digital-disbursements/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Fiserv/digital-disbursements/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Fiserv/digital-disbursements/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/Fiserv/digital-disbursements/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/Fiserv/digital-disbursements/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/Fiserv/digital-disbursements/languages",
+        "stargazers_url": "https://api.github.com/repos/Fiserv/digital-disbursements/stargazers",
+        "contributors_url": "https://api.github.com/repos/Fiserv/digital-disbursements/contributors",
+        "subscribers_url": "https://api.github.com/repos/Fiserv/digital-disbursements/subscribers",
+        "subscription_url": "https://api.github.com/repos/Fiserv/digital-disbursements/subscription",
+        "commits_url": "https://api.github.com/repos/Fiserv/digital-disbursements/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/Fiserv/digital-disbursements/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/Fiserv/digital-disbursements/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/Fiserv/digital-disbursements/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/Fiserv/digital-disbursements/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/Fiserv/digital-disbursements/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/Fiserv/digital-disbursements/merges",
+        "archive_url": "https://api.github.com/repos/Fiserv/digital-disbursements/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/Fiserv/digital-disbursements/downloads",
+        "issues_url": "https://api.github.com/repos/Fiserv/digital-disbursements/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/Fiserv/digital-disbursements/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/Fiserv/digital-disbursements/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Fiserv/digital-disbursements/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/Fiserv/digital-disbursements/labels{/name}",
+        "releases_url": "https://api.github.com/repos/Fiserv/digital-disbursements/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/Fiserv/digital-disbursements/deployments",
+        "created_at": 1642828878,
+        "updated_at": "2025-11-14T11:38:32Z",
+        "pushed_at": 1763659211,
+        "git_url": "git://github.com/Fiserv/digital-disbursements.git",
+        "ssh_url": "git@github.com:Fiserv/digital-disbursements.git",
+        "clone_url": "https://github.com/Fiserv/digital-disbursements.git",
+        "svn_url": "https://github.com/Fiserv/digital-disbursements",
+        "homepage": "",
+        "size": 9628,
+        "stargazers_count": 1,
+        "watchers_count": 1,
+        "language": null,
+        "has_issues": true,
+        "has_projects": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_discussions": false,
+        "forks_count": 0,
+        "mirror_url": null,
+        "archived": false,
+        "disabled": false,
+        "open_issues_count": 2,
+        "license": null,
+        "allow_forking": true,
+        "is_template": false,
+        "web_commit_signoff_required": false,
+        "topics": [],
+        "visibility": "private",
+        "forks": 0,
+        "open_issues": 2,
+        "watchers": 1,
+        "default_branch": "develop",
+        "stargazers": 1,
+        "master_branch": "develop",
+        "organization": "Fiserv",
+        "custom_properties": {}
+    },
+    "pusher": {
+        "name": "waskalevikas",
+        "email": "119947102+waskalevikas@users.noreply.github.com"
+    },
+    "organization": {
+        "login": "Fiserv",
+        "id": 43011046,
+        "node_id": "MDEyOk9yZ2FuaXphdGlvbjQzMDExMDQ2",
+        "url": "https://api.github.com/orgs/Fiserv",
+        "repos_url": "https://api.github.com/orgs/Fiserv/repos",
+        "events_url": "https://api.github.com/orgs/Fiserv/events",
+        "hooks_url": "https://api.github.com/orgs/Fiserv/hooks",
+        "issues_url": "https://api.github.com/orgs/Fiserv/issues",
+        "members_url": "https://api.github.com/orgs/Fiserv/members{/member}",
+        "public_members_url": "https://api.github.com/orgs/Fiserv/public_members{/member}",
+        "avatar_url": "https://avatars.githubusercontent.com/u/43011046?v=4",
+        "description": ""
+    },
+    "sender": {
+        "login": "waskalevikas",
+        "id": 119947102,
+        "node_id": "U_kgDOByY_Xg",
+        "avatar_url": "https://avatars.githubusercontent.com/u/119947102?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/waskalevikas",
+        "html_url": "https://github.com/waskalevikas",
+        "followers_url": "https://api.github.com/users/waskalevikas/followers",
+        "following_url": "https://api.github.com/users/waskalevikas/following{/other_user}",
+        "gists_url": "https://api.github.com/users/waskalevikas/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/waskalevikas/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/waskalevikas/subscriptions",
+        "organizations_url": "https://api.github.com/users/waskalevikas/orgs",
+        "repos_url": "https://api.github.com/users/waskalevikas/repos",
+        "events_url": "https://api.github.com/users/waskalevikas/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/waskalevikas/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+    },
+    "created": false,
+    "deleted": false,
+    "forced": false,
+    "base_ref": null,
+    "compare": "https://github.com/Fiserv/digital-disbursements/compare/3661a03a2173...12210cac3201",
+    "commits": [
+        {
+            "id": "a19079733afec756b68f7f1684d452f500f0ae60",
+            "tree_id": "4c348dc21d207e982647fbf8424903b052f11b6d",
+            "distinct": false,
+            "message": "Merge pull request #4 from Fiserv/stage\n\nSync up task",
+            "timestamp": "2022-03-03T13:10:30-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/a19079733afec756b68f7f1684d452f500f0ae60",
+            "author": {
+                "name": "Abhishek Singh",
+                "email": "81193958+f2zdirk@users.noreply.github.com",
+                "date": "2022-03-03T13:10:30-05:00",
+                "username": "asingh2023"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2022-03-03T13:10:30-05:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "validator/.gitignore",
+                "validator/package-lock.json",
+                "validator/package.json",
+                "validator/readme.md",
+                "validator/yaml.js"
+            ],
+            "removed": [],
+            "modified": [
+                "config/product-layout.yaml"
+            ]
+        },
+        {
+            "id": "c1f9247b0656c7d2c511bb9f24183629cbf474e1",
+            "tree_id": "b6a0cd4c7856dc2fd8f597d524d56b6bd4eaf850",
+            "distinct": false,
+            "message": "Merge pull request #5 from Fiserv/stage\n\nSync up task",
+            "timestamp": "2022-03-17T13:19:56-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/c1f9247b0656c7d2c511bb9f24183629cbf474e1",
+            "author": {
+                "name": "Abhishek Singh",
+                "email": "81193958+f2zdirk@users.noreply.github.com",
+                "date": "2022-03-17T13:19:56-04:00",
+                "username": "asingh2023"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2022-03-17T13:19:56-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/tenant.json"
+            ]
+        },
+        {
+            "id": "8d414c81f868c0c3ed88223ff1a62e28b6b3da3c",
+            "tree_id": "053d87f675ddc78461a37286eedbf84b86b9d1c4",
+            "distinct": false,
+            "message": "Merge pull request #27 from Fiserv/stage\n\nDDP - Production pull request for March 30th",
+            "timestamp": "2023-03-29T15:01:19-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/8d414c81f868c0c3ed88223ff1a62e28b6b3da3c",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2023-03-29T15:01:19-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-03-29T15:01:19-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                ".DS_Store",
+                ".github/workflows/validator.yaml",
+                ".gitignore",
+                "assets/FLXPINMM.CI.1654537809.BAT97.1.csv",
+                "assets/FLXPONMM.CI.1654537809.BAT97.1_Summary.csv",
+                "assets/FLXPONMM.CI.1654537809.BAT97.2_Summary.csv",
+                "assets/digital-disbursements_spec.zip",
+                "assets/images/Hosted-Page-Screenshot.png",
+                "assets/images/PaymentBulk.png",
+                "assets/images/accept-payment-reg-user.png",
+                "assets/images/addButton.png",
+                "assets/images/addNew.png",
+                "assets/images/addnewButton.png",
+                "assets/images/bulk.png",
+                "assets/images/bulkload.png",
+                "assets/images/bulkupload.png",
+                "assets/images/button.png",
+                "assets/images/clx.png",
+                "assets/images/clxAdmin.png",
+                "assets/images/clxbulk.png",
+                "assets/images/clxlogin.png",
+                "assets/images/clxsecurity.png",
+                "assets/images/confirmation.png",
+                "assets/images/createBulkUpload.png",
+                "assets/images/createsingleline.png",
+                "assets/images/hosted_flow.png",
+                "assets/images/hosted_roles.png",
+                "assets/images/hosted_session.png",
+                "assets/images/icons/Bulk-processing.png",
+                "assets/images/icons/Person-and-computer.png",
+                "assets/images/icons/api-connection.png",
+                "assets/images/icons/batch-bulk-icon.png",
+                "assets/images/icons/hosted-pages-icon.png",
+                "assets/images/initPaymentMenu.png",
+                "assets/images/initProcessTransaction.png",
+                "assets/images/md/align_image.png",
+                "assets/images/md/card_syntax.png",
+                "assets/images/md/tab_syntax.png",
+                "assets/images/md/theme_syntax.png",
+                "assets/images/newRecipientBulk.png",
+                "assets/images/nextButton.png",
+                "assets/images/openButton.png",
+                "assets/images/openButton_uploadfile.png",
+                "assets/images/payCreateBulk.png",
+                "assets/images/paymentBulkUpload.png",
+                "assets/images/previous.png",
+                "assets/images/processTranButton.png",
+                "assets/images/processTrans.png",
+                "assets/images/processTransaction.png",
+                "assets/images/transButton.png",
+                "assets/images/uploadfile.png",
+                "assets/images/uploadopt.png",
+                "docs/documentation/features/fraud.md",
+                "docs/documentation/features/payment-options.md",
+                "docs/documentation/features/tokenization.md",
+                "docs/documentation/kitchensink.md",
+                "docs/faq/ans/.DS_Store",
+                "docs/faq/ans/customFields.md",
+                "docs/faq/ans/dpr.md",
+                "docs/faq/ans/environmentURL.md",
+                "docs/faq/ans/fraudcheck.md",
+                "docs/faq/ans/hmacgeneration.md",
+                "docs/faq/ans/isMobile.md",
+                "docs/faq/ans/notificationResponse.md",
+                "docs/faq/ans/recipientGuest.md",
+                "docs/faq/ans/recipientIdentifier.md",
+                "docs/faq/ans/recipientLimit.md",
+                "docs/faq/ans/recipientTypes.md",
+                "docs/faq/ans/tin.md",
+                "docs/faq/ans/uniquMCID.md",
+                "docs/faq/ans/usrExp.md",
+                "docs/faq/ans/webhookIP.md",
+                "docs/faq/ans/webhookNotification.md",
+                "docs/interactive-guide/apiflow.md",
+                "docs/interactive-guide/batchflow.md",
+                "docs/interactive-guide/bulkflow.md",
+                "docs/interactive-guide/hostedPageflow.md",
+                "docs/interactive-guide/portalflow.md",
+                "docs/introduction/introduction.md",
+                "docs/introduction/sandbox.md",
+                "docs/release-notes/2023.md",
+                "docs/troubleshooting/Transaction-payment-status.md",
+                "docs/troubleshooting/email-templates.md",
+                "docs/troubleshooting/error-codes.md",
+                "docs/troubleshooting/notification-messages.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-services.yaml",
+                "reference/1.0.0/MerchantService/ddp-merchant-services.yaml",
+                "reference/1.0.0/NotificationService/ddp-notification-services.yaml",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml",
+                "reference/1.0.0/RecipientServices/ddp-recipient-services.yaml",
+                "reference/1.0.0/RoutingNumberValidation/ddp-account-validation.yaml",
+                "reference/1.0.0/TransactionService/ddp-transaction-services.yaml"
+            ],
+            "removed": [
+                "validator/.gitignore",
+                "validator/package-lock.json",
+                "validator/package.json",
+                "validator/readme.md",
+                "validator/yaml.js"
+            ],
+            "modified": [
+                ".docignore",
+                "README.md",
+                "config/document-explorer-definition.yaml",
+                "config/product-layout.yaml",
+                "config/tenant.json",
+                "docs/documentation/changelog.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/getting-started/setup-tenant/deploy-tenant.md",
+                "docs/getting-started/setup-tenant/register-tenant.md",
+                "docs/getting-started/setup-tenant/setup-tenant.md",
+                "docs/introduction/contact-us.md",
+                "docs/migration/migration.md",
+                "reference/1.0.0/api-1.0.0.yaml",
+                "reference/1.0.1/api-1.0.1.yaml"
+            ]
+        },
+        {
+            "id": "be1d63c18fb537d673932df52a2d9615fd0d5825",
+            "tree_id": "a86315ed70a859e891c09c48678aa6e2083aa0e3",
+            "distinct": false,
+            "message": "Merge pull request #29 from Fiserv/stage\n\nbuild v1.0.1 for May 11th",
+            "timestamp": "2023-05-10T13:43:52-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/be1d63c18fb537d673932df52a2d9615fd0d5825",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2023-05-10T13:43:52-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-05-10T13:43:52-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/.DS_Store",
+                "assets/images/.DS_Store",
+                "assets/images/email_template.png",
+                "assets/images/icons/bank_account.png",
+                "assets/images/icons/crypto_wallets.png",
+                "assets/images/icons/debit.png",
+                "assets/images/icons/echeck.png",
+                "assets/images/icons/money_network.png",
+                "assets/images/icons/social_payments.png",
+                "assets/images/md/otp1.png",
+                "assets/images/md/otp2.png",
+                "assets/images/md/otp3.png",
+                "docs/documentation/features/mfa.md",
+                "docs/release-notes/2023.5.md"
+            ],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/fraud.md",
+                "docs/documentation/features/payment-options.md",
+                "docs/documentation/features/tokenization.md",
+                "docs/interactive-guide/apiflow.md",
+                "docs/interactive-guide/batchflow.md",
+                "docs/introduction/introduction.md",
+                "docs/troubleshooting/email-templates.md"
+            ]
+        },
+        {
+            "id": "e49d3c7332af2e000c550b160d99f85a7fdbd34e",
+            "tree_id": "0a29973b660a250b764b68cbaf70eb7f33486477",
+            "distinct": false,
+            "message": "Merge pull request #31 from Fiserv/stage\n\nStage",
+            "timestamp": "2023-05-11T11:44:51-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/e49d3c7332af2e000c550b160d99f85a7fdbd34e",
+            "author": {
+                "name": "f7wau03",
+                "email": "117678612+f7wau03@users.noreply.github.com",
+                "date": "2023-05-11T11:44:51-04:00",
+                "username": "f7wau03"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-05-11T11:44:51-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml"
+            ]
+        },
+        {
+            "id": "46cc831542a40f8d3904f3871cf2c853e56a4107",
+            "tree_id": "4528d23708df24d5b0308c59aa88c7cb9b75873b",
+            "distinct": false,
+            "message": "Update validator.yaml",
+            "timestamp": "2023-06-07T11:33:32-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/46cc831542a40f8d3904f3871cf2c853e56a4107",
+            "author": {
+                "name": "Abhishek",
+                "email": "81193958+asingh2023@users.noreply.github.com",
+                "date": "2023-06-07T11:33:32-04:00",
+                "username": "asingh2023"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-06-07T11:33:32-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                ".github/workflows/validator.yaml"
+            ]
+        },
+        {
+            "id": "2e3c9955fc3b57e867413882d82a859914847725",
+            "tree_id": "e9e0c878daaaecdb785c709bb433d8cbdf0cc9ee",
+            "distinct": false,
+            "message": "Added Getting-started section for new Left Nav",
+            "timestamp": "2023-07-20T13:48:41-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/2e3c9955fc3b57e867413882d82a859914847725",
+            "author": {
+                "name": "TaniaS",
+                "email": "74629095+TaniaS-fiserv@users.noreply.github.com",
+                "date": "2023-07-20T13:48:41-04:00",
+                "username": "TaniaS-fiserv"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-07-20T13:48:41-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/product-layout.yaml"
+            ]
+        },
+        {
+            "id": "0844f6dbc374a56ac74d52cd98f5e92af6336c10",
+            "tree_id": "be67710f737333a078c990330958e08c2b6c2bba",
+            "distinct": false,
+            "message": "Merge pull request #36 from Fiserv/stage\n\nS15 Stage -> Production",
+            "timestamp": "2023-08-17T13:56:14-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/0844f6dbc374a56ac74d52cd98f5e92af6336c10",
+            "author": {
+                "name": "f7wau03",
+                "email": "117678612+f7wau03@users.noreply.github.com",
+                "date": "2023-08-17T13:56:14-04:00",
+                "username": "f7wau03"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-08-17T13:56:14-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/images/EV2_flow.png",
+                "assets/images/TAVE_example.png",
+                "assets/images/ta-flow.png",
+                "docs/release-notes/2023.7.md",
+                "docs/release-notes/2023.8.md",
+                "docs/troubleshooting/tokens.md"
+            ],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/interactive-guide/hostedPageflow.md"
+            ]
+        },
+        {
+            "id": "f8010982272cb1b28f6531f024fe207a4697d9f5",
+            "tree_id": "239872cec21c03aa28f8d67379f43df0a5d19f16",
+            "distinct": false,
+            "message": "Merge pull request #38 from Fiserv/stage\n\nStage to main for getStarted fix",
+            "timestamp": "2023-08-17T17:04:48-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/f8010982272cb1b28f6531f024fe207a4697d9f5",
+            "author": {
+                "name": "f7wau03",
+                "email": "117678612+f7wau03@users.noreply.github.com",
+                "date": "2023-08-17T17:04:48-04:00",
+                "username": "f7wau03"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2023-08-17T17:04:48-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/tenant.json"
+            ]
+        },
+        {
+            "id": "f80894e4e996956b7949d213f56e447e555c5990",
+            "tree_id": "f6a3ed5ac11053e211e211c59c34cd6542e03f2b",
+            "distinct": false,
+            "message": "Edit Update Account API",
+            "timestamp": "2023-08-23T16:40:45-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/f80894e4e996956b7949d213f56e447e555c5990",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "Jay.Sweeney@fiserv.com",
+                "date": "2023-08-23T16:40:45-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney",
+                "email": "Jay.Sweeney@fiserv.com",
+                "date": "2023-08-23T16:40:45-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "reference/1.0.0/AccountVaultingService/ddp-account-services.yaml"
+            ]
+        },
+        {
+            "id": "2f64c3e76a1da783c71e94c331e7ad88b44c15ac",
+            "tree_id": "239872cec21c03aa28f8d67379f43df0a5d19f16",
+            "distinct": false,
+            "message": "Revert \"Edit Update Account API\"\n\nThis reverts commit f80894e4e996956b7949d213f56e447e555c5990.",
+            "timestamp": "2023-08-23T16:52:49-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/2f64c3e76a1da783c71e94c331e7ad88b44c15ac",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "Jay.Sweeney@fiserv.com",
+                "date": "2023-08-23T16:52:49-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney",
+                "email": "Jay.Sweeney@fiserv.com",
+                "date": "2023-08-23T16:52:49-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "reference/1.0.0/AccountVaultingService/ddp-account-services.yaml"
+            ]
+        },
+        {
+            "id": "58280306e9c3c984bafcca0e6e2cdd2f798e8481",
+            "tree_id": "034d0acf1b093a743557201b80896055d02124e6",
+            "distinct": false,
+            "message": "Merge pull request #47 from Fiserv/stage\n\nInitial Clean-ups for 2024 Stage to Main",
+            "timestamp": "2024-04-11T12:43:07-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/58280306e9c3c984bafcca0e6e2cdd2f798e8481",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2024-04-11T12:43:07-04:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2024-04-11T12:43:07-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/.DS_Store",
+                "docs/release-notes/2024.3.md"
+            ],
+            "removed": [
+                "docs/getting-started/code-a-tenant/code-tenant.md",
+                "docs/getting-started/create-a-tenant/create-tenant.md",
+                "docs/getting-started/preview-and-publish-content/preview-and-publish.md",
+                "docs/getting-started/setup-tenant/deploy-tenant.md",
+                "docs/getting-started/setup-tenant/register-tenant.md",
+                "docs/getting-started/setup-tenant/setup-tenant.md",
+                "docs/introduction/introduction.md"
+            ],
+            "modified": [
+                "assets/.DS_Store",
+                "assets/images/.DS_Store",
+                "assets/images/md/otp1.png",
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/payment-options.md",
+                "docs/documentation/kitchensink.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/interactive-guide/apiflow.md",
+                "docs/interactive-guide/batchflow.md",
+                "docs/interactive-guide/bulkflow.md",
+                "docs/interactive-guide/portalflow.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-services.yaml",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "715b218a5a3565d84c709f04c5500734fcc7cd9e",
+            "tree_id": "488cf4b5721020d196c12982af29d4475ad4dd3b",
+            "distinct": false,
+            "message": "Add zip generator workflow",
+            "timestamp": "2024-05-20T16:01:14-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/715b218a5a3565d84c709f04c5500734fcc7cd9e",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2024-05-20T16:01:14-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2024-05-20T16:01:14-07:00",
+                "username": "minh-pham1"
+            },
+            "added": [
+                ".github/workflows/zip-generator.yaml"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "f72e140bfbeafe2954fedb0f04e6826e456940dc",
+            "tree_id": "2c7ea463ffc35d66829221b6e63e06ca47a429d3",
+            "distinct": false,
+            "message": "Update main validator workflow",
+            "timestamp": "2024-05-20T16:01:15-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/f72e140bfbeafe2954fedb0f04e6826e456940dc",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2024-05-20T16:01:15-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2024-05-20T16:01:15-07:00",
+                "username": "minh-pham1"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                ".github/workflows/validator.yaml"
+            ]
+        },
+        {
+            "id": "23bbec6b76f18cea057b5a3c3c9f463b73fe3a6a",
+            "tree_id": "11e6e811606110242835f0297b7dbf01d387d164",
+            "distinct": false,
+            "message": "Merge pull request #86 from Fiserv/stage\n\nVisa+ and P2P Features",
+            "timestamp": "2024-09-03T09:20:34-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/23bbec6b76f18cea057b5a3c3c9f463b73fe3a6a",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2024-09-03T09:20:34-04:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2024-09-03T09:20:34-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/images/VisaPlus.png",
+                "assets/images/anirules.png",
+                "docs/documentation/features/bankaccountvalidation.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/returnoffunds.md",
+                "docs/documentation/features/sanctionholdreview.md",
+                "docs/documentation/features/visainquiry.md",
+                "docs/documentation/features/visaplus.md",
+                "docs/release-notes/2024.6.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-lookup.yaml",
+                "reference/1.0.0/VisaPlus/visa-plus.yaml"
+            ],
+            "removed": [],
+            "modified": [
+                ".DS_Store",
+                "config/document-explorer-definition.yaml",
+                "config/product-layout.yaml",
+                "config/tenant.json",
+                "docs/documentation/features/fraud.md",
+                "docs/interactive-guide/apiflow.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-services.yaml",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml",
+                "reference/1.0.0/RecipientServices/ddp-recipient-services.yaml",
+                "reference/1.0.0/TransactionService/ddp-transaction-services.yaml"
+            ]
+        },
+        {
+            "id": "6b9edfe94571c2a29c975b3c377f3594516f8f83",
+            "tree_id": "9686172f6e2519de5578f99c53758c4b9540a374",
+            "distinct": false,
+            "message": "Merge pull request #127 from Fiserv/stage\n\nStage",
+            "timestamp": "2025-01-22T19:10:49-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/6b9edfe94571c2a29c975b3c377f3594516f8f83",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-01-22T19:10:49-05:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-01-22T19:10:49-05:00",
+                "username": "web-flow"
+            },
+            "added": [
+                ".github/workflows/zip-generator-cleanup.yaml",
+                ".idea/.gitignore",
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip",
+                "assets/images/HostedPages (1).jpeg",
+                "assets/images/HostedPages (1).png",
+                "assets/images/HostedPages (2).png",
+                "assets/images/HostedPages (3).png",
+                "assets/images/HostedPages (4).png",
+                "assets/images/HostedPages (5).png",
+                "assets/images/HostedPages-1.png",
+                "assets/images/HostedPages-2.png",
+                "assets/images/HostedPages-3.png",
+                "assets/images/HostedPages-4.png",
+                "assets/images/HostedPages_default.png",
+                "assets/images/Picture25.png",
+                "assets/images/idempotency.png",
+                "assets/images/status_check.png",
+                "docs/documentation/features/crosscurrency.md",
+                "docs/documentation/features/softdescriptor.md",
+                "docs/release-notes/2024.8.md",
+                "docs/troubleshooting/idempotency-timeouts.md"
+            ],
+            "removed": [
+                ".DS_Store",
+                "assets/.DS_Store",
+                "assets/images/.DS_Store",
+                "docs/.DS_Store",
+                "docs/documentation/kitchensink.md",
+                "docs/faq/ans/.DS_Store",
+                "docs/release-notes/2024.6.md"
+            ],
+            "modified": [
+                ".gitignore",
+                "config/document-explorer-definition.yaml",
+                "config/product-layout.yaml",
+                "config/tenant.json",
+                "docs/documentation/changelog.md",
+                "docs/documentation/documentation.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/payment-options.md",
+                "docs/documentation/features/returnoffunds.md",
+                "docs/documentation/features/sanctionholdreview.md",
+                "docs/documentation/features/visainquiry.md",
+                "docs/faq/ans/customFields.md",
+                "docs/faq/ans/environmentURL.md",
+                "docs/faq/ans/fraudcheck.md",
+                "docs/faq/ans/hmacgeneration.md",
+                "docs/faq/ans/isMobile.md",
+                "docs/faq/ans/notificationResponse.md",
+                "docs/faq/ans/recipientGuest.md",
+                "docs/faq/ans/recipientLimit.md",
+                "docs/faq/ans/recipientTypes.md",
+                "docs/faq/ans/tin.md",
+                "docs/faq/ans/uniquMCID.md",
+                "docs/faq/ans/webhookIP.md",
+                "docs/faq/ans/webhookNotification.md",
+                "docs/getting-started.md",
+                "docs/interactive-guide/apiflow.md",
+                "docs/interactive-guide/batchflow.md",
+                "docs/interactive-guide/bulkflow.md",
+                "docs/interactive-guide/hostedPageflow.md",
+                "docs/interactive-guide/portalflow.md",
+                "docs/introduction/contact-us.md",
+                "docs/migration/migration.md",
+                "docs/release-notes/2024.3.md",
+                "docs/troubleshooting/Transaction-payment-status.md",
+                "docs/troubleshooting/email-templates.md",
+                "docs/troubleshooting/error-codes.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-lookup.yaml",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "3f5243bb26601b80ec36c5ec61276b0aeda7f4e0",
+            "tree_id": "cf8b23b1479f144c2c51fa5dda44fc87bb8e5ed5",
+            "distinct": false,
+            "message": "Zip Generator Action",
+            "timestamp": "2025-01-23T00:11:11Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/3f5243bb26601b80ec36c5ec61276b0aeda7f4e0",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-01-23T00:11:11Z",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "github-actions[bot]",
+                "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                "date": "2025-01-23T00:11:11Z",
+                "username": "github-actions[bot]"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ]
+        },
+        {
+            "id": "673379a705137bf4e1fbbe77f8f8d7fc72e857d1",
+            "tree_id": "cf8b23b1479f144c2c51fa5dda44fc87bb8e5ed5",
+            "distinct": false,
+            "message": "Merge pull request #128 from Fiserv/devstudio-update-zip-files-main\n\nZip Generator Action - main",
+            "timestamp": "2025-01-22T16:11:38-08:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/673379a705137bf4e1fbbe77f8f8d7fc72e857d1",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2025-01-22T16:11:38-08:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-01-22T16:11:38-08:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ]
+        },
+        {
+            "id": "26346156c039fbf3a262ea285b6f3533b9a22e94",
+            "tree_id": "a238884427d7bb35e25dbcdd81816bcf259dbbe3",
+            "distinct": false,
+            "message": "Merge pull request #131 from Fiserv/stage\n\nStage",
+            "timestamp": "2025-01-23T11:14:41-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/26346156c039fbf3a262ea285b6f3533b9a22e94",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-01-23T11:14:41-05:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-01-23T11:14:41-05:00",
+                "username": "web-flow"
+            },
+            "added": [
+                ".gitattributes"
+            ],
+            "removed": [],
+            "modified": [
+                "docs/troubleshooting/idempotency-timeouts.md"
+            ]
+        },
+        {
+            "id": "c95f6fa0d99b96490bf0684d25719677520538ce",
+            "tree_id": "a13f925e21b6e8fd1933774d1f26e2bfc50f695b",
+            "distinct": false,
+            "message": "Merge pull request #139 from Fiserv/stage\n\nIdempotency Certification Changes to Production",
+            "timestamp": "2025-01-30T13:37:04-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/c95f6fa0d99b96490bf0684d25719677520538ce",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-01-30T13:37:04-05:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-01-30T13:37:04-05:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/images/cert_tc_1.png",
+                "assets/images/cert_tc_2.png",
+                "assets/images/cert_tc_3.png",
+                "assets/images/cert_tc_4.png",
+                "assets/images/cert_tc_5.png",
+                "assets/images/cert_tc_6.png"
+            ],
+            "removed": [],
+            "modified": [
+                "docs/troubleshooting/idempotency-timeouts.md"
+            ]
+        },
+        {
+            "id": "c22846b7311e8c2a7766eedba84f5468995d96b0",
+            "tree_id": "7dc2939d81a1598ebcab871c219e565771ac29eb",
+            "distinct": false,
+            "message": "Update mfa.md",
+            "timestamp": "2025-02-21T14:30:10-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/c22846b7311e8c2a7766eedba84f5468995d96b0",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-02-21T14:30:10-05:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-02-21T14:30:10-05:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/documentation/features/mfa.md"
+            ]
+        },
+        {
+            "id": "6d2ccf870283126e86786aa1e64aea1623415461",
+            "tree_id": "7dc2939d81a1598ebcab871c219e565771ac29eb",
+            "distinct": false,
+            "message": "Merge pull request #144 from Fiserv/paulmohljr-patch-3\n\nUpdate mfa.md",
+            "timestamp": "2025-02-21T14:30:47-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/6d2ccf870283126e86786aa1e64aea1623415461",
+            "author": {
+                "name": "paulmohljr",
+                "email": "82846075+paulmohljr@users.noreply.github.com",
+                "date": "2025-02-21T14:30:47-05:00",
+                "username": "paulmohljr"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-02-21T14:30:47-05:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/documentation/features/mfa.md"
+            ]
+        },
+        {
+            "id": "ebb080816230db737d94b563f3da8d565fd36a4a",
+            "tree_id": "a7e20a2292b7c4a4c840cbb7a3b3c834008072d4",
+            "distinct": false,
+            "message": "Merge pull request #149 from Fiserv/develop\n\nPull QA changes to DEV",
+            "timestamp": "2025-03-24T18:10:17-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/ebb080816230db737d94b563f3da8d565fd36a4a",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-03-24T18:10:17-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-03-24T18:10:17-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/documentation/features/rtp.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ],
+            "removed": [],
+            "modified": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip",
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/p2p.md",
+                "docs/troubleshooting/email-templates.md",
+                "docs/troubleshooting/notification-messages.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-lookup.yaml"
+            ]
+        },
+        {
+            "id": "6e7c8dc00ea09b2b9aa56a2ae2b33967ccd6c659",
+            "tree_id": "d7334304eb12331b54e9b6141726312de0566cc8",
+            "distinct": false,
+            "message": "Zip Generator Action",
+            "timestamp": "2025-03-24T22:11:03Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/6e7c8dc00ea09b2b9aa56a2ae2b33967ccd6c659",
+            "author": {
+                "name": "sweeneyjay",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-03-24T22:11:03Z",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "github-actions[bot]",
+                "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                "date": "2025-03-24T22:11:03Z",
+                "username": "github-actions[bot]"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ]
+        },
+        {
+            "id": "8f342b1e0953354dee57ccebc5578e6c397734e4",
+            "tree_id": "d7334304eb12331b54e9b6141726312de0566cc8",
+            "distinct": false,
+            "message": "Merge pull request #151 from Fiserv/devstudio-update-zip-files-stage\n\nZip Generator Action - stage",
+            "timestamp": "2025-03-24T15:11:31-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/8f342b1e0953354dee57ccebc5578e6c397734e4",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2025-03-24T15:11:31-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-03-24T15:11:31-07:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ]
+        },
+        {
+            "id": "732ea64e78daa2711976ff02ca616790bd5f5980",
+            "tree_id": "7fd2d91a5398eb5730d32b64358b7fc12a53fe10",
+            "distinct": false,
+            "message": "Merge pull request #155 from Fiserv/develop\n\nAdded Encryption Algorithm",
+            "timestamp": "2025-04-30T15:47:59-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/732ea64e78daa2711976ff02ca616790bd5f5980",
+            "author": {
+                "name": "prashantkumarfiserv",
+                "email": "99802696+prashantkumarfiserv@users.noreply.github.com",
+                "date": "2025-04-30T15:47:59-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-04-30T15:47:59-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/interactive-guide/apiflow.md"
+            ]
+        },
+        {
+            "id": "7dc63390bfaa4708b02d06a703b88e6ce691673e",
+            "tree_id": "03cd0e528d93a0fc8b84ec1aed0f99cae9b7787e",
+            "distinct": false,
+            "message": "Remove obsolete digital disbursements zip files",
+            "timestamp": "2025-06-17T13:16:37-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/7dc63390bfaa4708b02d06a703b88e6ce691673e",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T13:16:37-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T13:16:37-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [],
+            "removed": [
+                "assets/digital-disbursements_spec.zip",
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": []
+        },
+        {
+            "id": "ab59eb528063fb4dec6c8288f31892f0d3f1da68",
+            "tree_id": "17fab59f826a364ad9196d57687f5ca49b3b1b27",
+            "distinct": false,
+            "message": "Add release notes for version 1.0.1, detailing new features and known issues",
+            "timestamp": "2025-06-17T13:23:05-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/ab59eb528063fb4dec6c8288f31892f0d3f1da68",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T13:23:05-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T13:23:05-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [
+                "docs/release-notes/2024.6.md"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "e693485008d1f0af561f22452e3fbb218a5e8b31",
+            "tree_id": "17fab59f826a364ad9196d57687f5ca49b3b1b27",
+            "distinct": false,
+            "message": "Merge pull request #167 from Fiserv/fix-stage\n\nRemove obsolete digital disbursements zip files",
+            "timestamp": "2025-06-17T13:23:42-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/e693485008d1f0af561f22452e3fbb218a5e8b31",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T13:23:42-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T13:23:42-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/release-notes/2024.6.md"
+            ],
+            "removed": [
+                "assets/digital-disbursements_spec.zip",
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": []
+        },
+        {
+            "id": "bdadca0c458e4af953a0d5c469875f4caba52e52",
+            "tree_id": "bec1f6f2c8a9e6a5de26143d4b66f354ea213556",
+            "distinct": false,
+            "message": "Merge pull request #166 from Fiserv/develop\n\nPull Dev Studio Changes from Dev into Stage",
+            "timestamp": "2025-06-17T13:25:52-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/bdadca0c458e4af953a0d5c469875f4caba52e52",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T13:25:52-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T13:25:52-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/cryptocashout.md",
+                "docs/interactive-guide/a2a.md",
+                "docs/interactive-guide/p2p.md"
+            ],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/rtp.md",
+                "docs/documentation/features/softdescriptor.md",
+                "docs/faq/faq.md",
+                "reference/1.0.0/AccountVaultingService/ddp-account-lookup.yaml",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "17c77d48fa2a4f36ba0912114c5cde9c02c64c30",
+            "tree_id": "af25a4cc0db9ceea55b567e8869ed69ba3e529d7",
+            "distinct": false,
+            "message": "Zip Generator Action",
+            "timestamp": "2025-06-17T17:26:18Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/17c77d48fa2a4f36ba0912114c5cde9c02c64c30",
+            "author": {
+                "name": "sweeneyjay",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T17:26:18Z",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "github-actions[bot]",
+                "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                "date": "2025-06-17T17:26:18Z",
+                "username": "github-actions[bot]"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "02288bd8ed038578fb5a02174b8e2c80b5714537",
+            "tree_id": "af25a4cc0db9ceea55b567e8869ed69ba3e529d7",
+            "distinct": false,
+            "message": "Merge pull request #168 from Fiserv/devstudio-update-zip-files-stage\n\nZip Generator Action - stage",
+            "timestamp": "2025-06-17T10:26:39-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/02288bd8ed038578fb5a02174b8e2c80b5714537",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2025-06-17T10:26:39-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T10:26:39-07:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "ae7c46030942b96070e30dc81e0f71e49530ba03",
+            "tree_id": "8fbac225cf3e36d1fd0fe17549d2143cbfec1395",
+            "distinct": false,
+            "message": "Add release notes for version 1.0.2, highlighting new features, enhancements, and fixes",
+            "timestamp": "2025-06-17T15:55:08-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/ae7c46030942b96070e30dc81e0f71e49530ba03",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T15:55:08-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T15:55:08-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "4e36a7d036eba94992b6d7bf2ca2f59be3d6fd6a",
+            "tree_id": "ce0c1d791879e3efc61d3e0603c15ff7a103218a",
+            "distinct": false,
+            "message": "Remove obsolete digital disbursements zip files",
+            "timestamp": "2025-06-17T15:58:19-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/4e36a7d036eba94992b6d7bf2ca2f59be3d6fd6a",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T15:58:19-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T15:58:19-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [],
+            "removed": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": []
+        },
+        {
+            "id": "5a29473559fa8bb1fb7c70efa827325de74120cd",
+            "tree_id": "ce0c1d791879e3efc61d3e0603c15ff7a103218a",
+            "distinct": false,
+            "message": "Merge pull request #170 from Fiserv/add-release-notes\n\nAdd release notes for version 1.0.2, highlighting new features, enhan\u2026",
+            "timestamp": "2025-06-17T16:01:43-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/5a29473559fa8bb1fb7c70efa827325de74120cd",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T16:01:43-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T16:01:43-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": []
+        },
+        {
+            "id": "815ed77fc8e651cabac7c572b45deb6a9903d834",
+            "tree_id": "135dc5583eb77d64d8ac8b3cae62f031536d25d4",
+            "distinct": false,
+            "message": "SPELLING/GRAMMAR FIX",
+            "timestamp": "2025-06-17T16:25:37-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/815ed77fc8e651cabac7c572b45deb6a9903d834",
+            "author": {
+                "name": "Tom Munson",
+                "email": "thomas.munson@fiserv.com",
+                "date": "2025-06-17T16:25:37-04:00",
+                "username": "Tmunson32"
+            },
+            "committer": {
+                "name": "Tom Munson",
+                "email": "thomas.munson@fiserv.com",
+                "date": "2025-06-17T16:25:37-04:00",
+                "username": "Tmunson32"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/documentation/features/a2a.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ]
+        },
+        {
+            "id": "292380494ab2bde2d167659c72187edd1d5ebc57",
+            "tree_id": "8ed91ee9d380d641547f28d9ccb54f25c38f2b15",
+            "distinct": false,
+            "message": "Merge pull request #172 from Fiserv/stage-fix\n\nSPELLING/GRAMMAR FIX",
+            "timestamp": "2025-06-17T16:32:20-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/292380494ab2bde2d167659c72187edd1d5ebc57",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T16:32:20-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T16:32:20-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/documentation/features/a2a.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ]
+        },
+        {
+            "id": "782f8cf8579dcab75f335abcea726e7ba399524b",
+            "tree_id": "3a8c4fd86cd2802a5a59e4fa95f715cca39a69ea",
+            "distinct": false,
+            "message": "Resolve merge conflict by incorporating both suggestions",
+            "timestamp": "2025-06-17T16:37:23-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/782f8cf8579dcab75f335abcea726e7ba399524b",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T16:37:23-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-17T16:37:23-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "dc51b9f111ab2bb3da9984cceef16676f10d39fc",
+            "tree_id": "3a8c4fd86cd2802a5a59e4fa95f715cca39a69ea",
+            "distinct": false,
+            "message": "Merge pull request #173 from Fiserv/stage-conflict-resolve\n\nStage conflict resolve",
+            "timestamp": "2025-06-17T16:49:31-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/dc51b9f111ab2bb3da9984cceef16676f10d39fc",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-17T16:49:31-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-17T16:49:31-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "9aa047f328f855097377a019ffbca555ce1fb7c6",
+            "tree_id": "dfaae2465f5e13849cee33cf3c9f42ac999a3f5d",
+            "distinct": false,
+            "message": "Add A2A and P2P flow documentation; update RTP prerequisites and error codes",
+            "timestamp": "2025-06-20T13:50:22-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/9aa047f328f855097377a019ffbca555ce1fb7c6",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-20T13:50:22-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-06-20T13:50:22-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md"
+            ]
+        },
+        {
+            "id": "eed0ef66d6cc56173af1fcbfe6cb7f84822e54e3",
+            "tree_id": "dfaae2465f5e13849cee33cf3c9f42ac999a3f5d",
+            "distinct": false,
+            "message": "Merge pull request #174 from Fiserv/stage-conflict-resolve\n\nAdd A2A and P2P flow documentation; update RTP prerequisites and erro\u2026",
+            "timestamp": "2025-06-20T13:55:37-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/eed0ef66d6cc56173af1fcbfe6cb7f84822e54e3",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-06-20T13:55:37-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-06-20T13:55:37-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md"
+            ]
+        },
+        {
+            "id": "83099462bc8bd8776fbaa913d9128511e2b75264",
+            "tree_id": "6700cb1ec6acf742521595af07642edabfde2b18",
+            "distinct": false,
+            "message": "PhoneNumber Removal for Paypal\n\nPhoneNumber Removal for Paypal",
+            "timestamp": "2025-07-02T11:12:05+01:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/83099462bc8bd8776fbaa913d9128511e2b75264",
+            "author": {
+                "name": "vikaswaskale",
+                "email": "51259974+vikaswaskale@users.noreply.github.com",
+                "date": "2025-07-02T11:12:05+01:00",
+                "username": "vikaswaskale"
+            },
+            "committer": {
+                "name": "vikaswaskale",
+                "email": "51259974+vikaswaskale@users.noreply.github.com",
+                "date": "2025-07-02T11:12:05+01:00",
+                "username": "vikaswaskale"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/interactive-guide/apiflow.md",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "ea5c3d53f57f7f0f05f66cf1bb43602f79912efc",
+            "tree_id": "650b44d372c0f2e42fdbc1d427bd0df62662795a",
+            "distinct": false,
+            "message": "Update apiflow.md",
+            "timestamp": "2025-07-03T09:23:34+01:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/ea5c3d53f57f7f0f05f66cf1bb43602f79912efc",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-07-03T09:23:34+01:00",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-03T09:23:34+01:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/interactive-guide/apiflow.md"
+            ]
+        },
+        {
+            "id": "a2a939164faba79bd954b264e3aa10d4c190b5e1",
+            "tree_id": "52546f515f3ecda8f9b7f02641b3f2fe9cbb351f",
+            "distinct": false,
+            "message": "Update ddp-payment-services.yaml",
+            "timestamp": "2025-07-03T09:29:05+01:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/a2a939164faba79bd954b264e3aa10d4c190b5e1",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-07-03T09:29:05+01:00",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-03T09:29:05+01:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "02f11160dbca0ef4aa214bec1db069bc9089d4e7",
+            "tree_id": "52546f515f3ecda8f9b7f02641b3f2fe9cbb351f",
+            "distinct": false,
+            "message": "Merge pull request #176 from Fiserv/feature/ddp-July25-updates\n\nPhoneNumber Removal for Paypal",
+            "timestamp": "2025-07-08T13:02:39-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/02f11160dbca0ef4aa214bec1db069bc9089d4e7",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-07-08T13:02:39-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-08T13:02:39-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/interactive-guide/apiflow.md",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "64e1f1a500843ea4e2c14763e10eea4f206d9252",
+            "tree_id": "1302123543bceb68184aef836988a379f8e19fb0",
+            "distinct": false,
+            "message": "Zip Generator Action",
+            "timestamp": "2025-07-08T17:03:01Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/64e1f1a500843ea4e2c14763e10eea4f206d9252",
+            "author": {
+                "name": "sweeneyjay",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-07-08T17:03:01Z",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "github-actions[bot]",
+                "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                "date": "2025-07-08T17:03:01Z",
+                "username": "github-actions[bot]"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "eb0ecb23c6e88e53c9d39782c71b0f023a4b466b",
+            "tree_id": "1302123543bceb68184aef836988a379f8e19fb0",
+            "distinct": false,
+            "message": "Merge pull request #178 from Fiserv/devstudio-update-zip-files-develop\n\nZip Generator Action - develop",
+            "timestamp": "2025-07-08T10:03:26-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/eb0ecb23c6e88e53c9d39782c71b0f023a4b466b",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2025-07-08T10:03:26-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-08T10:03:26-07:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "a8f765bcd6ff51e21b8e353765ce5a4e3732bbc6",
+            "tree_id": "eaaac527e266409e52ba2015a1a72684337ac581",
+            "distinct": false,
+            "message": "Remove digital disbursements_spec.zip and update documentation for A2A, P2P, RTP features, and release notes; improve clarity in FAQs and troubleshooting guides.",
+            "timestamp": "2025-07-08T15:51:32-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/a8f765bcd6ff51e21b8e353765ce5a4e3732bbc6",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-07-08T15:51:32-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-07-08T15:51:32-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [
+                "docs/release-notes/2024.6.md",
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [
+                "assets/digital-disbursements_spec.zip"
+            ],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ]
+        },
+        {
+            "id": "5c88b3e707012a469aff437d73e9f20e29a2c5f0",
+            "tree_id": "eaaac527e266409e52ba2015a1a72684337ac581",
+            "distinct": false,
+            "message": "Merge pull request #180 from Fiserv/merge_fix\n\nRemove digital disbursements_spec.zip and update documentation for A2\u2026",
+            "timestamp": "2025-07-08T15:52:51-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/5c88b3e707012a469aff437d73e9f20e29a2c5f0",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-07-08T15:52:51-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-08T15:52:51-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/release-notes/2024.6.md",
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [
+                "assets/digital-disbursements_spec.zip"
+            ],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ]
+        },
+        {
+            "id": "0f5dbc95dc5906db3abf52991bab45cd07210094",
+            "tree_id": "3a51dcd76f9af5f4547a28d75b189e7a616dc183",
+            "distinct": false,
+            "message": "Resolved my removing Zip Files",
+            "timestamp": "2025-07-08T16:14:22-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/0f5dbc95dc5906db3abf52991bab45cd07210094",
+            "author": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-07-08T16:14:22-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "Jay Sweeney - 10193297",
+                "email": "jay.sweeney@fiserv.com",
+                "date": "2025-07-08T16:14:22-04:00",
+                "username": "sweeneyjay"
+            },
+            "added": [
+                "docs/release-notes/2024.6.md",
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [
+                "assets/digital-disbursements_spec.zip",
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/troubleshooting/long-lived-key.md"
+            ]
+        },
+        {
+            "id": "b76d6a87f0aeac2f67c304bedc1fc792e1a526a4",
+            "tree_id": "3a51dcd76f9af5f4547a28d75b189e7a616dc183",
+            "distinct": false,
+            "message": "Merge pull request #181 from Fiserv/zip_fix\n\nZip fix",
+            "timestamp": "2025-07-08T16:15:59-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/b76d6a87f0aeac2f67c304bedc1fc792e1a526a4",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-07-08T16:15:59-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-07-08T16:15:59-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "modified": []
+        },
+        {
+            "id": "5b56bb9a376201b2acabfbccafac36c4fdb5d4e2",
+            "tree_id": "3b4288b2e0145ed31ad06a975972fb65c1759eac",
+            "distinct": false,
+            "message": "Merge pull request #186 from Fiserv/feature/ddp-documentation\n\nFeature/ddp documentation to develop",
+            "timestamp": "2025-09-02T12:53:19-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/5b56bb9a376201b2acabfbccafac36c4fdb5d4e2",
+            "author": {
+                "name": "Jay Sweeney",
+                "email": "121973998+sweeneyjay@users.noreply.github.com",
+                "date": "2025-09-02T12:53:19-04:00",
+                "username": "sweeneyjay"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-09-02T12:53:19-04:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/documentation/features/ach_dfa_pull.md"
+            ],
+            "removed": [],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/troubleshooting/error-codes.md"
+            ]
+        },
+        {
+            "id": "d51ef1832936ffa5cf80e27dca6299134887096f",
+            "tree_id": "436f51ce7ecb071e07ef0fc3d9e7a2682fa4cd8c",
+            "distinct": false,
+            "message": "DDP | Fixed cancellation API specs",
+            "timestamp": "2025-09-19T13:14:06-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/d51ef1832936ffa5cf80e27dca6299134887096f",
+            "author": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:14:06-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:14:06-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "1797a6cec468efe0b12f5c437053e7899a6cb9ed",
+            "tree_id": "3c283050dbbbbf852344e954c99e7153779d8692",
+            "distinct": false,
+            "message": "DDP | Fixed lint issue",
+            "timestamp": "2025-09-19T13:19:09-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/1797a6cec468efe0b12f5c437053e7899a6cb9ed",
+            "author": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:19:09-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:19:09-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/release-notes/2024.6.md"
+            ]
+        },
+        {
+            "id": "c9da6b1a7d83d394fd7dfa879f58a10827c8239a",
+            "tree_id": "f547c051582f1325c677a97f744601f409722147",
+            "distinct": false,
+            "message": "DDP | Fixed cancellation API specs",
+            "timestamp": "2025-09-19T13:22:20-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/c9da6b1a7d83d394fd7dfa879f58a10827c8239a",
+            "author": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:22:20-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "Prashant Kumar",
+                "email": "prashantkumar.tripathi@fiserv.com",
+                "date": "2025-09-19T13:22:20-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/release-notes/2024.6.md"
+            ]
+        },
+        {
+            "id": "e77399f6a0dea4ab401326e1126d382af1ba3bc9",
+            "tree_id": "f547c051582f1325c677a97f744601f409722147",
+            "distinct": false,
+            "message": "Merge pull request #187 from Fiserv/feature/fix-cancellation-specs\n\nDDP | Fixed cancellation API specs",
+            "timestamp": "2025-09-19T13:23:16-04:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/e77399f6a0dea4ab401326e1126d382af1ba3bc9",
+            "author": {
+                "name": "prashantkumarfiserv",
+                "email": "99802696+prashantkumarfiserv@users.noreply.github.com",
+                "date": "2025-09-19T13:23:16-04:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-09-19T13:23:16-04:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/release-notes/2024.6.md",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        },
+        {
+            "id": "febe5f223ee16c3ada265fcd3d7a1a6397e7ec36",
+            "tree_id": "de6a5d4df4944c913f5eb02bcac1b3d2623b7e81",
+            "distinct": false,
+            "message": "Zip Generator Action",
+            "timestamp": "2025-09-19T17:23:37Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/febe5f223ee16c3ada265fcd3d7a1a6397e7ec36",
+            "author": {
+                "name": "prashantkumarfiserv",
+                "email": "99802696+prashantkumarfiserv@users.noreply.github.com",
+                "date": "2025-09-19T17:23:37Z",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "github-actions[bot]",
+                "email": "41898282+github-actions[bot]@users.noreply.github.com",
+                "date": "2025-09-19T17:23:37Z",
+                "username": "github-actions[bot]"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "1f4cc4af2633a449d6ad347d57ab6b35ebaab3a2",
+            "tree_id": "de6a5d4df4944c913f5eb02bcac1b3d2623b7e81",
+            "distinct": false,
+            "message": "Merge pull request #188 from Fiserv/devstudio-update-zip-files-develop\n\nZip Generator Action - develop",
+            "timestamp": "2025-09-19T10:24:06-07:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/1f4cc4af2633a449d6ad347d57ab6b35ebaab3a2",
+            "author": {
+                "name": "Minh Pham",
+                "email": "114534554+minh-pham1@users.noreply.github.com",
+                "date": "2025-09-19T10:24:06-07:00",
+                "username": "minh-pham1"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-09-19T10:24:06-07:00",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "58f172605fad0d4fc9df2a041708cc94db468cfb",
+            "tree_id": "88ea6ff09e4854d04b86e08e1899fb18eec3a78e",
+            "distinct": false,
+            "message": "Merge pull request #189 from Fiserv/feature/ddp-documentation\n\nUpdated error-codes.md",
+            "timestamp": "2025-11-13T10:50:38-05:00",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/58f172605fad0d4fc9df2a041708cc94db468cfb",
+            "author": {
+                "name": "prashantkumarfiserv",
+                "email": "99802696+prashantkumarfiserv@users.noreply.github.com",
+                "date": "2025-11-13T10:50:38-05:00",
+                "username": "prashantkumarfiserv"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-13T10:50:38-05:00",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/troubleshooting/error-codes.md"
+            ]
+        },
+        {
+            "id": "0c84944c044a2f64a02766a3364d54da9c21c2ed",
+            "tree_id": "51c49ef34e2915db6bedfb392720284edf2c6321",
+            "distinct": false,
+            "message": "Merge pull request #191 from Fiserv/feature/ddp-documentation\n\nMD validator errors fix",
+            "timestamp": "2025-11-14T15:06:25+05:30",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/0c84944c044a2f64a02766a3364d54da9c21c2ed",
+            "author": {
+                "name": "pkrishk",
+                "email": "krishnakumar.parthasarathy@fiserv.com",
+                "date": "2025-11-14T15:06:25+05:30",
+                "username": "pkrishk"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-14T15:06:25+05:30",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/interactive-guide/batchflow.md",
+                "docs/interactive-guide/hostedPageflow.md",
+                "docs/introduction/contact-us.md"
+            ]
+        },
+        {
+            "id": "7a59dad1797ff538a81720d796c19967867966d7",
+            "tree_id": "178fbec82c4c2cd75b7d0e721251bf929679da6d",
+            "distinct": false,
+            "message": "Merge pull request #192 from Fiserv/feature/ddp-documentation\n\nCreate 2025.11.md",
+            "timestamp": "2025-11-14T11:35:14Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/7a59dad1797ff538a81720d796c19967867966d7",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-11-14T11:35:14Z",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-14T11:35:14Z",
+                "username": "web-flow"
+            },
+            "added": [
+                "docs/release-notes/2025.11.md"
+            ],
+            "removed": [],
+            "modified": []
+        },
+        {
+            "id": "06367ba1799022e4b70a8ebb30a1fc05b1962b50",
+            "tree_id": "23322f11472f34564d6f40dcbae08ac379db7178",
+            "distinct": false,
+            "message": "Update 2025.11.md",
+            "timestamp": "2025-11-14T11:37:31Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/06367ba1799022e4b70a8ebb30a1fc05b1962b50",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-11-14T11:37:31Z",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-14T11:37:31Z",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/release-notes/2025.11.md"
+            ]
+        },
+        {
+            "id": "ae7e3bc6eb11f091c208d80c115837a07173cfee",
+            "tree_id": "23322f11472f34564d6f40dcbae08ac379db7178",
+            "distinct": false,
+            "message": "Merge pull request #193 from Fiserv/waskalevikas-patch-1\n\nUpdate 2025.11.md",
+            "timestamp": "2025-11-14T11:38:26Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/ae7e3bc6eb11f091c208d80c115837a07173cfee",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-11-14T11:38:26Z",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-14T11:38:26Z",
+                "username": "web-flow"
+            },
+            "added": [],
+            "removed": [],
+            "modified": [
+                "docs/release-notes/2025.11.md"
+            ]
+        },
+        {
+            "id": "12210cac3201938f6e351441b70935a8064f07ad",
+            "tree_id": "a3752e8804929a29bccdafa6611746171a654061",
+            "distinct": true,
+            "message": "Merge branch 'develop' into feature/ddp-documentation",
+            "timestamp": "2025-11-20T17:20:10Z",
+            "url": "https://github.com/Fiserv/digital-disbursements/commit/12210cac3201938f6e351441b70935a8064f07ad",
+            "author": {
+                "name": "waskalevikas",
+                "email": "119947102+waskalevikas@users.noreply.github.com",
+                "date": "2025-11-20T17:20:10Z",
+                "username": "waskalevikas"
+            },
+            "committer": {
+                "name": "GitHub",
+                "email": "noreply@github.com",
+                "date": "2025-11-20T17:20:10Z",
+                "username": "web-flow"
+            },
+            "added": [
+                "assets/files/digital-disbursements_postman.zip",
+                "assets/files/digital-disbursements_spec.zip",
+                "docs/release-notes/2024.6.md",
+                "docs/release-notes/2025.6.md"
+            ],
+            "removed": [
+                "assets/digital-disbursements_spec.zip"
+            ],
+            "modified": [
+                "config/document-explorer-definition.yaml",
+                "docs/documentation/features/a2a.md",
+                "docs/documentation/features/p2p.md",
+                "docs/documentation/features/rtp.md",
+                "docs/faq/faq.md",
+                "docs/getting-started.md",
+                "docs/interactive-guide/apiflow.md",
+                "docs/release-notes/2025.11.md",
+                "docs/troubleshooting/long-lived-key.md",
+                "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+            ]
+        }
+    ],
+    "head_commit": {
+        "id": "12210cac3201938f6e351441b70935a8064f07ad",
+        "tree_id": "a3752e8804929a29bccdafa6611746171a654061",
+        "distinct": true,
+        "message": "Merge branch 'develop' into feature/ddp-documentation",
+        "timestamp": "2025-11-20T17:20:10Z",
+        "url": "https://github.com/Fiserv/digital-disbursements/commit/12210cac3201938f6e351441b70935a8064f07ad",
+        "author": {
+            "name": "waskalevikas",
+            "email": "119947102+waskalevikas@users.noreply.github.com",
+            "date": "2025-11-20T17:20:10Z",
+            "username": "waskalevikas"
+        },
+        "committer": {
+            "name": "GitHub",
+            "email": "noreply@github.com",
+            "date": "2025-11-20T17:20:10Z",
+            "username": "web-flow"
+        },
+        "added": [
+            "assets/files/digital-disbursements_postman.zip",
+            "assets/files/digital-disbursements_spec.zip",
+            "docs/release-notes/2024.6.md",
+            "docs/release-notes/2025.6.md"
+        ],
+        "removed": [
+            "assets/digital-disbursements_spec.zip"
+        ],
+        "modified": [
+            "config/document-explorer-definition.yaml",
+            "docs/documentation/features/a2a.md",
+            "docs/documentation/features/p2p.md",
+            "docs/documentation/features/rtp.md",
+            "docs/faq/faq.md",
+            "docs/getting-started.md",
+            "docs/interactive-guide/apiflow.md",
+            "docs/release-notes/2025.11.md",
+            "docs/troubleshooting/long-lived-key.md",
+            "reference/1.0.0/PayoutService/ddp-payment-services.yaml"
+        ]
+    }
+}
+*****************************************************
