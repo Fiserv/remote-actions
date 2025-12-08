@@ -226,7 +226,7 @@ const validateSection = async (repo, sections, lines) => {
       sectionCheck = false;
     }
     if (section.link) {
-      if (!section.link.match(/\.mdx?/)) {
+      if (!section.link.length || !section.link.match(/\.mdx?/)) {
         errorMsg(`Section link ${section.link} is not a valid .md file`);
         sectionCheck = false;
       } else if (!section.link?.includes("branch")) {
