@@ -2,7 +2,7 @@
 
 const fs = require("fs");
 const yaml = require("js-yaml");
-const fetch = require('node-fetch');
+const fetch = require("node-fetch");
 
 const github_token = process.env.API_TOKEN_GITHUB;
 const args = process.argv.slice(2);
@@ -33,10 +33,17 @@ const validateDir = async (dir, fiserv_resources) => {
       file_check[0] = true;
       try {
         const fileName = `${dir}/${file.name}`;
-        validatorName = file.name.slice(0, file.name.lastIndexOf('.'));
+        validatorName = file.name.slice(0, file.name.lastIndexOf("."));
         const content = await fs.promises.readFile(fileName, "utf8");
-        const apiJson = yaml.load(content);
-        check = await validateDocLinks(args?.[0], apiJson);
+        const treeJson = yaml.load(content);
+        const lines = content.split("\n");
+
+        for (const obj of treeJson) {
+          // const sectionCheck = await validateSection(dir.match(/[^/]+$/)?.[0], obj.sections, lines);
+          check =
+            (await validateSection("remote-actions", obj.sections, lines)) &&
+            check;
+        }
       } catch (e) {
         errorMessage(validatorName.toUpperCase(), e?.message);
         check = false;
@@ -82,10 +89,16 @@ const validateDir = async (dir, fiserv_resources) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const data = JSON.parse(content);
-        const valid_solutions = fiserv_resources === "true"
-          ? ["fiserv-resources"]
-          : ["merchants", "financial-institutions", "fintech", "carat"];
-        const productUrls = ['layout', 'documentation', 'documenttree', 'documenttreeV2'];
+        const valid_solutions =
+          fiserv_resources === "true"
+            ? ["fiserv-resources"]
+            : ["merchants", "financial-institutions", "fintech", "carat"];
+        const productUrls = [
+          "layout",
+          "documentation",
+          "documenttree",
+          "documenttreeV2",
+        ];
 
         check = validateSpecExistence(args?.[0], data);
         if (data?.name !== "Support") {
@@ -95,24 +108,24 @@ const validateDir = async (dir, fiserv_resources) => {
             );
             check = false;
           } else {
-            const invalid_solutions = data?.solution.filter((x) => !valid_solutions.includes(x))
-              if ( invalid_solutions.length ) {
+            const invalid_solutions = data?.solution.filter(
+              (x) => !valid_solutions.includes(x)
+            );
+            if (invalid_solutions.length) {
               errorMsg(
-                `File ${ file?.name } has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${ file?.name } file`
+                `File ${file?.name} has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${file?.name} file`
               );
               check = false;
             }
           }
         }
 
-       for (const p of productUrls) {
+        for (const p of productUrls) {
           if (!data.product[p]?.includes(data.name)) {
-            errorMsg(
-              `Field "product.${p}" should be set to product name`
-            );
+            errorMsg(`Field "product.${p}" should be set to product name`);
             check = false;
           }
-        };
+        }
 
         if (!data?.getStartedFilePath) {
           errorMsg(
@@ -148,11 +161,12 @@ const validateDir = async (dir, fiserv_resources) => {
         }
 
         if (!data?.product.description) {
-          errorMsg(
-            `Tenant description is missing`
-          );
+          errorMsg(`Tenant description is missing`);
           check = false;
-        } else if (data?.product.description?.length == 0 || data?.product.description?.length > description_length) {
+        } else if (
+          data?.product.description?.length == 0 ||
+          data?.product.description?.length > description_length
+        ) {
           errorMsg(
             `Product description must be between 1 and ${description_length} characters.`
           );
@@ -172,43 +186,97 @@ const validateDir = async (dir, fiserv_resources) => {
   }
 };
 
-const validateDocLinks = async (dir, arr) => {
-  let check = true;
-  try {
-    for (const obj of arr) {
-      if (obj?.link?.length) {
-        const file = `${dir}/${obj.link.replace(/\#[\w-]+/, '')}`;
-        console.log(file);
-        if (obj.link.includes("branch")) {
-          const repo = dir.match(/[^/]+$/)?.[0];
-          const branch = obj.link.match(/branch=(.+)&?/)?.[1];
-          obj.link = obj.link.split(/&?branch/)[0];
-          const response = await fetch(`https://api.github.com/repos/Fiserv/${repo}/contents/${obj.link}?ref=${branch}`,
-              {
-                headers: {
-                    Authorization: 'Bearer ' + github_token
-                }
-            });
-            if (response.status === 404) {
-              errorMsg(`${repo}/contents/${obj.link}?ref=${branch} - Missing`);
-              check = false;
-            } else if (!response.ok) {
-              throw new Error(`Request failed ${response.status}: ${response.url} - ${response.statusText}`);
-            }
-        }
-        else if (!fs.existsSync(file)) {
-          errorMsg(`${file} - Missing`);
-          check = false;
-        }
-      }
-      if (obj?.sections) {
-        check = await validateDocLinks(dir, obj?.sections) && check;
-      }
-    };
-  } catch (e) {
-    check = false;
+const findLineNumber = (text, lines) => {
+  // First, try to find an exact match
+  const exactMatchIndex = lines.findIndex((line) => {
+    return line.trim().match(new RegExp(`^link:\\s*['"]?${text}['"]?$`));
+  });
+
+  if (exactMatchIndex !== -1) {
+    return exactMatchIndex + 1;
   }
-  return check;
+
+  // If no exact match, fall back to partial match (includes)
+  const partialMatchIndex = lines.findIndex((line) => line.includes(text));
+  return partialMatchIndex !== -1 ? partialMatchIndex + 1 : null;
+};
+
+/**
+ *
+ * @param {string} repo
+ * @param {Array} sections
+ * @param {Array} lines
+ * @returns
+ */
+const validateSection = async (repo, sections, lines) => {
+  let sectionCheck = true;
+  for (const section of sections) {
+    if (!section.title) {
+      if (section.link) {
+        errorMsg(
+          `Section missing title field on line ${findLineNumber(
+            section.link,
+            lines
+          )}`
+        );
+      } else {
+        errorMsg("Invalid `- sections` object defined");
+      }
+
+      sectionCheck = false;
+    }
+    if (section.link) {
+      if (!section.link.match(/\.mdx?/)) {
+        errorMsg(`Section link ${section.link} is not a valid .md file`);
+        sectionCheck = false;
+      } else if (!section.link?.includes("branch")) {
+        // Check if the document exists locally in this repo
+        if (
+          !fs.existsSync(`${args?.[0]}/${section.link.replace(/^\/+/g, "")}`)
+        ) {
+          errorMsg(
+            `Section link ${section.link} (line ${findLineNumber(
+              section.link,
+              lines
+            )}) - Missing from repository`
+          );
+          sectionCheck = false;
+        }
+      } else {
+        const response = await fetch(
+          `https://api.github.com/repos/Fiserv/${repo}/contents/${section.link.replace(
+            "branch",
+            "ref"
+          )}`,
+          {
+            headers: {
+              Authorization: "Bearer " + github_token,
+            },
+          }
+        );
+        if (response.status === 404) {
+          errorMsg(
+            `Section link ${section.link} (line ${findLineNumber(
+              section.link,
+              lines
+            )}) - Missing from repository Github repository`
+          );
+          sectionCheck = false;
+        } else if (!response.ok) {
+          throw new Error(
+            `Request failed ${response.status}: ${response.url} - ${response.statusText}`
+          );
+        }
+      }
+    }
+
+    // Check sub-sections recursively
+    if (section.sections?.length > 0) {
+      sectionCheck =
+        (await validateSection(repo, section.sections, lines)) && sectionCheck;
+    }
+  }
+  return sectionCheck;
 };
 
 const validateSpecExistence = (dir, tenantData) => {
@@ -227,7 +295,10 @@ const validateSpecExistence = (dir, tenantData) => {
         MajorVersion = version;
       }
 
-      if (!item.releaseNotesPath?.length || !item.releaseNotesPath.endsWith('.md')) {
+      if (
+        !item.releaseNotesPath?.length ||
+        !item.releaseNotesPath.endsWith(".md")
+      ) {
         errorMsg(`${version} missing proper release notes`);
         specExistence = false;
       }
