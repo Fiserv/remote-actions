@@ -92,10 +92,9 @@ def main():
 
         # Check for deliveries that timed out (empty response)
         if response.get("headers", {}) == {} and response.get("payload", "") == "":
-          update_activity_log(f"Delivery {gitHubDeliveryId} timed out (empty response).", activity_log_filepath)
-          save_timeout_delivery(current_delivery_obj, timed_out_filepath, env, activity_log_filepath)
-          num_timed_out += 1
-          continue
+            if handle_timeout_delivery(current_delivery_obj, timed_out_filepath, env, activity_log_filepath):
+                num_timed_out += 1
+            continue
 
         statusCode = current_delivery.get("status_code")
         if statusCode == 200:
@@ -149,7 +148,7 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
         for line in log_lines:
             f.write(line + "\n")
 
-def save_timeout_delivery(delivery, timed_out_filepath, env, activity_log_filepath):
+def handle_timeout_delivery(delivery, timed_out_filepath, env, activity_log_filepath):
   details = delivery["details"]
   headers = details.get("request", {}).get("headers", {})
   delivery_id = headers.get("X-GitHub-Delivery")
@@ -159,7 +158,7 @@ def save_timeout_delivery(delivery, timed_out_filepath, env, activity_log_filepa
 
   if branch != ENV_BRANCHES[env]:
     update_activity_log(f"Skipping timed-out delivery {delivery_id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'", activity_log_filepath)
-    return
+    return False
 
   update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
 
@@ -184,6 +183,8 @@ def save_timeout_delivery(delivery, timed_out_filepath, env, activity_log_filepa
       json.dump(data, f, indent=4)
   else:
     update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
+  
+  return True
 
 def fetch_all_deliveries(deliveries_url, activity_log_filepath):
   per_page = 100  # Max is 100
