@@ -1,0 +1,2 @@
+The repo updated for 75667820-f611-11f0-8758-5e456f7d049f and b1fc41ae-f619-11f0-8bda-c39f42541176 is "adobe-commerce-plugin", so it's ok to ignore this blockage
+Regarding cebf8204-f607-11f0-9a14-bf11fdb0988a, Treasury API is customizing the creation of postman collections. The files affected by the PR whose webhook was blocked are not "tenant content", they are json files corresponding to creating their postman collections. Therefore, this webhook doesn't need to be unblocked.
