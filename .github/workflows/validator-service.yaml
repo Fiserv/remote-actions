@@ -24,3 +24,5 @@ jobs:
     secrets: inherit
   file-access-validator:
     uses: ./.github/workflows/github-file-access-validator.yaml
+  api-access-validator:
+    uses: ./.github/workflows/github-api-access-validator.yaml
