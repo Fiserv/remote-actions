@@ -1,4 +1,4 @@
-name: File Access Validator
+name: API Access Validator
 on:
   workflow_call:
   # push:
@@ -11,7 +11,7 @@ on:
   #     - "config/files-access-definiton.yaml"
 
 jobs:
-  File-Access-Action:
+  API-Access-Action:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -37,15 +37,15 @@ jobs:
           cd ${{ github.workspace }}/tools
           ls -la
 
-      - name: Check if files access definition file exists
+      - name: Check if API access definition file exists
         id: check-file
         run: |
-          if [ -f "${{ github.workspace }}/config/files-access-definition.yaml" ]; then
+          if [ -f "${{ github.workspace }}/config/api-access-definition.yaml" ]; then
             echo "exists=true" >> $GITHUB_OUTPUT
-            echo "✅ File exists: config/files-access-definition.yaml"
+            echo "✅ File exists: config/api-access-definition.yaml"
           else
             echo "exists=false" >> $GITHUB_OUTPUT
-            echo "⚠️ File not found: config/files-access-definition.yaml - skipping validation"
+            echo "⚠️ File not found: config/api-access-definition.yaml - skipping validation"
           fi
 
       - name: Cache node modules
@@ -68,7 +68,7 @@ jobs:
         continue-on-error: true
         run: npm list
 
-      - name: Running File Access Definition Validator.....
+      - name: Running API Access Definition Validator.....
         if: steps.check-file.outputs.exists == 'true'
         run: |
           pwd
@@ -81,8 +81,8 @@ jobs:
           npm install
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
-          echo "Executing file access definition check"
-          result=$(npm run fileaccess ${{ github.workspace }})
+          echo "Executing API access definition check"
+          result=$(npm run apiaccess ${{ github.workspace }})
           echo "**********TEST RESULTS*********************"
           echo "$result"
           pwd
