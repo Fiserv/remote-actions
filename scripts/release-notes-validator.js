@@ -16,7 +16,10 @@ const findReleaseNotes = async (dir) => {
           if (check) {
             printMessage(`${release_notes_validator} : PASSED`);
           } else {
-            errorMessage(release_notes_validator, "Release notes directory does not contain any markdown documents");
+            errorMessage(
+              release_notes_validator,
+              "Release notes directory does not contain any markdown documents",
+            );
           }
           return;
         }
@@ -32,22 +35,19 @@ const findReleaseNotes = async (dir) => {
 const validateNonEmptyDir = async (dir) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
 
-  if (!files?.length)
-    return false;
+  if (!files?.length) return false;
 
-  if (files.find(f => /.md$/.test(f.name)))
-    return true;
+  if (files.find((f) => /.mdx?$/.test(f.name))) return true;
 
   for (const file of files) {
     if (file?.isDirectory()) {
       const subDirCheck = await validateNonEmptyDir(`${dir}/${file.name}`);
-      if (subDirCheck)
-        return true;
+      if (subDirCheck) return true;
     }
   }
 
   return false;
-}
+};
 
 const main = async () => {
   try {
@@ -58,7 +58,7 @@ const main = async () => {
     } else {
       errorMessage(
         "Release Notes VALIDATOR",
-        "No path for reference directory defined"
+        "No path for reference directory defined",
       );
     }
   } catch (e) {
