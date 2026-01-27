@@ -297,7 +297,7 @@ const validateSpecExistence = (dir, tenantData) => {
 
       if (
         !item.releaseNotesPath?.length ||
-        !item.releaseNotesPath.endsWith(".md")
+        !item.releaseNotesPath.match(/\.mdx?$/)
       ) {
         errorMsg(`${version} missing proper release notes`);
         specExistence = false;
