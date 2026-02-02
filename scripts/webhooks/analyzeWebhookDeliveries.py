@@ -52,7 +52,7 @@ def main():
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
     hooks = requests.get(hooks_url, headers=HEADERS).json()
 
-    # Step 2: Find the webhook matching the target URL
+    # Step 2: Find the webhook matching the URL corresponding to the specified environment
     hook = next((h for h in hooks if h['config'].get('url') == target_url), None)
     if not hook:
         update_activity_log(f"No webhook found for URL: {target_url}", activity_log_filepath)
@@ -343,6 +343,10 @@ def delivery_needs_processing(most_recently_processed_timestamp, delivery, activ
   id = headers.get("X-GitHub-Delivery")
   timestamp = delivery["timestamp"]
 
+  if ignore_repository(details, activity_log_filepath) == True:
+      update_activity_log(f"Ignoring delivery {id} based on repository ignore list", activity_log_filepath)
+      return False
+  
   try:
     most_recently_processed_timestamp = float(most_recently_processed_timestamp)
   except (TypeError, ValueError):
@@ -356,6 +360,26 @@ def delivery_needs_processing(most_recently_processed_timestamp, delivery, activ
 
   update_activity_log(f"Delivery {id} ({datetime_str}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})", activity_log_filepath)
   return False
- 
+
+def get_ignored_repos(ignore_file='.repoIgnore'):
+    if not hasattr(get_ignored_repos, "cache"):
+        try:
+            with open(ignore_file, "r") as f:
+                get_ignored_repos.cache = set(line.strip() for line in f if line.strip())
+        except FileNotFoundError:
+            get_ignored_repos.cache = set()
+    return get_ignored_repos.cache
+
+def ignore_repository(delivery_detail, activity_log_filepath):
+    requestPayload = delivery_detail.get("request", {}).get("payload", {})
+    repository = requestPayload.get("repository", {})
+    repo_name = repository.get("name", "")
+    ignored_repos = get_ignored_repos()
+    if repo_name in ignored_repos:
+      update_activity_log(f"Ignoring repository: {repo_name}", activity_log_filepath)
+      return True
+    else:
+      return False
+
 if __name__ == "__main__":
     main()
