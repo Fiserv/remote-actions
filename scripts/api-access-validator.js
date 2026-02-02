@@ -186,9 +186,9 @@ const validateEntry = (entry, index) => {
         isValid = false;
       }
       // Check for improper group names (should only contain alphanumeric and underscore)
-      if (group.match(/[^A-Za-z0-9_]/)) {
+      if (group.match(/[^A-Za-z0-9_-]/)) {
         errorMsg(
-          `${entryPath}.groups[${idx}] - Group name '${group}' contains invalid characters (only alphanumeric and underscore allowed)`,
+          `${entryPath}.groups[${idx}] - Group name '${group}' contains invalid characters (only alphanumeric, underscore, and hyphen allowed)`,
         );
         isValid = false;
       }
