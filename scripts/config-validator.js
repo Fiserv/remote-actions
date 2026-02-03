@@ -133,7 +133,15 @@ const validateDir = async (dir, fiserv_resources) => {
           accessConfigValid = false;
         }
 
+        const ignored_product_urls = [
+          "developers",
+          "merchants",
+          "applications",
+        ];
         for (const p of productUrls) {
+          if (ignored_product_urls.includes(p)) {
+            continue;
+          }
           if (!data.product[p]?.includes(data.name)) {
             errorMsg(`Field "product.${p}" should be set to product name`);
             check = false;
