@@ -68,7 +68,7 @@ const validateDir = async (dir, fiserv_resources) => {
           /(\<\\\s?br\s*\>)/gi.test(content)
         ) {
           errorMsg(
-            `${fileName} contains improper <br> tags. Use <br /> instead.`
+            `${fileName} contains improper <br> tags. Use <br /> instead.`,
           );
           check = false;
         }
@@ -93,31 +93,44 @@ const validateDir = async (dir, fiserv_resources) => {
           fiserv_resources === "true"
             ? ["fiserv-resources"]
             : ["merchants", "financial-institutions", "fintech", "carat"];
-        const productUrls = [
-          "layout",
-          "documentation",
-          "documenttree",
-          "documenttreeV2",
-        ];
+        console.log(
+          Object.keys(data?.product).forEach((x) =>
+            console.log(data.product[x]),
+          ),
+        );
+        const productUrls = Object.keys(data?.product).filter(
+          (x) =>
+            typeof data.product[x] === "string" &&
+            data.product[x]?.startsWith("/v"),
+        );
 
         check = validateSpecExistence(args?.[0], data);
         if (data?.name !== "Support") {
           if (!data?.solution?.length) {
             errorMsg(
-              `File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`
+              `File ${file?.name} missing the solution field! Please add valid solution(s) into the array in ${file?.name} file`,
             );
             check = false;
           } else {
             const invalid_solutions = data?.solution.filter(
-              (x) => !valid_solutions.includes(x)
+              (x) => !valid_solutions.includes(x),
             );
             if (invalid_solutions.length) {
               errorMsg(
-                `File ${file?.name} has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${file?.name} file`
+                `File ${file?.name} has invalid solutions [${invalid_solutions}] in the array! Please fix the solution array in ${file?.name} file`,
               );
               check = false;
             }
           }
+        }
+
+        // Check if api-access-definition.yaml exists and validate accessConfig
+        const fileAccessFileExistence = !!fs.existsSync(
+          `${dir}/api-access-definition.yaml`,
+        );
+        let accessConfigValid = true;
+        if (fileAccessFileExistence) {
+          accessConfigValid = false;
         }
 
         for (const p of productUrls) {
@@ -125,11 +138,19 @@ const validateDir = async (dir, fiserv_resources) => {
             errorMsg(`Field "product.${p}" should be set to product name`);
             check = false;
           }
+          accessConfigValid = accessConfigValid || p === "accessConfig";
+        }
+
+        if (!accessConfigValid) {
+          errorMsg(
+            `Field "product.accessConfig" is missing but "api-access-definition.yaml" exists`,
+          );
+          check = false;
         }
 
         if (!data?.getStartedFilePath) {
           errorMsg(
-            `File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`
+            `File ${file?.name} missing Getting Started link! Please add .md file path with property name "getStartedFilePath" in ${file?.name} file`,
           );
           check = false;
         } else {
@@ -140,7 +161,7 @@ const validateDir = async (dir, fiserv_resources) => {
           }`;
           if (!fs.existsSync(file)) {
             errorMsg(
-              `${data?.getStartedFilePath} doesn't exist in docs directory`
+              `${data?.getStartedFilePath} doesn't exist in docs directory`,
             );
             check = false;
           }
@@ -154,7 +175,7 @@ const validateDir = async (dir, fiserv_resources) => {
           }`;
           if (!fs.existsSync(file)) {
             errorMsg(
-              `${data?.resourcesFilePath} doesn't exist in docs directory`
+              `${data?.resourcesFilePath} doesn't exist in docs directory`,
             );
             check = false;
           }
@@ -168,7 +189,7 @@ const validateDir = async (dir, fiserv_resources) => {
           data?.product.description?.length > description_length
         ) {
           errorMsg(
-            `Product description must be between 1 and ${description_length} characters.`
+            `Product description must be between 1 and ${description_length} characters.`,
           );
           check = false;
         }
@@ -216,8 +237,8 @@ const validateSection = async (repo, sections, lines) => {
         errorMsg(
           `Section missing title field on line ${findLineNumber(
             section.link,
-            lines
-          )}`
+            lines,
+          )}`,
         );
       } else {
         errorMsg("Invalid `- sections` object defined");
@@ -237,8 +258,8 @@ const validateSection = async (repo, sections, lines) => {
           errorMsg(
             `Section link ${section.link} (line ${findLineNumber(
               section.link,
-              lines
-            )}) - Missing from repository`
+              lines,
+            )}) - Missing from repository`,
           );
           sectionCheck = false;
         }
@@ -246,25 +267,25 @@ const validateSection = async (repo, sections, lines) => {
         const response = await fetch(
           `https://api.github.com/repos/Fiserv/${repo}/contents/${section.link.replace(
             "branch",
-            "ref"
+            "ref",
           )}`,
           {
             headers: {
               Authorization: "Bearer " + github_token,
             },
-          }
+          },
         );
         if (response.status === 404) {
           errorMsg(
             `Section link ${section.link} (line ${findLineNumber(
               section.link,
-              lines
-            )}) - Missing from repository Github repository`
+              lines,
+            )}) - Missing from repository Github repository`,
           );
           sectionCheck = false;
         } else if (!response.ok) {
           throw new Error(
-            `Request failed ${response.status}: ${response.url} - ${response.statusText}`
+            `Request failed ${response.status}: ${response.url} - ${response.statusText}`,
           );
         }
       }
@@ -307,7 +328,7 @@ const validateSpecExistence = (dir, tenantData) => {
       if (apiSpecFiles.length > 0) {
         for (const filePath of apiSpecFiles) {
           const file = `${provideReferenceFolder(
-            dir
+            dir,
           )}/${version}/${filePath}.yaml`;
           if (!fs.existsSync(file)) {
             errorMsg(`${file} - Missing`);
@@ -360,7 +381,7 @@ const main = async () => {
     } else {
       errorMessage(
         "Tenant Config VALIDATOR",
-        "No path for reference dir. defined"
+        "No path for reference dir. defined",
       );
     }
   } catch (e) {
@@ -385,7 +406,7 @@ const main = async () => {
     });
     errorMessage(
       "Tenant Config VALIDATOR",
-      "Some files are missing in the tenant config folder. Please check the folder structure."
+      "Some files are missing in the tenant config folder. Please check the folder structure.",
     );
   }
 };
