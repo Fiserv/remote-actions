@@ -116,7 +116,7 @@ const mdHtmlValidator = async (dir) => {
             });
           } catch (error) {
               check = false;
-              errorMsg(`MDX Compilation Error: ${error.message}`)
+              errorMsg(`MDX Compilation Error: ${error.message.includes('acorn') ? 'Parsing for embeded JavaScript expressions inside {} failed. Possibly missing escape character \\ for regular string {' : error.message}`);
           }
 
           if (check) {
