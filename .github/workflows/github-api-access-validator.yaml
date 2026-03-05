@@ -56,7 +56,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ~/.npm
+          path: ${{ github.workspace }}/tools/scripts/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -78,7 +78,7 @@ jobs:
           echo "NPM version installed : " $npmv
           nodev=$(node --version)
           echo "Node version installed : " $nodev
-          npm install
+          npm ci
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           echo "Executing API access definition check"

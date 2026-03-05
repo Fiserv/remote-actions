@@ -49,7 +49,7 @@ jobs:
         env:
           cache-name: cache-node-modules
         with:
-          path: ~/.npm
+          path: ${{ github.workspace }}/tools/scripts/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -70,7 +70,7 @@ jobs:
           echo "NPM version installed : " $npmv
           nodev=$(node --version)
           echo "Node version installed : " $nodev
-          npm install
+          npm ci
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           result=$(npm run markdownlint ${{ github.workspace }})
