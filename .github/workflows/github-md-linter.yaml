@@ -70,7 +70,7 @@ jobs:
           echo "NPM version installed : " $npmv
           nodev=$(node --version)
           echo "Node version installed : " $nodev
-          npm install
+          npm ci
           echo " Repo: ${{ github.repository }}"
           echo " Space: ${{ github.workspace }}"
           result=$(npm run markdownlint ${{ github.workspace }})
