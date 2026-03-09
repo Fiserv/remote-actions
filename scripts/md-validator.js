@@ -61,7 +61,7 @@ const mdHtmlValidator = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async (file) => {
       if (file?.isDirectory()) {
-        check = mdHtmlValidator(`${dir}/${file.name}`);
+        mdHtmlValidator(`${dir}/${file.name}`);
         return;
       }
       if (/\.mdx?$/.test(file?.name)) {
