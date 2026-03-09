@@ -154,7 +154,7 @@ const validateIndexBody = (
         : api.summary,
       summary: api.summary,
       path,
-      description: api.description ? api.description : "",
+      description: api.description,
       tags: api.tags,
       requestType: reqType,
       requestBody: strRequestBody,
@@ -193,6 +193,14 @@ const validateIndexBody = (
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-group-name' - ${body.xGroupName}`
+    );
+    xFieldsCheck = false;
+  }
+
+  if (!body.description.length) {
+    errorMessage(
+      YAML_VALIDATOR,
+      `File :${fileName} API-Path:${path} Error: Description is missing for ${body.title} - ${body.xProxyName}`
     );
     xFieldsCheck = false;
   }
