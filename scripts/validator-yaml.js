@@ -40,7 +40,7 @@ const validateDir = async (dir, apiList) => {
         if (!apiJson?.openapi || apiJson.openapi < "3.0.0") {
           errorMessage(
             YAML_VALIDATOR,
-            `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned between 3.0.0 and 3.0.3`
+            `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned above 3.0.0`
           );
           return;
         }
