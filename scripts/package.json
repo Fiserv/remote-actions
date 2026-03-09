@@ -17,7 +17,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@apidevtools/swagger-parser": "^10.0.3",
+    "@apidevtools/swagger-parser": "^12.1.0",
     "@mdx-js/mdx": "^3.0.0",
     "adm-zip": "^0.5.9",
     "highlight.js": "^11.5.1",
