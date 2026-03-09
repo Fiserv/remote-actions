@@ -37,10 +37,10 @@ const validateDir = async (dir, apiList) => {
         if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
           errorMessage(YAML_VALIDATOR, "No path provided!");
         }
-        if (!apiJson?.openapi || apiJson.openapi < "3.0.0" || apiJson.openapi > "3.0.3") {
+        if (!apiJson?.openapi || apiJson.openapi < "3.0.0") {
           errorMessage(
             YAML_VALIDATOR,
-            `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned between 3.0.0 and 3.0.3`
+            `File: ${fileName}.yaml - Error: OpenAPI version must be defined and versioned above 3.0.0`
           );
           return;
         }
@@ -159,7 +159,7 @@ const validateIndexBody = (
       requestType: reqType,
       requestBody: strRequestBody,
       xGroupName: api["x-group-name"] ? api["x-group-name"] : "",
-      xProxyName: api["x-proxy-name"] ? api["x-proxy-name"] : "",
+      xProxyName: api["x-proxy-name"],
       xDisableDefaultExample: api["x-disable-default-example"]
         ? api["x-disable-default-example"]
         : false,
@@ -182,14 +182,21 @@ const validateIndexBody = (
   }
 
   let xFieldsCheck = true;
-  if (body.xProxyName.length > 0 && /^[^A-Za-z]/.test(body.xProxyName)) {
+  if (!body.xProxyName?.length) {
+    errorMessage(
+      YAML_VALIDATOR,
+      `File :${fileName} API-Path:${path} Error: 'x-proxy-name' is required and must not be empty`
+    );
+    xFieldsCheck = false;
+  } else if (/^[^A-Za-z]/.test(body.xProxyName)) {
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Non-alphabetical character at start of 'x-proxy-name' - ${body.xProxyName}`
     );
     xFieldsCheck = false;
   }
-  if (body.xGroupName.length > 0 && /^\W/.test(body.xGroupName)) {
+
+  if (body.xGroupName?.length > 0 && /^\W/.test(body.xGroupName)) {
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Invalid character at start of 'x-group-name' - ${body.xGroupName}`
@@ -197,7 +204,7 @@ const validateIndexBody = (
     xFieldsCheck = false;
   }
 
-  if (!body.description.length) {
+  if (!body.description?.length) {
     errorMessage(
       YAML_VALIDATOR,
       `File :${fileName} API-Path:${path} Error: Description is missing for ${body.title} - ${body.xProxyName}`
@@ -227,7 +234,7 @@ const hasAPIs = async (dir) => {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
         const tenantData = JSON.parse(content);
-        if (tenantData?.apiVersions && tenantData?.apiVersions.length > 0) {
+        if (tenantData?.apiVersions?.length) {
           return tenantData?.apiVersions;
         }
       } catch (e) {
