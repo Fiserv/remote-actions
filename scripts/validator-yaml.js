@@ -205,11 +205,11 @@ const validateIndexBody = (
   }
 
   if (!body.description?.length) {
-    errorMessage(
+    warningMsg(
       YAML_VALIDATOR,
-      `File :${fileName} API-Path:${path} Error: Description is missing for ${body.title} - ${body.xProxyName}`
+      `${fileName}: Description is missing for ${body.requestType} - ${body.path}`
     );
-    xFieldsCheck = false;
+    // xFieldsCheck = false;
   }
 
   const apiIndexKey = `${body.path}_${body.requestType}_${version}_${body.xCore}`;
