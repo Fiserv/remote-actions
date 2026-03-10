@@ -11,6 +11,7 @@ const {
   errorMsg,
   errorMessage,
   printMessage,
+  warningMsg,
   provideReferenceFolder,
 } = require("./utils/tools");
 const { enrichHTMLFromMarkup, showdownHighlight } = require("./utils/md-utils");
