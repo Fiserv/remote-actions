@@ -132,7 +132,7 @@ const validateSpecExistence = async (dir, tenantData) => {
 
                   if (
                     tenant_repo && postmanFileName && content &&
-                    generatePostmanCollections(
+                    await generatePostmanCollections(
                       tenant_repo,
                       postmanFileName,
                       yaml.dump(apiJson)
@@ -198,21 +198,30 @@ const generateSpecZipCollection = async (folder, filename, content) => {
 };
 
 const generatePostmanCollections = (folder, postmanFileName, content) => {
-  try {
-    const timeout = setTimeout(() => {
-      console.log("Postman conversion timed out");
-      return false;
-    }, 5000);
+  return new Promise((resolve) => {
+    try {
+      const timeout = setTimeout(() => {
+        warningMsg("Postman conversion timed out");
+        resolve(false);
+      }, 5000);
 
-    postmanConverter.convert(
-      { type: "string", data: content },
-      {},
-      (err, conversionResult) => {
-        clearTimeout(timeout);
-        if (err !== null) {
-          errorMessage("Postman GENERATOR - Could not convert spec file", err);
-        }
-        if (conversionResult.result) {
+      postmanConverter.convert(
+        { type: "string", data: content },
+        {},
+        (err, conversionResult) => {
+          clearTimeout(timeout);
+
+          if (err !== null) {
+            errorMessage("Postman GENERATOR - Could not convert spec file", err);
+            resolve(false);
+            return;
+          }
+
+          if (!conversionResult?.result) {
+            resolve(false);
+            return;
+          }
+
           printMessage(
             `Adding file postman ----- ${folder?.repo}${folder?.path}/${postmanFileName}`
           );
@@ -228,14 +237,14 @@ const generatePostmanCollections = (folder, postmanFileName, content) => {
             );
           }
           postman_zip.writeZip(`${args}/assets/${postmanZipFile}.zip`);
-          return true
+          resolve(true);
         }
-      }
-    );
-  } catch (error) {
-    errorMessage("Postman GENERATOR", error);
-  }
-  return false;
+      );
+    } catch (error) {
+      errorMessage("Postman GENERATOR", error);
+      resolve(false);
+    }
+  });
 };
 
 const main = async () => {
