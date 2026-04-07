@@ -97,23 +97,21 @@ def main():
         update_activity_log(f"Processing delivery id: {gitHubDeliveryId}", activity_log_filepath)
 
         # Determine if the delivery is newer than the last-most-recently-processed delivery
-        if not delivery_needs_processing(last_most_recently_processed_timestamp, current_delivery_obj, activity_log_filepath):
+        if not delivery_needs_processing(last_most_recently_processed_timestamp, current_delivery_obj, env, activity_log_filepath):
             continue
 
         # Check for deliveries that timed out (empty response)
         if response.get(DELIVERY_DETAILS_HEADERS_KEY, {}) == {} and response.get(DELIVERY_DETAILS_PAYLOAD_KEY, "") == "":
-            if handle_timeout_delivery(current_delivery_obj, timed_out_filepath, env, activity_log_filepath):
+            if handle_timeout_delivery(current_delivery_obj, timed_out_filepath, activity_log_filepath):
                 num_timed_out += 1
             continue
 
-        statusCode = current_delivery.get("status_code")
-        if statusCode == 200:
+        if handle_blocked_delivery(current_delivery_obj, blocked_delivery_filepath, target_url, activity_log_filepath):
             num_blocked += 1
-            save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryId, current_delivery_detail, activity_log_filepath)
 
         if not most_recently_processed_delivery or get_delivery_timestamp(current_delivery_detail, activity_log_filepath) > most_recently_processed_delivery[TIMESTAMP_KEY]:
-          most_recently_processed_delivery = current_delivery_obj
-          update_most_recently_processed(most_recently_processed_filepath, most_recently_processed_delivery, activity_log_filepath)
+            most_recently_processed_delivery = current_delivery_obj
+            update_most_recently_processed(most_recently_processed_filepath, most_recently_processed_delivery, activity_log_filepath)
 
         num_processed += 1
         update_activity_log(f"Processed {num_processed} deliveries so far...", activity_log_filepath)
@@ -134,7 +132,17 @@ def update_activity_log(log_content, activity_log_filepath):
     print(f"{log_content}")
     with open(activity_log_filepath, "a") as f:
         f.write(log_content + "\n")
-      
+
+def handle_blocked_delivery(current_delivery_obj, blocked_delivery_filepath, target_url, activity_log_filepath):
+    details = current_delivery_obj[DETAILS_OBJECT_KEY]
+    headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
+    delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
+
+    statusCode = details.get("status_code")
+    if statusCode == 200:
+      save_blocked_delivery(blocked_delivery_filepath, target_url, delivery_id, details, activity_log_filepath)
+      return True
+
 def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryId, current_delivery_detail, activity_log_filepath):
     persistence_filename = f"{blocked_delivery_filepath}_{gitHubDeliveryId}.log"
     responsePayload = current_delivery_detail.get(DELIVERY_DETAILS_RESPONSE_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
@@ -158,17 +166,12 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
         for line in log_lines:
             f.write(line + "\n")
 
-def handle_timeout_delivery(delivery, timed_out_filepath, env, activity_log_filepath):
+def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath):
   details = delivery[DETAILS_OBJECT_KEY]
   headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
   delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
   payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
-  branch = payload.get('ref', '').replace('refs/heads/', '')
   timestamp = get_delivery_timestamp(details, activity_log_filepath)
-
-  if branch != ENV_BRANCHES[env]:
-    update_activity_log(f"Skipping timed-out delivery {delivery_id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'", activity_log_filepath)
-    return False
 
   update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
 
@@ -216,6 +219,10 @@ def fetch_all_deliveries(deliveries_url, activity_log_filepath):
         head_commit = payload.get(PAYLOAD_HEAD_COMMIT_KEY, {})
         if head_commit:
           epoch_timestamp = get_delivery_timestamp(details, activity_log_filepath)
+          if epoch_timestamp == None:
+            update_activity_log(f"Skipping delivery id {gitHubDeliveryId} with invalid timestamp: ", activity_log_filepath)
+            continue
+
           update_activity_log(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {epoch_timestamp}, {datetime.fromtimestamp(epoch_timestamp)}", activity_log_filepath)
           update_activity_log(f"signature: {signature}, delivery id: {gitHubDeliveryId}", activity_log_filepath)
           deliveries_with_details.append({
@@ -259,18 +266,21 @@ def get_delivery_timestamp(detail, activity_log_filepath):
         update_activity_log("No head_commit found in delivery", activity_log_filepath)
         return None
     timestamp = head_commit.get(TIMESTAMP_KEY)
+    print(f"timestamp from head_commit {timestamp}")
+
     if not timestamp:
         update_activity_log("No timestamp found in delivery", activity_log_filepath)
         return None
     try:
         # Parse ISO 8601 timestamp to aware datetime
         dt = datetime.fromisoformat(timestamp)
+
         # Normalize to local time
         local_dt = dt.astimezone()
         epoch_timestamp = local_dt.timestamp()
         return epoch_timestamp
     except Exception:
-        update_activity_log(f"Invalid timestamp format: {timestamp}", activity_log_filepath)
+        update_activity_log(f"Invalid timestamp format: {timestamp}, delivery should be skipped", activity_log_filepath)
         return None
 
 def printable_date_time(detail, activity_log_filepath):
@@ -281,40 +291,6 @@ def printable_date_time(detail, activity_log_filepath):
     if epoch_timestamp is None:
         return None
     return datetime.fromtimestamp(epoch_timestamp)
-
-#def get_sorted_deliveries_with_details(all_deliveries, deliveries_url):
-    """
-    Filters out deliveries without a head_commit/timestamp, fetches details,
-    and returns a list of dicts with 'delivery' and 'details', sorted by timestamp (oldest first).
-    """
-    deliveries_with_details = []
-    for delivery in all_deliveries:
-        delivery_id = delivery.get("id")
-        detail_url = f"{deliveries_url}/{delivery_id}"
-        details = requests.get(detail_url, headers=HEADERS).json()
-        headers = details.get("request", {}).get("headers", {})
-        gitHubDeliveryId = headers.get("X-GitHub-Delivery")
-        payload = details.get("request", {}).get("payload", {})
-        head_commit = payload.get("head_commit", {})
-        if head_commit:
-            timestamp = head_commit.get("timestamp")
-            epoch_timestamp = datetime.fromisoformat(timestamp).astimezone().timestamp()
-            print(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {datetime.fromtimestamp(get_delivery_timestamp(details))}")
-            deliveries_with_details.append({
-                "delivery": delivery,
-                "details": details,
-                "timestamp": epoch_timestamp
-            })
-            response = details.get("response", {})
-            print(f"response: {response}")
-
-        else:
-            print(f"Skipping delivery {gitHubDeliveryId} with no head_commit")
-
-    # Sort by timestamp (oldest first)
-    deliveries_with_details.sort(key=lambda x: x["timestamp"])
-
-    return [{"delivery": d["delivery"], "details": d["details"], "timestamp": d["timestamp"]} for d in deliveries_with_details]
 
 def read_most_recently_processed(most_recently_processed_filepath, activity_log_filepath):
   try:
@@ -347,16 +323,22 @@ def update_most_recently_processed(most_recently_processed_filepath, most_recent
   with open(most_recently_processed_filepath, "w") as f:
     json.dump({"delivery_id": gitHubDeliveryId, "delivery date-time": delivery_date_str, "timestamp": timestamp}, f, indent=4)
 
-def delivery_needs_processing(most_recently_processed_timestamp, delivery, activity_log_filepath):
+def delivery_needs_processing(most_recently_processed_timestamp, delivery, env, activity_log_filepath):
   details = delivery[DETAILS_OBJECT_KEY]
   headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
   id = headers.get(GITHUB_DELIVERY_HEADER)
+  payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
+  branch = payload.get('ref', '').replace('refs/heads/', '')
   timestamp = delivery[TIMESTAMP_KEY]
 
   if ignore_repository(details, activity_log_filepath) == True:
       update_activity_log(f"Ignoring delivery {id} based on repository ignore list", activity_log_filepath)
       return False
-  
+
+  if branch != ENV_BRANCHES[env]:
+      update_activity_log(f"Skipping delivery {id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'", activity_log_filepath)
+      return False
+
   try:
     most_recently_processed_timestamp = float(most_recently_processed_timestamp)
   except (TypeError, ValueError):
