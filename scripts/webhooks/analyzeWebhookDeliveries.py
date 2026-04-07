@@ -42,6 +42,9 @@ TIMESTAMP_KEY = "timestamp"
 PAYLOAD_HEAD_COMMIT_KEY = "head_commit"
 SIGNATURE_HEADER = "X-Hub-Signature-256"
 
+# List of files that are updated during processing that need to be committed
+updated_files = set()
+
 def main():
     env = sys.argv[1]
     if len(sys.argv) != 2 or env not in WEBHOOK_URLS:
@@ -126,12 +129,17 @@ def main():
       gitHubDeliveryId = headers.get(GITHUB_DELIVERY_HEADER)
       timestamp = most_recently_processed_delivery[TIMESTAMP_KEY]
       delivery_date = printable_date_time(current_delivery_detail, activity_log_filepath)
-      update_activity_log(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}", activity_log_filepath)
+      update_activity_log(
+          f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}",
+          activity_log_filepath)
+
+      print("Files needing to be committed:")
+      for file in updated_files:
+        print(file)
 
 def update_activity_log(log_content, activity_log_filepath):
     print(f"{log_content}")
-    with open(activity_log_filepath, "a") as f:
-        f.write(log_content + "\n")
+    write_and_record(activity_log_filepath, log_content + "\n", mode="a")
 
 def handle_blocked_delivery(current_delivery_obj, blocked_delivery_filepath, target_url, activity_log_filepath):
     details = current_delivery_obj[DETAILS_OBJECT_KEY]
@@ -162,9 +170,7 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
         "*****************************************************"
     ]
     # Log to stdout and file
-    with open(persistence_filename, "w") as f:
-        for line in log_lines:
-            f.write(line + "\n")
+    write_and_record(persistence_filename, "".join(log_lines) + "\n", mode="w")
 
 def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath):
   details = delivery[DETAILS_OBJECT_KEY]
@@ -181,6 +187,7 @@ def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath)
     "timestamp": timestamp
   }
 
+# TODO use write_and_record function
   try:
     with open(timed_out_filepath, "r") as f:
       data = json.load(f)
@@ -198,6 +205,11 @@ def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath)
     update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
   
   return True
+
+def write_and_record(file_path, content, mode="w"):
+    with open(file_path, mode) as f:
+        f.write(content)
+    updated_files.add(file_path)
 
 def fetch_all_deliveries(deliveries_url, activity_log_filepath):
   per_page = 100  # Max is 100
@@ -223,7 +235,9 @@ def fetch_all_deliveries(deliveries_url, activity_log_filepath):
             update_activity_log(f"Skipping delivery id {gitHubDeliveryId} with invalid timestamp: ", activity_log_filepath)
             continue
 
-          update_activity_log(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {epoch_timestamp}, {datetime.fromtimestamp(epoch_timestamp)}", activity_log_filepath)
+          update_activity_log(
+              f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {epoch_timestamp}, {datetime.fromtimestamp(epoch_timestamp)}",
+              activity_log_filepath)
           update_activity_log(f"signature: {signature}, delivery id: {gitHubDeliveryId}", activity_log_filepath)
           deliveries_with_details.append({
             DELIVERY_OBJECT_KEY: delivery,
@@ -318,10 +332,19 @@ def update_most_recently_processed(most_recently_processed_filepath, most_recent
   timestamp = most_recently_processed_delivery[TIMESTAMP_KEY]
   delivery_date = printable_date_time(detail, activity_log_filepath)
   delivery_date_str = delivery_date.isoformat() if delivery_date else None
-  update_activity_log(f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, date-time: {delivery_date_str}, timestamp: {timestamp}", activity_log_filepath)
+  update_activity_log(
+      f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, date-time: {delivery_date_str}, timestamp: {timestamp}",
+      activity_log_filepath)
 
-  with open(most_recently_processed_filepath, "w") as f:
-    json.dump({"delivery_id": gitHubDeliveryId, "delivery date-time": delivery_date_str, "timestamp": timestamp}, f, indent=4)
+  write_and_record(
+      most_recently_processed_filepath,
+      json.dumps(
+          {
+            "delivery_id": gitHubDeliveryId,
+            "delivery date-time": delivery_date_str,
+            "timestamp": timestamp
+          }, indent=4),
+      mode="w")
 
 def delivery_needs_processing(most_recently_processed_timestamp, delivery, env, activity_log_filepath):
   details = delivery[DETAILS_OBJECT_KEY]
@@ -336,21 +359,29 @@ def delivery_needs_processing(most_recently_processed_timestamp, delivery, env, 
       return False
 
   if branch != ENV_BRANCHES[env]:
-      update_activity_log(f"Skipping delivery {id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'", activity_log_filepath)
+      update_activity_log(
+          f"Skipping delivery {id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'",
+          activity_log_filepath)
       return False
 
   try:
     most_recently_processed_timestamp = float(most_recently_processed_timestamp)
   except (TypeError, ValueError):
-    update_activity_log(f"Invalid most_recently_processed_timestamp: {most_recently_processed_timestamp}, defaulting to 0.0", activity_log_filepath)
+    update_activity_log(
+        f"Invalid most_recently_processed_timestamp: {most_recently_processed_timestamp}, defaulting to 0.0",
+        activity_log_filepath)
     most_recently_processed_timestamp = 0.0
 
   datetime_str = printable_date_time(details, activity_log_filepath)
   if timestamp > most_recently_processed_timestamp:
-    update_activity_log(f"Delivery {id} ({datetime_str}) needs processing (timestamp: {timestamp} > most recent timestamp: {most_recently_processed_timestamp})", activity_log_filepath)
+    update_activity_log(
+        f"Delivery {id} ({datetime_str}) needs processing (timestamp: {timestamp} > most recent timestamp: {most_recently_processed_timestamp})",
+        activity_log_filepath)
     return True
 
-  update_activity_log(f"Delivery {id} ({datetime_str}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})", activity_log_filepath)
+  update_activity_log(
+      f"Delivery {id} ({datetime_str}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})",
+      activity_log_filepath)
   return False
 
 def get_ignored_repos(ignore_file='.repoIgnore'):
