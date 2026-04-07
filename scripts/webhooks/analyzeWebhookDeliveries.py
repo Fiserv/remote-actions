@@ -173,38 +173,46 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
     write_and_record(persistence_filename, "".join(log_lines) + "\n", mode="w")
 
 def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath):
-  details = delivery[DETAILS_OBJECT_KEY]
-  headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
-  delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
-  payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
-  timestamp = get_delivery_timestamp(details, activity_log_filepath)
+    """
+    Records a timed-out webhook delivery in a JSON file, ensuring each delivery is only recorded once.
 
-  update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
+    This function uses a read-modify-write pattern to maintain the file as a valid JSON array of delivery records.
+    It first reads the existing file (if present), loads the list of records, and checks for duplicates.
+    If the delivery is not already present, it appends the new record and writes the updated list back to the file.
+    This approach ensures the file remains a valid JSON array, avoids duplicate entries, and allows for reliable
+    reading and updating of the data in future runs. Appending directly to the file would break the JSON structure
+    and make it unreadable as a JSON array.
+    """
+    details = delivery[DETAILS_OBJECT_KEY]
+    headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
+    delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
+    payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
+    timestamp = get_delivery_timestamp(details, activity_log_filepath)
 
-  record = {
-    "delivery_id": delivery_id,
-    "payload": payload,
-    "timestamp": timestamp
-  }
+    update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
 
-# TODO use write_and_record function
-  try:
-    with open(timed_out_filepath, "r") as f:
-      data = json.load(f)
-      if not isinstance(data, list):
-        data = []
-  except (FileNotFoundError, json.JSONDecodeError):
-    data = []
+    record = {
+      "delivery_id": delivery_id,
+      "payload": payload,
+      "timestamp": timestamp
+    }
 
-  # Only append if delivery_id is not already present
-  if not any(r.get("delivery_id") == delivery_id for r in data):
-    data.append(record)
-    with open(timed_out_filepath, "w") as f:
-      json.dump(data, f, indent=4)
-  else:
-    update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
-  
-  return True
+    try:
+      with open(timed_out_filepath, "r") as f:
+        data = json.load(f)
+        if not isinstance(data, list):
+          data = []
+    except (FileNotFoundError, json.JSONDecodeError):
+      data = []
+
+    # Only append if delivery_id is not already present
+    if not any(r.get("delivery_id") == delivery_id for r in data):
+      data.append(record)
+      write_and_record(timed_out_filepath, json.dumps(data, indent=4), mode="w")
+    else:
+      update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
+
+    return True
 
 def write_and_record(file_path, content, mode="w"):
     with open(file_path, mode) as f:
