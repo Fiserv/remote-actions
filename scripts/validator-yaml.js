@@ -65,10 +65,10 @@ const parseAPIData = (fileName, apiJson, checkedApis) => {
   try {
     for (const [path, obj] of Object.entries(apiJson.paths)) {
       for (const [reqType, api] of Object.entries(obj)) {
-        if (typeof api !== "object" || api === null) {
+        if (typeof api !== "object" || api === null || reqType === 'servers') {
           continue;
         }
-        if (!api["x-proxy-name"]) {
+        if (!api["x-proxy-name"]?.length) {
           errorMessage(
             YAML_VALIDATOR,
             `File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`
