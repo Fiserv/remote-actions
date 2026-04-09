@@ -1,3 +1,4 @@
+import base64
 import sys
 import requests
 import os
@@ -27,10 +28,14 @@ ENV_BRANCHES = {
     "prod": "main"
 }
 
-MOST_RECENTLY_PROCESSED_BASE_FILEPATH = "persistence/most_recently_processed"
-TIMED_OUT_DELIVERIES_BASE_FILEPATH = "persistence/timed_out_deliveries"
-BLOCKED_DELIVERIES_BASE_FILEPATH = "persistence/blocked_delivery"
-ACTIVITY_LOG_BASE_FILEPATH = "persistence/activity_log"
+MOST_RECENTLY_PROCESSED_FILENAME = "most_recently_processed"
+TIMED_OUT_DELIVERIES_FILENAME = "timed_out_deliveries"
+BLOCKED_DELIVERY_FILENAME = "blocked_delivery"
+ACTIVITY_LOG_FILENAME = "activity_log"
+MOST_RECENTLY_PROCESSED_FILEPATH = f"persistence/{MOST_RECENTLY_PROCESSED_FILENAME}"
+TIMED_OUT_DELIVERIES_FILEPATH = f"persistence/{TIMED_OUT_DELIVERIES_FILENAME}"
+BLOCKED_DELIVERY_FILEPATH = f"persistence/{BLOCKED_DELIVERY_FILENAME}"
+ACTIVITY_LOG_FILEPATH = f"persistence/{ACTIVITY_LOG_FILENAME}"
 GITHUB_DELIVERY_HEADER = "X-Github-Delivery"
 DELIVERY_OBJECT_KEY = "delivery"
 DETAILS_OBJECT_KEY = "details"
@@ -55,11 +60,10 @@ def main():
     env = sys.argv[1]
     target_url = WEBHOOK_URLS[env]
 
-    most_recently_processed_filepath = f"{MOST_RECENTLY_PROCESSED_BASE_FILEPATH}_{env}.json"
-    today_str = datetime.now().strftime("%m-%d-%Y")
-    timed_out_filepath = f"{TIMED_OUT_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}.json"
-    blocked_delivery_filepath = f"{BLOCKED_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}"
-    activity_log_filepath = f"{ACTIVITY_LOG_BASE_FILEPATH}_{today_str}_{env}.log"
+    most_recently_processed_filepath = f"{get_most_recently_processed_filepath(env)}"
+    timed_out_filepath = f"{get_timed_out_filepath(env)}"
+    blocked_delivery_filepath = f"{get_blocked_delivery_filepath(env)}"
+    activity_log_filepath = f"{get_activity_log_filepath(env)}"
 
     # Step 1: Get all Fiserv org webhooks
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
@@ -119,7 +123,7 @@ def main():
         num_processed += 1
         update_activity_log(f"Processed {num_processed} deliveries so far...", activity_log_filepath)
 
-    update_activity_log(f"Total number of deliveries processed: {num_processed}", activity_log_filepath)
+    update_activity_log(f"Total number of deliveries needing to be processed: {num_processed}", activity_log_filepath)
     update_activity_log(f"Total number of blocked webhooks: {num_blocked}", activity_log_filepath)
     update_activity_log(f"Total number of timed_out webhooks: {num_timed_out}", activity_log_filepath)
 
@@ -133,9 +137,85 @@ def main():
           f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}",
           activity_log_filepath)
 
-      print("Files needing to be committed:")
-      for file in updated_files:
-        print(file)
+    print("Files needing to be committed:")
+    for file in updated_files:
+      print(file)
+
+    persist_changes(env)
+
+def get_today_str():
+  return datetime.now().strftime("%m-%d-%Y")
+
+def get_most_recently_processed_filepath(env):
+  return f"{MOST_RECENTLY_PROCESSED_FILEPATH}_{env}.json"
+
+def get_timed_out_filepath(env):
+  return f"{TIMED_OUT_DELIVERIES_FILEPATH}_{get_today_str()}_{env}.json"
+
+# get_blocked_delivery_filepath doesn't include the extension because
+# the GitHub DeliveryId is appended to this path to form the complete filename
+def get_blocked_delivery_filepath (env):
+  return f"{BLOCKED_DELIVERY_FILEPATH}_{get_today_str()}_{env}"
+
+def get_activity_log_filepath(env):
+   return f"{ACTIVITY_LOG_FILEPATH}_{get_today_str()}_{env}.log"
+
+def persist_changes(env):
+    # Commit new and/or updated persistence files to the appropriate branch
+    repo_owner = "Fiserv"
+    repo_name = "remote-actions"
+    repo_path_name = "scripts/webhooks/"
+    branch_name = "main" # Always commit to 'main' branch
+    api_base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents"
+    commit_messages = {
+      f"{ACTIVITY_LOG_FILEPATH}": f"Most recent activity log for {env} environment",
+      f"{MOST_RECENTLY_PROCESSED_FILEPATH}": f"Most recently processed data for {env} environment",
+      f"{BLOCKED_DELIVERY_FILEPATH}": f"Blocked webhook for {env} environment",
+      f"{TIMED_OUT_DELIVERIES_FILEPATH}": f"Timed out webhooks for {env} environment"
+    }
+
+    for file in updated_files:
+        # Read file content
+        with open(file, "rb") as f:
+            content_bytes = f.read()
+        content_b64 = base64.b64encode(content_bytes).decode("utf-8")
+
+        # Construct the relative path of the file in the repo
+        repo_file_path = repo_path_name + file
+
+        # Check if file exists to get its sha
+        get_url = f"{api_base_url}/{repo_file_path}?ref={branch_name}"
+        response = requests.get(get_url, headers=HEADERS)
+        if response.status_code == 200:
+            sha = response.json().get("sha")
+        else:
+            sha = None
+
+        commit_message = None
+        for prefix, message in commit_messages.items():
+          if file.startswith(prefix):
+            commit_message = message
+            break
+        if not commit_message:
+          print(f"Unable to commit unknown file {file}")
+          return
+
+        print(f"commit message for {file} is {commit_message}")
+
+        put_url = f"{api_base_url}/{repo_file_path}"
+        payload = {
+            "message": commit_message,
+            "content": content_b64,
+            "branch": branch_name
+        }
+        if sha:
+            payload["sha"] = sha
+
+        #put_response = requests.put(put_url, headers=HEADERS, json=payload)
+        #if put_response.status_code in (200, 201):
+            #print(f"Committed {repo_file_path} to branch {branch_name}")
+        #else:
+            #print(f"Failed to commit {repo_file_path}: {put_response.status_code} {put_response.text}")
 
 def update_activity_log(log_content, activity_log_filepath):
     print(f"{log_content}")
