@@ -32,10 +32,10 @@ MOST_RECENTLY_PROCESSED_FILENAME = "most_recently_processed"
 TIMED_OUT_DELIVERIES_FILENAME = "timed_out_deliveries"
 BLOCKED_DELIVERY_FILENAME = "blocked_delivery"
 ACTIVITY_LOG_FILENAME = "activity_log"
-MOST_RECENTLY_PROCESSED_FILEPATH = f"persistence/{MOST_RECENTLY_PROCESSED_FILENAME}"
-TIMED_OUT_DELIVERIES_FILEPATH = f"persistence/{TIMED_OUT_DELIVERIES_FILENAME}"
-BLOCKED_DELIVERY_FILEPATH = f"persistence/{BLOCKED_DELIVERY_FILENAME}"
-ACTIVITY_LOG_FILEPATH = f"persistence/{ACTIVITY_LOG_FILENAME}"
+MOST_RECENTLY_PROCESSED_FILEPATH = f"{MOST_RECENTLY_PROCESSED_FILENAME}"
+TIMED_OUT_DELIVERIES_FILEPATH = f"{TIMED_OUT_DELIVERIES_FILENAME}"
+BLOCKED_DELIVERY_FILEPATH = f"{BLOCKED_DELIVERY_FILENAME}"
+ACTIVITY_LOG_FILEPATH = f"{ACTIVITY_LOG_FILENAME}"
 GITHUB_DELIVERY_HEADER = "X-Github-Delivery"
 DELIVERY_OBJECT_KEY = "delivery"
 DETAILS_OBJECT_KEY = "details"
@@ -51,19 +51,29 @@ SIGNATURE_HEADER = "X-Hub-Signature-256"
 updated_files = set()
 
 def main():
-    env = sys.argv[1]
-    if len(sys.argv) != 2 or env not in WEBHOOK_URLS:
-        print(f"Error: {env} not in {WEBHOOK_URLS}")
-        print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod]")
-        sys.exit(1)
+    if len(sys.argv) != 3:
+      print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod] [path of artifacts directory")
+      sys.exit(1)
 
     env = sys.argv[1]
+    if env not in WEBHOOK_URLS:
+      print(f"Error: {env} not in {WEBHOOK_URLS}")
+      print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod]")
+      sys.exit(1)
+
     target_url = WEBHOOK_URLS[env]
 
-    most_recently_processed_filepath = f"{get_most_recently_processed_filepath(env)}"
-    timed_out_filepath = f"{get_timed_out_filepath(env)}"
-    blocked_delivery_filepath = f"{get_blocked_delivery_filepath(env)}"
-    activity_log_filepath = f"{get_activity_log_filepath(env)}"
+    artifacts_path = sys.argv[2]
+
+    # Validate that the artifacts path exists before proceeding
+    if not os.path.isdir(artifacts_path):
+      print(f"Error: Artifacts path '{artifacts_path}' does not exist")
+      sys.exit(1)
+
+    most_recently_processed_filepath = f"{get_most_recently_processed_filepath(artifacts_path, env)}"
+    timed_out_filepath = f"{get_timed_out_filepath(artifacts_path, env)}"
+    blocked_delivery_filepath = f"{get_blocked_delivery_filepath(artifacts_path, env)}"
+    activity_log_filepath = f"{get_activity_log_filepath(artifacts_path, env)}"
 
     # Step 1: Get all Fiserv org webhooks
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
@@ -94,7 +104,6 @@ def main():
     update_activity_log(f"Total deliveries to process: {len(deliveries)}", activity_log_filepath)
     for current_delivery_obj in deliveries:
         
-        current_delivery = current_delivery_obj[DELIVERY_OBJECT_KEY]
         current_delivery_detail = current_delivery_obj[DETAILS_OBJECT_KEY]
         response = current_delivery_detail.get(DELIVERY_DETAILS_RESPONSE_KEY, {})
 
@@ -146,25 +155,25 @@ def main():
 def get_today_str():
   return datetime.now().strftime("%m-%d-%Y")
 
-def get_most_recently_processed_filepath(env):
-  return f"{MOST_RECENTLY_PROCESSED_FILEPATH}_{env}.json"
+def get_most_recently_processed_filepath(artifacts_path, env):
+  return f"{artifacts_path}/{MOST_RECENTLY_PROCESSED_FILEPATH}_{env}.json"
 
-def get_timed_out_filepath(env):
-  return f"{TIMED_OUT_DELIVERIES_FILEPATH}_{get_today_str()}_{env}.json"
+def get_timed_out_filepath(artifacts_path, env):
+  return f"{artifacts_path}/{TIMED_OUT_DELIVERIES_FILEPATH}_{get_today_str()}_{env}.json"
 
 # get_blocked_delivery_filepath doesn't include the extension because
 # the GitHub DeliveryId is appended to this path to form the complete filename
-def get_blocked_delivery_filepath (env):
-  return f"{BLOCKED_DELIVERY_FILEPATH}_{get_today_str()}_{env}"
+def get_blocked_delivery_filepath (artifacts_path, env):
+  return f"{artifacts_path}/{BLOCKED_DELIVERY_FILEPATH}_{get_today_str()}_{env}"
 
-def get_activity_log_filepath(env):
-   return f"{ACTIVITY_LOG_FILEPATH}_{get_today_str()}_{env}.log"
+def get_activity_log_filepath(artifacts_path, env):
+   return f"{artifacts_path}/{ACTIVITY_LOG_FILEPATH}_{get_today_str()}_{env}.log"
 
 def persist_changes(env):
     # Commit new and/or updated persistence files to the appropriate branch
     repo_owner = "Fiserv"
-    repo_name = "remote-actions"
-    repo_path_name = "scripts/webhooks/"
+    repo_name = "developer-studio-webhook-artifacts"
+    repo_path_name = "artifacts"
     branch_name = "main" # Always commit to 'main' branch
     api_base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents"
     commit_messages = {
@@ -181,7 +190,7 @@ def persist_changes(env):
         content_b64 = base64.b64encode(content_bytes).decode("utf-8")
 
         # Construct the relative path of the file in the repo
-        repo_file_path = repo_path_name + file
+        repo_file_path = repo_path_name + "/" + os.path.basename(file)
 
         # Check if file exists to get its sha
         get_url = f"{api_base_url}/{repo_file_path}?ref={branch_name}"
@@ -193,7 +202,7 @@ def persist_changes(env):
 
         commit_message = None
         for prefix, message in commit_messages.items():
-          if file.startswith(prefix):
+          if prefix in file:
             commit_message = message
             break
         if not commit_message:
@@ -211,11 +220,11 @@ def persist_changes(env):
         if sha:
             payload["sha"] = sha
 
-        #put_response = requests.put(put_url, headers=HEADERS, json=payload)
-        #if put_response.status_code in (200, 201):
-            #print(f"Committed {repo_file_path} to branch {branch_name}")
-        #else:
-            #print(f"Failed to commit {repo_file_path}: {put_response.status_code} {put_response.text}")
+        put_response = requests.put(put_url, headers=HEADERS, json=payload)
+        if put_response.status_code in (200, 201):
+            print(f"Committed {repo_file_path} to branch {branch_name}")
+        else:
+            print(f"Failed to commit {repo_file_path}: {put_response.status_code} {put_response.text}")
 
 def update_activity_log(log_content, activity_log_filepath):
     print(f"{log_content}")
