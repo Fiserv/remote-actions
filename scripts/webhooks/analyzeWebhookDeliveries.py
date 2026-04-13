@@ -1,3 +1,4 @@
+import base64
 import sys
 import requests
 import os
@@ -27,10 +28,14 @@ ENV_BRANCHES = {
     "prod": "main"
 }
 
-MOST_RECENTLY_PROCESSED_BASE_FILEPATH = "persistence/most_recently_processed"
-TIMED_OUT_DELIVERIES_BASE_FILEPATH = "persistence/timed_out_deliveries"
-BLOCKED_DELIVERIES_BASE_FILEPATH = "persistence/blocked_delivery"
-ACTIVITY_LOG_BASE_FILEPATH = "persistence/activity_log"
+MOST_RECENTLY_PROCESSED_FILENAME = "most_recently_processed"
+TIMED_OUT_DELIVERIES_FILENAME = "timed_out_deliveries"
+BLOCKED_DELIVERY_FILENAME = "blocked_delivery"
+ACTIVITY_LOG_FILENAME = "activity_log"
+MOST_RECENTLY_PROCESSED_FILEPATH = f"{MOST_RECENTLY_PROCESSED_FILENAME}"
+TIMED_OUT_DELIVERIES_FILEPATH = f"{TIMED_OUT_DELIVERIES_FILENAME}"
+BLOCKED_DELIVERY_FILEPATH = f"{BLOCKED_DELIVERY_FILENAME}"
+ACTIVITY_LOG_FILEPATH = f"{ACTIVITY_LOG_FILENAME}"
 GITHUB_DELIVERY_HEADER = "X-Github-Delivery"
 DELIVERY_OBJECT_KEY = "delivery"
 DETAILS_OBJECT_KEY = "details"
@@ -42,21 +47,33 @@ TIMESTAMP_KEY = "timestamp"
 PAYLOAD_HEAD_COMMIT_KEY = "head_commit"
 SIGNATURE_HEADER = "X-Hub-Signature-256"
 
+# List of files that are updated during processing that need to be committed
+updated_files = set()
+
 def main():
-    env = sys.argv[1]
-    if len(sys.argv) != 2 or env not in WEBHOOK_URLS:
-        print(f"Error: {env} not in {WEBHOOK_URLS}")
-        print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod]")
-        sys.exit(1)
+    if len(sys.argv) != 3:
+      print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod] [path of artifacts directory")
+      sys.exit(1)
 
     env = sys.argv[1]
+    if env not in WEBHOOK_URLS:
+      print(f"Error: {env} not in {WEBHOOK_URLS}")
+      print("Usage: findBlockedWebhookRequests.py [dev|qa|stage|prod]")
+      sys.exit(1)
+
     target_url = WEBHOOK_URLS[env]
 
-    most_recently_processed_filepath = f"{MOST_RECENTLY_PROCESSED_BASE_FILEPATH}_{env}.json"
-    today_str = datetime.now().strftime("%m-%d-%Y")
-    timed_out_filepath = f"{TIMED_OUT_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}.json"
-    blocked_delivery_filepath = f"{BLOCKED_DELIVERIES_BASE_FILEPATH}_{today_str}_{env}"
-    activity_log_filepath = f"{ACTIVITY_LOG_BASE_FILEPATH}_{today_str}_{env}.log"
+    artifacts_path = sys.argv[2]
+
+    # Validate that the artifacts path exists before proceeding
+    if not os.path.isdir(artifacts_path):
+      print(f"Error: Artifacts path '{artifacts_path}' does not exist")
+      sys.exit(1)
+
+    most_recently_processed_filepath = f"{get_most_recently_processed_filepath(artifacts_path, env)}"
+    timed_out_filepath = f"{get_timed_out_filepath(artifacts_path, env)}"
+    blocked_delivery_filepath = f"{get_blocked_delivery_filepath(artifacts_path, env)}"
+    activity_log_filepath = f"{get_activity_log_filepath(artifacts_path, env)}"
 
     # Step 1: Get all Fiserv org webhooks
     hooks_url = f"https://api.github.com/orgs/Fiserv/hooks"
@@ -87,7 +104,6 @@ def main():
     update_activity_log(f"Total deliveries to process: {len(deliveries)}", activity_log_filepath)
     for current_delivery_obj in deliveries:
         
-        current_delivery = current_delivery_obj[DELIVERY_OBJECT_KEY]
         current_delivery_detail = current_delivery_obj[DETAILS_OBJECT_KEY]
         response = current_delivery_detail.get(DELIVERY_DETAILS_RESPONSE_KEY, {})
 
@@ -116,7 +132,7 @@ def main():
         num_processed += 1
         update_activity_log(f"Processed {num_processed} deliveries so far...", activity_log_filepath)
 
-    update_activity_log(f"Total number of deliveries processed: {num_processed}", activity_log_filepath)
+    update_activity_log(f"Total number of deliveries needing to be processed: {num_processed}", activity_log_filepath)
     update_activity_log(f"Total number of blocked webhooks: {num_blocked}", activity_log_filepath)
     update_activity_log(f"Total number of timed_out webhooks: {num_timed_out}", activity_log_filepath)
 
@@ -126,12 +142,93 @@ def main():
       gitHubDeliveryId = headers.get(GITHUB_DELIVERY_HEADER)
       timestamp = most_recently_processed_delivery[TIMESTAMP_KEY]
       delivery_date = printable_date_time(current_delivery_detail, activity_log_filepath)
-      update_activity_log(f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}", activity_log_filepath)
+      update_activity_log(
+          f"Most recent processed delivery -- id: {gitHubDeliveryId}, timestamp: {delivery_date}, timestamp: {timestamp}",
+          activity_log_filepath)
+
+    print("Files needing to be committed:")
+    for file in updated_files:
+      print(file)
+
+    persist_changes(env)
+
+def get_today_str():
+  return datetime.now().strftime("%m-%d-%Y")
+
+def get_most_recently_processed_filepath(artifacts_path, env):
+  return f"{artifacts_path}/{MOST_RECENTLY_PROCESSED_FILEPATH}_{env}.json"
+
+def get_timed_out_filepath(artifacts_path, env):
+  return f"{artifacts_path}/{TIMED_OUT_DELIVERIES_FILEPATH}_{get_today_str()}_{env}.json"
+
+# get_blocked_delivery_filepath doesn't include the extension because
+# the GitHub DeliveryId is appended to this path to form the complete filename
+def get_blocked_delivery_filepath (artifacts_path, env):
+  return f"{artifacts_path}/{BLOCKED_DELIVERY_FILEPATH}_{get_today_str()}_{env}"
+
+def get_activity_log_filepath(artifacts_path, env):
+   return f"{artifacts_path}/{ACTIVITY_LOG_FILEPATH}_{get_today_str()}_{env}.log"
+
+def persist_changes(env):
+    # Commit new and/or updated persistence files to the appropriate branch
+    repo_owner = "Fiserv"
+    repo_name = "developer-studio-webhook-artifacts"
+    repo_path_name = "artifacts"
+    branch_name = "main" # Always commit to 'main' branch
+    api_base_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents"
+    commit_messages = {
+      f"{ACTIVITY_LOG_FILEPATH}": f"Most recent activity log for {env} environment",
+      f"{MOST_RECENTLY_PROCESSED_FILEPATH}": f"Most recently processed data for {env} environment",
+      f"{BLOCKED_DELIVERY_FILEPATH}": f"Blocked webhook for {env} environment",
+      f"{TIMED_OUT_DELIVERIES_FILEPATH}": f"Timed out webhooks for {env} environment"
+    }
+
+    for file in updated_files:
+        # Read file content
+        with open(file, "rb") as f:
+            content_bytes = f.read()
+        content_b64 = base64.b64encode(content_bytes).decode("utf-8")
+
+        # Construct the relative path of the file in the repo
+        repo_file_path = repo_path_name + "/" + os.path.basename(file)
+
+        # Check if file exists to get its sha
+        get_url = f"{api_base_url}/{repo_file_path}?ref={branch_name}"
+        response = requests.get(get_url, headers=HEADERS)
+        if response.status_code == 200:
+            sha = response.json().get("sha")
+        else:
+            sha = None
+
+        commit_message = None
+        for prefix, message in commit_messages.items():
+          if prefix in file:
+            commit_message = message
+            break
+        if not commit_message:
+          print(f"Unable to commit unknown file {file}")
+          return
+
+        print(f"commit message for {file} is {commit_message}")
+
+        put_url = f"{api_base_url}/{repo_file_path}"
+        payload = {
+            "message": commit_message,
+            "content": content_b64,
+            "branch": branch_name
+        }
+        if sha:
+            payload["sha"] = sha
+
+        put_response = requests.put(put_url, headers=HEADERS, json=payload)
+        if put_response.status_code in (200, 201):
+            print(f"Committed {repo_file_path} to branch {branch_name}")
+        else:
+            print(f"Failed to commit {repo_file_path}: {put_response.status_code} {put_response.text}")
 
 def update_activity_log(log_content, activity_log_filepath):
     print(f"{log_content}")
-    with open(activity_log_filepath, "a") as f:
-        f.write(log_content + "\n")
+    write_and_record(activity_log_filepath, log_content + "\n", mode="a")
 
 def handle_blocked_delivery(current_delivery_obj, blocked_delivery_filepath, target_url, activity_log_filepath):
     details = current_delivery_obj[DETAILS_OBJECT_KEY]
@@ -162,42 +259,54 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
         "*****************************************************"
     ]
     # Log to stdout and file
-    with open(persistence_filename, "w") as f:
-        for line in log_lines:
-            f.write(line + "\n")
+    write_and_record(persistence_filename, "".join(log_lines) + "\n", mode="w")
 
 def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath):
-  details = delivery[DETAILS_OBJECT_KEY]
-  headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
-  delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
-  payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
-  timestamp = get_delivery_timestamp(details, activity_log_filepath)
+    """
+    Records a timed-out webhook delivery in a JSON file, ensuring each delivery is only recorded once.
 
-  update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
+    This function uses a read-modify-write pattern to maintain the file as a valid JSON array of delivery records.
+    It first reads the existing file (if present), loads the list of records, and checks for duplicates.
+    If the delivery is not already present, it appends the new record and writes the updated list back to the file.
+    This approach ensures the file remains a valid JSON array, avoids duplicate entries, and allows for reliable
+    reading and updating of the data in future runs. Appending directly to the file would break the JSON structure
+    and make it unreadable as a JSON array.
+    """
+    details = delivery[DETAILS_OBJECT_KEY]
+    headers = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
+    delivery_id = headers.get(GITHUB_DELIVERY_HEADER)
+    payload = details.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_PAYLOAD_KEY, {})
+    timestamp = get_delivery_timestamp(details, activity_log_filepath)
 
-  record = {
-    "delivery_id": delivery_id,
-    "payload": payload,
-    "timestamp": timestamp
-  }
+    update_activity_log(f"Delivery {delivery_id} timed out. Updating {timed_out_filepath}", activity_log_filepath)
 
-  try:
-    with open(timed_out_filepath, "r") as f:
-      data = json.load(f)
-      if not isinstance(data, list):
-        data = []
-  except (FileNotFoundError, json.JSONDecodeError):
-    data = []
+    record = {
+      "delivery_id": delivery_id,
+      "payload": payload,
+      "timestamp": timestamp
+    }
 
-  # Only append if delivery_id is not already present
-  if not any(r.get("delivery_id") == delivery_id for r in data):
-    data.append(record)
-    with open(timed_out_filepath, "w") as f:
-      json.dump(data, f, indent=4)
-  else:
-    update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
-  
-  return True
+    try:
+      with open(timed_out_filepath, "r") as f:
+        data = json.load(f)
+        if not isinstance(data, list):
+          data = []
+    except (FileNotFoundError, json.JSONDecodeError):
+      data = []
+
+    # Only append if delivery_id is not already present
+    if not any(r.get("delivery_id") == delivery_id for r in data):
+      data.append(record)
+      write_and_record(timed_out_filepath, json.dumps(data, indent=4), mode="w")
+    else:
+      update_activity_log(f"Delivery {delivery_id} already present in {timed_out_filepath}, skipping.", activity_log_filepath)
+
+    return True
+
+def write_and_record(file_path, content, mode="w"):
+    with open(file_path, mode) as f:
+        f.write(content)
+    updated_files.add(file_path)
 
 def fetch_all_deliveries(deliveries_url, activity_log_filepath):
   per_page = 100  # Max is 100
@@ -223,7 +332,9 @@ def fetch_all_deliveries(deliveries_url, activity_log_filepath):
             update_activity_log(f"Skipping delivery id {gitHubDeliveryId} with invalid timestamp: ", activity_log_filepath)
             continue
 
-          update_activity_log(f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {epoch_timestamp}, {datetime.fromtimestamp(epoch_timestamp)}", activity_log_filepath)
+          update_activity_log(
+              f"Found head_commit for delivery id {gitHubDeliveryId}, timestamp: {epoch_timestamp}, {datetime.fromtimestamp(epoch_timestamp)}",
+              activity_log_filepath)
           update_activity_log(f"signature: {signature}, delivery id: {gitHubDeliveryId}", activity_log_filepath)
           deliveries_with_details.append({
             DELIVERY_OBJECT_KEY: delivery,
@@ -318,10 +429,19 @@ def update_most_recently_processed(most_recently_processed_filepath, most_recent
   timestamp = most_recently_processed_delivery[TIMESTAMP_KEY]
   delivery_date = printable_date_time(detail, activity_log_filepath)
   delivery_date_str = delivery_date.isoformat() if delivery_date else None
-  update_activity_log(f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, date-time: {delivery_date_str}, timestamp: {timestamp}", activity_log_filepath)
+  update_activity_log(
+      f"Most recent processed delivery set to -- id: {gitHubDeliveryId}, date-time: {delivery_date_str}, timestamp: {timestamp}",
+      activity_log_filepath)
 
-  with open(most_recently_processed_filepath, "w") as f:
-    json.dump({"delivery_id": gitHubDeliveryId, "delivery date-time": delivery_date_str, "timestamp": timestamp}, f, indent=4)
+  write_and_record(
+      most_recently_processed_filepath,
+      json.dumps(
+          {
+            "delivery_id": gitHubDeliveryId,
+            "delivery date-time": delivery_date_str,
+            "timestamp": timestamp
+          }, indent=4),
+      mode="w")
 
 def delivery_needs_processing(most_recently_processed_timestamp, delivery, env, activity_log_filepath):
   details = delivery[DETAILS_OBJECT_KEY]
@@ -336,21 +456,29 @@ def delivery_needs_processing(most_recently_processed_timestamp, delivery, env, 
       return False
 
   if branch != ENV_BRANCHES[env]:
-      update_activity_log(f"Skipping delivery {id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'", activity_log_filepath)
+      update_activity_log(
+          f"Skipping delivery {id} for branch '{branch}' not matching environment branch '{ENV_BRANCHES[env]}'",
+          activity_log_filepath)
       return False
 
   try:
     most_recently_processed_timestamp = float(most_recently_processed_timestamp)
   except (TypeError, ValueError):
-    update_activity_log(f"Invalid most_recently_processed_timestamp: {most_recently_processed_timestamp}, defaulting to 0.0", activity_log_filepath)
+    update_activity_log(
+        f"Invalid most_recently_processed_timestamp: {most_recently_processed_timestamp}, defaulting to 0.0",
+        activity_log_filepath)
     most_recently_processed_timestamp = 0.0
 
   datetime_str = printable_date_time(details, activity_log_filepath)
   if timestamp > most_recently_processed_timestamp:
-    update_activity_log(f"Delivery {id} ({datetime_str}) needs processing (timestamp: {timestamp} > most recent timestamp: {most_recently_processed_timestamp})", activity_log_filepath)
+    update_activity_log(
+        f"Delivery {id} ({datetime_str}) needs processing (timestamp: {timestamp} > most recent timestamp: {most_recently_processed_timestamp})",
+        activity_log_filepath)
     return True
 
-  update_activity_log(f"Delivery {id} ({datetime_str}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})", activity_log_filepath)
+  update_activity_log(
+      f"Delivery {id} ({datetime_str}) does not need processing (timestamp: {timestamp} <= most recent timestamp: {most_recently_processed_timestamp})",
+      activity_log_filepath)
   return False
 
 def get_ignored_repos(ignore_file='.repoIgnore'):
