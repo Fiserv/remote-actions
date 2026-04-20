@@ -60,8 +60,34 @@ const validateDir = async (dir, apiList) => {
   return true;
 };
 
+/**
+ * Validates uniqueness of the combination of API grouping fields for an API path/request type
+ * @param {Object} api - The API object containing the fields to check
+ * @param {Object} apiGroupingFieldsMap - Map tracking all field combinations seen so far
+ * @param {string} fileName - The file being validated
+ * @param {string} path - The API path
+ * @param {string} reqType - The request type (GET, POST, etc.)
+ * @returns {boolean} - True if combination is unique, false if duplicate found
+ */
+const validateFieldCombinationUniqueness = (api, apiGroupingFieldsMap, fileName, path, reqType) => {
+  // Create a combination key from the three fields
+  const apiGroupingFieldsKey = `${api["x-child-product-name"] || ""}|${api["x-group-name"] || ""}|${api["x-proxy-name"]}`;
+
+  if (apiGroupingFieldsMap[apiGroupingFieldsKey]) {
+    errorMessage(
+      YAML_VALIDATOR,
+      `File :${fileName} API-Path:${path} Error: api grouping fields '${apiGroupingFieldsKey}' are not unique. The combination of api grouping fields are already defined in ${apiGroupingFieldsMap[apiGroupingFieldsKey]}`
+    );
+    return false;
+  } else {
+    apiGroupingFieldsMap[apiGroupingFieldsKey] = `${path} [${reqType.toUpperCase()}]`;
+    return true;
+  }
+};
+
 const parseAPIData = (fileName, apiJson, checkedApis) => {
   let check = true;
+  const apiGroupingFieldsMap = {};
   try {
     for (const [path, obj] of Object.entries(apiJson.paths)) {
       for (const [reqType, api] of Object.entries(obj)) {
@@ -74,6 +100,15 @@ const parseAPIData = (fileName, apiJson, checkedApis) => {
             `File :${fileName} API-Path:${path} Error: Missing 'x-proxy-name'`
           );
           check = false;
+        } else {
+          // Validate uniqueness of API grouping fields
+          check &= validateFieldCombinationUniqueness(
+            api,
+            apiGroupingFieldsMap,
+            fileName,
+            path,
+            reqType
+          );
         }
         const version = fileName.split("/")[1];
         check &= validateIndexBody(
