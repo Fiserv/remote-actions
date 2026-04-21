@@ -1,14 +1,6 @@
 name: Tenant Config Validator
 on:
   workflow_call:
-  # push:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "config/**"
-  # pull_request:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "config/**"
 
 jobs:
   tenant-config-validator:
@@ -19,12 +11,9 @@ jobs:
         uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
       - name: Run tenant config validator
         uses: Fiserv/remote-actions/actions/run-node-script@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         with:
           display-name: tenant config validator
           script-command: configcheck ${{ github.workspace }} ${{ vars.FISERV_INTERNAL }}
       - name: Cleanup tools directory
         if: always()
         uses: Fiserv/remote-actions/actions/cleanup-tools@main
-      - run: echo "🍏 This job's status is ${{ job.status }}."

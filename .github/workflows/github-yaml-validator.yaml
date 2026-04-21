@@ -25,4 +25,3 @@ jobs:
       - name: Cleanup tools directory
         if: always()
         uses: Fiserv/remote-actions/actions/cleanup-tools@main
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.yamlvalidate.outputs.status }}"
