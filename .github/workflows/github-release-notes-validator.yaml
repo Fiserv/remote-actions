@@ -9,42 +9,14 @@ jobs:
     steps:
       - name: Check out code and tools
         uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@main
-        env:
-          cache-name: cache-node-modules
+      - name: Run release notes validator
+        uses: Fiserv/remote-actions/actions/run-node-script@main
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-      - name: Running Release Notes Validator.....
+          display-name: release notes validator
+          script-command: releasenotes ${{ github.workspace }}
+      - name: Cleanup tools directory
+        if: always()
         run: |
-          pwd
-          cd ${{ github.workspace }}/.dev-studio-tools/scripts
-          ls -la
-          npmv=$(npm --version)
-          echo "NPM version installed : " $npmv
-          nodev=$(node --version)
-          echo "Node version installed : " $nodev
-          npm ci
-          echo " Repo: ${{ github.repository }}"
-          echo " Space: ${{ github.workspace }}"
-          result=$(npm run releasenotes ${{ github.workspace }})
-          echo "**********TEST RESULTS*********************"
-          echo "$result"
-          if [[ $result == *'FAILED'* ]] ;then
-          echo "Validator failed and exiting the Job..."
-          exit 1
-          elif [[ $result == *'PASSED'* ]] ;then
-          echo "Validator Ran Successfully....🍏"
-          fi
+          rm -rf ${{ github.workspace }}/.dev-studio-tools
+          echo "Temp tools directory deleted ......"
       - run: echo "🍏 This job's status is ${{ job.status }}."

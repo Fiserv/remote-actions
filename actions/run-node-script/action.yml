@@ -1,0 +1,80 @@
+name: Run Node Script
+description: This action runs a Node.js script from the `.dev-studio-tools/scripts` directory.
+
+inputs:
+  script-command:
+    description: Script or command arguments to pass to `npm run`.
+    required: true
+  display-name:
+    description: Text shown in the execution step title after Running.
+    required: false
+    default: Node script
+
+outputs:
+  result:
+    description: Raw command output from npm run.
+    value: ${{ steps.execute.outputs.result }}
+  status:
+    description: Derived status value (FAILED, PASSED, SKIPPED, UNKNOWN).
+    value: ${{ steps.execute.outputs.status }}
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Node modules
+      id: cache-npm
+      uses: actions/cache@main
+      env:
+        cache-name: dev-studio-cache-node-modules
+      with:
+        path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
+        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ env.cache-name }}-
+          ${{ runner.os }}-build-
+          ${{ runner.os }}-
+
+    - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
+      name: List the installed Node modules
+      continue-on-error: true
+      shell: bash
+      run: npm list
+
+    - name: Run ${{ inputs.display-name }}
+      id: execute
+      shell: bash
+      run: |
+        cd ${{ github.workspace }}/.dev-studio-tools/scripts
+        echo "NPM version installed: $(npm --version)"
+        echo "Node version installed: $(node --version)"
+        npm ci
+        echo "Repo: ${{ github.repository }}"
+        echo "Space: ${{ github.workspace }}"
+        result=$(npm run ${{ inputs.script-command }})
+        status="UNKNOWN"
+
+        echo "--- OUTPUT ---"
+        echo "$result"
+        echo "--------------"
+
+        if [[ $result == *'FAILED'* ]] ;then
+          status="FAILED"
+          echo "Tool failed."
+        elif [[ $result == *'PASSED'* ]] ;then
+          status="PASSED"
+          echo "Tool succeeded."
+        elif [[ $result == *'SKIPPED'* ]] ;then
+          status="SKIPPED"
+          echo "Tool skipped."
+        fi
+
+        {
+          echo "status=$status"
+          echo "result<<EOF"
+          echo "$result"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+        if [[ "$status" == "FAILED" ]] ;then
+          exit 1
+        fi

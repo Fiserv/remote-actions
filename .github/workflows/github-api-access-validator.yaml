@@ -19,52 +19,16 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
             echo "⚠️ File not found: config/api-access-definition.yaml - skipping validation"
           fi
-      - name: Cache node modules
+      - name: Run API access definition validator
+        id: api_access_validator
+        uses: Fiserv/remote-actions/actions/run-node-script@main
         if: steps.check-file.outputs.exists == 'true'
-        id: cache-npm
-        uses: actions/cache@main
-        env:
-          cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' && steps.check-file.outputs.exists == 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-      - name: Running API Access Definition Validator.....
-        if: steps.check-file.outputs.exists == 'true'
+          display-name: API access definition validator
+          script-command: apiaccess ${{ github.workspace }}
+      - name: Cleanup tools directory
+        if: always() && steps.check-file.outputs.exists == 'true'
         run: |
-          pwd
-          cd ${{ github.workspace }}/.dev-studio-tools/scripts
-          ls -la
-          npmv=$(npm --version)
-          echo "NPM version installed : " $npmv
-          nodev=$(node --version)
-          echo "Node version installed : " $nodev
-          npm ci
-          echo " Repo: ${{ github.repository }}"
-          echo " Space: ${{ github.workspace }}"
-          echo "Executing API access definition check"
-          result=$(npm run apiaccess ${{ github.workspace }})
-          echo "**********TEST RESULTS*********************"
-          echo "$result"
-          pwd
-          ls -la
           rm -rf ${{ github.workspace }}/.dev-studio-tools
           echo "Temp tools directory deleted ......"
-          if [[ $result == *'FAILED'* ]] ;then
-            echo "Validator failed and exiting the Job..."
-            exit 1
-          elif [[ $result == *'PASSED'* ]] ;then
-            echo "Validator Ran Successfully....🍏"
-          elif [[ $result == *'SKIPPED'* ]] ;then
-            echo "Validator JOB IS SKIPPED"
-            echo "JobStatus="$result >> $GITHUB_OUTPUT
-          fi
       - run: echo "🍏 This job's status is ${{ job.status }}."

@@ -10,50 +10,23 @@ jobs:
       - name: Check for auto-generated ZIP files
         run: |
           if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'assets/files/${{ github.event.repository.name }}.*\.zip' ;then
-            echo "API zip is already being pushed, skipping generation of new one"
+            echo "API zip is already being pushed, skipping generation of new one."
             exit 1
           else
-            echo "🎉 The job was automatically triggered by the ${{ github.event_name }} event."
+            echo "The job was automatically triggered by the ${{ github.event_name }} event."
           fi
       - name: Check out code and tools
         uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@main
-        env:
-          cache-name: cache-node-modules
+      - name: Run API zip generator
+        uses: Fiserv/remote-actions/actions/run-node-script@main
         with:
-          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-      - name: Running API Specs ZIP Generator.....
+          display-name: API zip generator
+          script-command: download ${{ github.workspace }}
+      - name: Cleanup tools directory
+        if: always()
         run: |
-          pwd
-          cd ${{ github.workspace }}/.dev-studio-tools/scripts
-          ls -la
-          npmv=$(npm --version)
-          echo "NPM version installed : " $npmv
-          nodev=$(node --version)
-          echo "Node version installed : " $nodev
-          npm ci
-          echo " Repo: ${{ github.repository }}"
-          echo " Space: ${{ github.workspace }}"
-          result=$(npm run download ${{github.workspace }})
-          echo "**********TEST RESULTS*********************"
-          echo "$result"
-          if [[ $result == *'ZIP GENERATOR FAILED'* ]] ;then
-            echo "Validator failed and exiting the Job..."
-            exit 1
-          elif [[ $result == *'PASSED'* ]] ;then
-            echo "Validator Ran Successfully....🍏"
-          fi
+          rm -rf ${{ github.workspace }}/.dev-studio-tools
+          echo "Temp tools directory deleted ......"
       - run: echo "🍏 This job's status is ${{ job.status }}."
       - name: Show file content
         run: |
@@ -62,7 +35,7 @@ jobs:
           ls -la
           mkdir -p files
           mv *.zip files
-      - name: Create Pull Request
+      - name: Create pull request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: |
@@ -73,11 +46,11 @@ jobs:
           git commit -m "Update zip files" || echo "No changes to commit"
           git push origin devstudio-update-zip-files-${{ github.ref_name }} || echo "No changes to push"
           gh pr create --base ${{ github.ref_name }} --head devstudio-update-zip-files-${{ github.ref_name }} --title "Zip Generator Action - ${{ github.ref_name }}" --body "This PR was created automatically by Github ZIP Generator Action."
-      - name: Merge Pull Request
+      - name: Merge pull request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: gh pr merge "devstudio-update-zip-files-${{ github.ref_name }}" --merge --auto --delete-branch
-      - name: Create ZIP Artifacts
+      - name: Create ZIP artifacts
         if: failure()
         uses: actions/upload-artifact@main
         with:
