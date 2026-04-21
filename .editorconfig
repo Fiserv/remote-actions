@@ -1,0 +1,27 @@
+# EditorConfig to support per-solution formatting.
+# http://editorconfig.org/
+
+# This is the default for the codeline.
+root = true
+
+# Default
+[*]
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# JavaScript and JS mixes - match eslint settings/standards
+[*.{js,json,mjs,ts,vue}]
+indent_size = 2
+
+# Markdown - match markdownlint settings
+[*.{md,markdown}]
+indent_size = 2
+
+# YAML - match standard YAML like Kubernetes and GitHub Actions
+[*.{yaml,yml}]
+indent_size = 2
+
+# Python - match PEP8 settings
+[*.py]
+indent_size = 4

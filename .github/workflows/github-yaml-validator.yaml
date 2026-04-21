@@ -94,12 +94,12 @@ jobs:
           echo "Temp tools directory deleted ......"
           if [[ $result == *'FAILED'* ]] ;then
             echo "Validator failed and exiting the Job..."
-            exit 1 
+            exit 1
           elif [[ $result == *'PASSED'* ]] ;then
-            echo "Validator Ran Successfully....🍏" 
+            echo "Validator Ran Successfully....🍏"
           elif [[ $result == *'SKIPPED'* ]] ;then
             echo "Validator JOB IS SKIPPED"
-            echo "JobStatus="$result >> $GITHUB_OUTPUT                    
+            echo "JobStatus="$result >> $GITHUB_OUTPUT
           fi
         # env:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
