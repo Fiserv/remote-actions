@@ -1,0 +1,17 @@
+name: Cleanup Tools
+description: Remove the .dev-studio-tools directory if it exists.
+
+runs:
+  using: composite
+  steps:
+    - name: Remove tools directory
+      shell: bash
+      run: |
+        tools_dir="${{ github.workspace }}/.dev-studio-tools"
+
+        if [[ -d "$tools_dir" ]]; then
+          rm -rf "$tools_dir"
+          echo "Removed $tools_dir"
+        else
+          echo "$tools_dir does not exist. Nothing to clean up."
+        fi

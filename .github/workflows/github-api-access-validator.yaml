@@ -27,8 +27,6 @@ jobs:
           display-name: API access definition validator
           script-command: apiaccess ${{ github.workspace }}
       - name: Cleanup tools directory
-        if: always() && steps.check-file.outputs.exists == 'true'
-        run: |
-          rm -rf ${{ github.workspace }}/.dev-studio-tools
-          echo "Temp tools directory deleted ......"
+        if: always()
+        uses: Fiserv/remote-actions/actions/cleanup-tools@main
       - run: echo "🍏 This job's status is ${{ job.status }}."

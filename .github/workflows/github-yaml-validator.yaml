@@ -22,11 +22,7 @@ jobs:
         with:
           display-name: YAML validator
           script-command: validate ${{ github.workspace }}
-        # env:
-        #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
       - name: Cleanup tools directory
         if: always()
-        run: |
-          rm -rf ${{ github.workspace }}/.dev-studio-tools
-          echo "Temp tools directory deleted ......"
+        uses: Fiserv/remote-actions/actions/cleanup-tools@main
       - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.yamlvalidate.outputs.status }}"
