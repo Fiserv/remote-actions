@@ -1,43 +1,15 @@
 name: File Access Validator
 on:
   workflow_call:
-  # push:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "config/files-access-definiton.yaml"
-  # pull_request:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "config/files-access-definiton.yaml"
 
 jobs:
-  File-Access-Action:
+  file-access-validator:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@main
-        with:
-          repository: ${{ github.repository }}
-          path: ${{ github.workspace }}
-      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@main
-        with:
-          repository: Fiserv/remote-actions
-          ref: main
-          path: ${{ github.workspace }}/tools
-      - name: List files in the repository
-        run: |
-          cd ${{ github.workspace }}
-          pwd
-          ls -la
-          cd ${{ github.workspace }}/tools
-          ls -la
-
-      - name: Check if files access definition file exists
+      - name: Check out code and tools
+        uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
+      - name: Check for file access definition
         id: check-file
         run: |
           if [ -f "${{ github.workspace }}/config/files-access-definition.yaml" ]; then
@@ -47,55 +19,13 @@ jobs:
             echo "exists=false" >> $GITHUB_OUTPUT
             echo "⚠️ File not found: config/files-access-definition.yaml - skipping validation"
           fi
-
-      - name: Cache node modules
+      - name: Run file access definition validator
+        id: file_access_validator
+        uses: Fiserv/remote-actions/actions/run-node-script@main
         if: steps.check-file.outputs.exists == 'true'
-        id: cache-npm
-        uses: actions/cache@main
-        env:
-          cache-name: cache-node-modules
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}/tools/scripts/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
-
-      - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' && steps.check-file.outputs.exists == 'true' }}
-        name: List the state of node modules
-        continue-on-error: true
-        run: npm list
-
-      - name: Running File Access Definition Validator.....
-        if: steps.check-file.outputs.exists == 'true'
-        run: |
-          pwd
-          cd ${{ github.workspace }}/tools/scripts
-          ls -la
-          npmv=$(npm --version)
-          echo "NPM version installed : " $npmv
-          nodev=$(node --version)
-          echo "Node version installed : " $nodev
-          npm ci
-          echo " Repo: ${{ github.repository }}"
-          echo " Space: ${{ github.workspace }}"
-          echo "Executing file access definition check"
-          result=$(npm run fileaccess ${{ github.workspace }})
-          echo "**********TEST RESULTS*********************"
-          echo "$result"
-          pwd
-          ls -la
-          rm -rf ${{ github.workspace }}/tools
-          echo "Temp tools directory deleted ......"
-          if [[ $result == *'FAILED'* ]] ;then
-            echo "Validator failed and exiting the Job..."
-            exit 1
-          elif [[ $result == *'PASSED'* ]] ;then
-            echo "Validator Ran Successfully....🍏" 
-          elif [[ $result == *'SKIPPED'* ]] ;then
-            echo "Validator JOB IS SKIPPED"
-            echo "JobStatus="$result >> $GITHUB_OUTPUT                    
-          fi
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+          display-name: file access definition validator
+          script-command: fileaccess ${{ github.workspace }}
+      - name: Cleanup tools directory
+        if: always()
+        uses: Fiserv/remote-actions/actions/cleanup-tools@main

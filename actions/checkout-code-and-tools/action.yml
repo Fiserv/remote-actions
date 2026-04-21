@@ -1,0 +1,22 @@
+name: Check Out Code and Tools
+description: This action checks out the documentation repository code and the documentation build actions repository.
+
+runs:
+  using: composite
+  steps:
+    - name: Create `.dev-studio-tools` directory
+      shell: bash
+      run: |
+        mkdir -m 777 .dev-studio-tools
+    - name: Check out ${{ github.repository }}
+      uses: actions/checkout@main
+      with:
+        repository: ${{ github.repository }}
+        ref: ${{ github.ref }}
+        path: ${{ github.workspace }}
+    - name: Check out Developer Studio actions
+      uses: actions/checkout@main
+      with:
+        repository: Fiserv/remote-actions
+        ref: main
+        path: ${{ github.workspace }}/.dev-studio-tools
