@@ -1,4 +1,4 @@
-name: TenantConfig Validator
+name: Tenant Config Validator
 on:
   workflow_call:
   # push:
@@ -11,37 +11,12 @@ on:
   #     - "config/**"
 
 jobs:
-  Tenant-Config-Action:
+  tenant-config-validator:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@main
-        with:
-          repository: ${{ github.repository }}
-          path: ${{ github.workspace }}
-      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@main
-        with:
-          repository: Fiserv/remote-actions
-          ref: main
-          path: ${{ github.workspace }}/tools
-      - name: List files in the repository
-        run: |
-          cd ${{ github.workspace }}
-          ls -la
-          cd ${{ github.workspace }}/tools
-          ls -la
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
-        run: |
-          pwd
-          ls -la
-
+      - name: Check out code and tools
+        uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@main
@@ -49,24 +24,22 @@ jobs:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}/tools/scripts/node_modules
+          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
         continue-on-error: true
         run: npm list
-
       - name: Running Tenant Config Validator.....
         env:
           API_TOKEN_GITHUB: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: |
           pwd
-          cd ${{ github.workspace }}/tools/scripts
+          cd ${{ github.workspace }}/.dev-studio-tools/scripts
           ls -la
           npmv=$(npm --version)
           echo "NPM version installed : " $npmv

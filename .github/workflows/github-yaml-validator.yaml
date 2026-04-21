@@ -1,58 +1,21 @@
-name: API Specs Validator
+name: YAML Validator
 on:
   workflow_dispatch:
   workflow_call:
     outputs:
       statuscheck:
-        description: "Output of Api validation job"
-        value: ${{ jobs.api_validator_actions.outputs.output1 }}
-  # push:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "reference/**"
-  # pull_request:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "reference/**"
+        description: "Output of YAML validation job"
+        value: ${{ jobs.yaml-validator.outputs.output1 }}
 
 jobs:
-  api_validator_actions:
+  yaml-validator:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     outputs:
-      output1: ${{ steps.apivalidate.outputs.JobStatus }}
+      output1: ${{ steps.yamlvalidate.outputs.JobStatus }}
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and ${GITHUB_REF##*/} and ${GITHUB_REF#refs/heads/} and your repository is ${{ github.repository }}."
-      - name: Creating new temp sub dir called `tools`
-        run: |
-          mkdir -m 777 tools
-          cd tools
-          pwd
-          ls -la
-      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@main
-        with:
-          repository: ${{ github.repository }}
-          path: ${{ github.workspace }}
-      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@main
-        with:
-          repository: Fiserv/remote-actions
-          ref: main
-          path: ${{ github.workspace }}/tools
-      - name: List files in the repository
-        run: |
-          cd ${{ github.workspace }}
-          pwd
-          ls -la
-          cd ${{ github.workspace }}/tools
-          pwd
-          ls -la
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned on root"
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-
+      - name: Check out code and tools
+        uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@main
@@ -60,23 +23,21 @@ jobs:
           cache-name: cache-node-modules
         with:
           # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: ${{ github.workspace }}/tools/scripts/node_modules
+          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
         continue-on-error: true
         run: npm list
-
-      - name: Running API Specs Validator.....
-        id: apivalidate
+      - name: Running YAML Validator.....
+        id: yamlvalidate
         run: |
           pwd
-          cd ${{ github.workspace }}/tools/scripts
+          cd ${{ github.workspace }}/.dev-studio-tools/scripts
           ls -la
           npmv=$(npm --version)
           echo "NPM version installed : " $npmv
@@ -90,7 +51,7 @@ jobs:
           echo "$result"
           pwd
           ls -la
-          rm -rf ${{github.workspace }}/tools
+          rm -rf ${{github.workspace }}/.dev-studio-tools
           echo "Temp tools directory deleted ......"
           if [[ $result == *'FAILED'* ]] ;then
             echo "Validator failed and exiting the Job..."
@@ -103,4 +64,4 @@ jobs:
           fi
         # env:
         #   GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
-      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.apivalidate.outputs.JobStatus }}"
+      - run: echo "🍏 This job's status is ${{ job.status }} and output - ${{ steps.yamlvalidate.outputs.JobStatus }}"

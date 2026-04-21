@@ -1,13 +1,9 @@
 name: API Specs ZIP Generator
 on:
   workflow_call:
-  # push:
-  #   branches: [develop, stage, preview, main, previous]
-  #   paths:
-  #     - "reference/**"
 
 jobs:
-  ZIP-Generator-Actions:
+  zip-generator:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -19,56 +15,28 @@ jobs:
           else
             echo "🎉 The job was automatically triggered by the ${{ github.event_name }} event."
           fi
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-      - name: Creating new temp sub dir called `tools`
-        run: |
-          mkdir -m 777 tools
-          cd tools
-          pwd
-          ls -la
-      - name: Check out ${{ github.repository }} Repo code at ${{ github.workspace }}
-        uses: actions/checkout@main
-        with:
-          repository: ${{ github.repository }}
-          path: ${{ github.workspace }}
-      - name: Check out Fiserv/remote-actions Repo code at ${{ github.workspace }}/tools
-        uses: actions/checkout@main
-        with:
-          repository: Fiserv/remote-actions
-          ref: main
-          path: ${{ github.workspace }}/tools
-      - name: List files in the repository
-        run: |
-          cd ${{ github.workspace }}
-          pwd
-          ls -la
-          cd ${{ github.workspace }}/tools
-          pwd
-          ls -la
-
+      - name: Check out code and tools
+        uses: Fiserv/remote-actions/actions/checkout-code-and-tools@main
       - name: Cache node modules
         id: cache-npm
         uses: actions/cache@main
         env:
           cache-name: cache-node-modules
         with:
-          path: ${{ github.workspace }}/tools/scripts/node_modules
+          path: ${{ github.workspace }}/.dev-studio-tools/scripts/node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
       - if: ${{ steps.cache-npm.outputs.cache-hit != 'true' }}
         name: List the state of node modules
         continue-on-error: true
         run: npm list
-
       - name: Running API Specs ZIP Generator.....
         run: |
           pwd
-          cd ${{ github.workspace }}/tools/scripts
+          cd ${{ github.workspace }}/.dev-studio-tools/scripts
           ls -la
           npmv=$(npm --version)
           echo "NPM version installed : " $npmv
@@ -94,7 +62,6 @@ jobs:
           ls -la
           mkdir -p files
           mv *.zip files
-
       - name: Create Pull Request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
@@ -106,12 +73,10 @@ jobs:
           git commit -m "Update zip files" || echo "No changes to commit"
           git push origin devstudio-update-zip-files-${{ github.ref_name }} || echo "No changes to push"
           gh pr create --base ${{ github.ref_name }} --head devstudio-update-zip-files-${{ github.ref_name }} --title "Zip Generator Action - ${{ github.ref_name }}" --body "This PR was created automatically by Github ZIP Generator Action."
-
       - name: Merge Pull Request
         env:
           GH_TOKEN: ${{ secrets.ZIP_GENERATOR_ACTION }}
         run: gh pr merge "devstudio-update-zip-files-${{ github.ref_name }}" --merge --auto --delete-branch
-
       - name: Create ZIP Artifacts
         if: failure()
         uses: actions/upload-artifact@main
