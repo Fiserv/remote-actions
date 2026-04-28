@@ -7,18 +7,33 @@ on:
   #     - "reference/**"
 
 jobs:
-  ZIP-Generator-Actions:
+  Check-ZIP:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    outputs:
+      skip: ${{ steps.zip-check.outputs.skip }}
     steps:
+      - name: Check out repository
+        uses: actions/checkout@main
+        with:
+          fetch-depth: 0
+
       - name: Check for auto-generated ZIP files
+        id: zip-check
         run: |
           if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q 'assets/files/${{ github.event.repository.name }}.*\.zip' ;then
             echo "API zip is already being pushed, skipping generation of new one"
-            exit 1
+            echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "🎉 The job was automatically triggered by the ${{ github.event_name }} event."
+            echo "skip=false" >> $GITHUB_OUTPUT
           fi
+
+  ZIP-Generator-Actions:
+    needs: Check-ZIP
+    if: needs.Check-ZIP.outputs.skip != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
       - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
       - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
       - name: Creating new temp sub dir called `tools`
