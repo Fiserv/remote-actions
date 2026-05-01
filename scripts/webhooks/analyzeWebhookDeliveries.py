@@ -117,7 +117,8 @@ def main():
             continue
 
         # Check for deliveries that timed out (empty response)
-        if response.get(DELIVERY_DETAILS_HEADERS_KEY, {}) == {} and response.get(DELIVERY_DETAILS_PAYLOAD_KEY, "") == "":
+        if ((response.get(DELIVERY_DETAILS_HEADERS_KEY, {}) == {} or response.get(DELIVERY_DETAILS_HEADERS_KEY, {}) == None)
+            and response.get(DELIVERY_DETAILS_PAYLOAD_KEY, "") == ""):
             if handle_timeout_delivery(current_delivery_obj, timed_out_filepath, activity_log_filepath):
                 num_timed_out += 1
             continue
