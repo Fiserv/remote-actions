@@ -60,6 +60,7 @@ const validateDir = async (dir, fiserv_resources) => {
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
+        const yamlContent = yaml.load(content);
         yaml.load(content);
 
         // Add improper <br> tag checks
@@ -71,6 +72,26 @@ const validateDir = async (dir, fiserv_resources) => {
             `${fileName} contains improper <br> tags. Use <br /> instead.`,
           );
           check = false;
+        }
+
+        // Validate getStarted field exists at root and file exists
+        if (!yamlContent.getStarted) {
+          errorMsg(
+            `${fileName} is missing required 'getStarted' field at the root level.`,
+          );
+          check = false;
+        } else {
+          const getStartedPath = `${args?.[0]}/${
+            yamlContent.getStarted.charAt(0) === "/"
+              ? yamlContent.getStarted.substring(1)
+              : yamlContent.getStarted
+          }`;
+          if (!fs.existsSync(getStartedPath)) {
+            errorMsg(
+              `getStarted file '${yamlContent.getStarted}' does not exist in docs directory.`,
+            );
+            check = false;
+          }
         }
       } catch (e) {
         errorMessage(pdl_validator, e?.message);
