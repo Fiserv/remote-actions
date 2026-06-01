@@ -57,6 +57,45 @@ converter.addExtension(() => {
   ];
 }, "extractImageUrls");
 
+const validateCodeFenceStructure = (content) => {
+  const issues = [];
+  const lines = content.split(/\r?\n/);
+  let activeFence = null;
+
+  lines.forEach((line, index) => {
+    const fenceMatch = line.match(/^\s*(```|~~~)([^`]*)$/);
+    if (!fenceMatch) {
+      return;
+    }
+
+    const marker = fenceMatch[1];
+    const suffix = (fenceMatch[2] || "").trim();
+    const lineNumber = index + 1;
+
+    if (!activeFence) {
+      activeFence = { marker, lineNumber };
+      return;
+    }
+
+    if (marker === activeFence.marker && suffix.length === 0) {
+      activeFence = null;
+      return;
+    }
+
+    issues.push(
+      `Line ${lineNumber}: nested or duplicate opening code fence '${line.trim()}' found before closing fence opened at line ${activeFence.lineNumber}.`
+    );
+  });
+
+  if (activeFence) {
+    issues.push(
+      `Line ${activeFence.lineNumber}: code fence '${activeFence.marker}' is not closed.`
+    );
+  }
+
+  return issues;
+};
+
 const mdHtmlValidator = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async (file) => {
@@ -69,6 +108,7 @@ const mdHtmlValidator = async (dir) => {
           let check = true;
           let fileName = `${dir}/${file.name}`;
           const content = fs.readFileSync(fileName, "utf8");
+
           converter.makeHtml(content);
 
           urlsArr.forEach((url) => {
@@ -117,6 +157,12 @@ const mdHtmlValidator = async (dir) => {
           } catch (error) {
               check = false;
               errorMsg(`MDX Compilation Error: ${error.message.includes('acorn') ? 'Parsing for embeded JavaScript expressions inside {} failed. Possibly missing escape character \\ for regular string {' : error.message}`);
+          }
+
+          const codeFenceIssues = validateCodeFenceStructure(content);
+          if (codeFenceIssues.length > 0) {
+            check = false;
+            codeFenceIssues.forEach((issue) => errorMsg(issue));
           }
 
           if (check) {
