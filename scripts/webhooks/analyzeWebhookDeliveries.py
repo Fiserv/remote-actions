@@ -103,13 +103,13 @@ def main():
 
     update_activity_log(f"Total deliveries to process: {len(deliveries)}", activity_log_filepath)
     for current_delivery_obj in deliveries:
-        
+
         current_delivery_detail = current_delivery_obj[DETAILS_OBJECT_KEY]
         response = current_delivery_detail.get(DELIVERY_DETAILS_RESPONSE_KEY, {})
 
         headers = current_delivery_detail.get(DELIVERY_DETAILS_REQUEST_KEY, {}).get(DELIVERY_DETAILS_HEADERS_KEY, {})
         gitHubDeliveryId = headers.get(GITHUB_DELIVERY_HEADER)
-        
+
         update_activity_log(f"Processing delivery id: {gitHubDeliveryId}", activity_log_filepath)
 
         # Determine if the delivery is newer than the last-most-recently-processed delivery
@@ -260,7 +260,7 @@ def save_blocked_delivery(blocked_delivery_filepath, target_url, gitHubDeliveryI
         "*****************************************************"
     ]
     # Log to stdout and file
-    write_and_record(persistence_filename, "".join(log_lines) + "\n", mode="w")
+    write_and_record(persistence_filename, "\n".join(log_lines) + "\n", mode="w")
 
 def handle_timeout_delivery(delivery, timed_out_filepath, activity_log_filepath):
     """
