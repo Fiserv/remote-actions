@@ -20,7 +20,7 @@ const pdl_validator = "Product Layout VALIDATOR";
 const tenant_config_validator = "TENANT CONFIG VALIDATOR";
 const file_check = [false, false, false];
 const description_length = 112;
-const explorerDefinitionRegex = /^(document|recipe)-explorer-definition\.yaml$/;
+const explorerDefinitionRegex = /^(document|recipe|sdk)-explorer-definition\.yaml$/;
 
 const validateDir = async (dir, fiserv_resources) => {
   const files = await fs.promises.readdir(dir, { withFileTypes: true });
