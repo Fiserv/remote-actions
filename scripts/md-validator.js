@@ -96,6 +96,49 @@ const validateCodeFenceStructure = (content) => {
   return issues;
 };
 
+const validateBracePlaceholders = (content) => {
+  const issues = [];
+  const lines = content.split(/\r?\n/);
+  let inFence = false;
+  let fenceMarker = null;
+
+  lines.forEach((line, index) => {
+    const lineNumber = index + 1;
+
+    // Track fenced code blocks (same logic as validateCodeFenceStructure)
+    const fenceMatch = line.match(/^\s*(```|~~~)([^`]*)$/);
+    if (fenceMatch) {
+      const marker = fenceMatch[1];
+      const suffix = (fenceMatch[2] || '').trim();
+      if (!inFence) {
+        inFence = true;
+        fenceMarker = marker;
+        return;
+      } else if (marker === fenceMarker && suffix.length === 0) {
+        inFence = false;
+        fenceMarker = null;
+        return;
+      }
+    }
+
+    if (inFence) return;
+
+    // Strip inline code spans to avoid false positives inside backticks
+    const stripped = line.replace(/`[^`]*`/g, (m) => ' '.repeat(m.length));
+
+    // Match bare {identifier} or {identifier_name} patterns
+    const placeholderRegex = /(?<!\\)\{[a-z_][a-z0-9_]*\}/gi;
+    let match;
+    while ((match = placeholderRegex.exec(stripped)) !== null) {
+      issues.push(
+        `Line ${lineNumber}: unescaped placeholder '${match[0]}' found. Use \\${match[0]} or wrap in backticks to escape.`
+      );
+    }
+  });
+
+  return issues;
+};
+
 const mdHtmlValidator = async (dir) => {
   fs.readdir(dir, { withFileTypes: true }, (err, files) => {
     files?.forEach(async (file) => {
@@ -147,6 +190,12 @@ const mdHtmlValidator = async (dir) => {
             }
           });
           urlsArr = [];
+
+          const placeholderIssues = validateBracePlaceholders(content);
+          if (placeholderIssues.length > 0) {
+            check = false;
+            placeholderIssues.forEach((issue) => errorMsg(issue));
+          }
 
           try {
             const processedContent = preprocessMdxToMarkdown(content);
