@@ -124,7 +124,10 @@ const validateBracePlaceholders = (content) => {
     if (inFence) return;
 
     // Strip inline code spans to avoid false positives inside backticks
-    const stripped = line.replace(/`[^`]*`/g, (m) => ' '.repeat(m.length));
+    // Strip link targets [text](url) to avoid false positives in URL paths
+    const stripped = line
+      .replace(/`[^`]*`/g, (m) => ' '.repeat(m.length))
+      .replace(/\]\([^)]*\)/g, (m) => ' '.repeat(m.length));
 
     // Match bare {identifier} or {identifier_name} patterns
     const placeholderRegex = /(?<!\\)\{[a-z_][a-z0-9_]*\}/gi;
