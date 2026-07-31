@@ -60,7 +60,7 @@ const validateDir = async (dir, fiserv_resources) => {
       try {
         const fileName = `${dir}/${file.name}`;
         const content = await fs.promises.readFile(fileName, "utf8");
-        yaml.load(content);
+        const treeJson = yaml.load(content);
 
         // Add improper <br> tag checks
         if (
@@ -69,6 +69,15 @@ const validateDir = async (dir, fiserv_resources) => {
         ) {
           errorMsg(
             `${fileName} contains improper <br> tags. Use <br /> instead.`,
+          );
+          check = false;
+        }
+
+        // Check productionDescription for h1-h3 HTML tags
+        const productionDescription = treeJson?.header?.productionDescription;
+        if (productionDescription && /<h[1-4][\s>]/i.test(productionDescription)) {
+          errorMsg(
+            `${fileName} field "header.productionDescription" must not contain h1, h2, h3, or h4 HTML tags.`,
           );
           check = false;
         }
@@ -93,11 +102,6 @@ const validateDir = async (dir, fiserv_resources) => {
           fiserv_resources === "true"
             ? ["fiserv-resources"]
             : ["merchants", "financial-institutions", "fintech", "carat"];
-        console.log(
-          Object.keys(data?.product).forEach((x) =>
-            console.log(data.product[x]),
-          ),
-        );
         const productUrls = Object.keys(data?.product).filter(
           (x) =>
             typeof data.product[x] === "string" &&
