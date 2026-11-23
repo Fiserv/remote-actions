@@ -33,8 +33,9 @@ const validateDir = async (dir, apiList) => {
       try {
         const content = fs.readFileSync(file, "utf8");
         const apiJson = yaml.load(content);
-        const tenantName = args[0].split("/").pop();
-        file = file.split(`/${tenantName}/`)[1];
+        // const tenantName = args[0].split("/").pop();
+        // file = file.split(`/${tenantName}/`)[1];
+        file = file.split("/").slice(1).join("/");
         if (!apiJson.paths || !Object.keys(apiJson.paths).length) {
           errorMessage(YAML_VALIDATOR, "No path provided!");
         }
@@ -133,6 +134,43 @@ const parseAPIData = (fileName, apiJson, checkedApis) => {
   return check;
 };
 
+/**
+ * Validates that examples don't contain escaped forward slashes (\/),
+ * which cause issues in Java backend parser with error:
+ * "double-quoted scalar found unknown escape character"
+ * @param {Object} obj - Object to recursively search for examples
+ * @param {string} fileName - File name for error reporting
+ * @param {string} path - API path for error reporting
+ * @param {string} reqType - Request type for error reporting
+ * @returns {boolean} - True if no escaped slashes found, false if issues found
+ */
+const validateEscapedForwardSlashes = (obj, fileName, path, reqType) => {
+  let isValid = true;
+
+  const checkForEscapedSlashes = (val, context = "") => {
+    if (typeof val === "string") {
+      if (val.includes("\\/")) {
+        errorMessage(
+          YAML_VALIDATOR,
+          `File:${fileName} API-Path: ${reqType.toUpperCase()} ${path}  Error: Found escaped forward slash (\\/) in ${context}. This causes Java parser error: "double-quoted scalar found unknown escape character". Use / instead.`
+        );
+        isValid = false;
+      }
+    } else if (typeof val === "object" && val !== null && !Array.isArray(val)) {
+      Object.entries(val).forEach(([key, value]) => {
+        checkForEscapedSlashes(value, context || key);
+      });
+    } else if (Array.isArray(val)) {
+      val.forEach((item, index) => {
+        checkForEscapedSlashes(item, `${context}[${index}]`);
+      });
+    }
+  };
+
+  checkForEscapedSlashes(obj);
+  return isValid;
+};
+
 const validateIndexBody = (
   fileName,
   yamlData,
@@ -142,8 +180,9 @@ const validateIndexBody = (
   version,
   checkedApis
 ) => {
+  let pathJSON;
   try {
-    const pathJSON = yamlData.paths[path][reqType];
+    pathJSON = yamlData.paths[path][reqType];
     const converter = new showdown.Converter({
       ghCompatibleHeaderId: true,
       emoji: true,
@@ -258,6 +297,9 @@ const validateIndexBody = (
   } else {
     checkedApis[apiIndexKey] = fileName;
   }
+
+  // Validate for escaped forward slashes in examples
+  xFieldsCheck &= validateEscapedForwardSlashes(pathJSON, fileName, path, reqType);
 
   return xFieldsCheck;
 };

@@ -236,7 +236,14 @@ For each path and method combination:
 - ✅ Checks for duplicate APIs using composite key: `{path}_{method}_{version}_{x-core}`
 - ❌ Duplicate APIs across files will fail with reference to both files
 
-#### 3.7 Markdown Conversion
+#### 3.7 Escaped Forward Slash Validation
+
+- ❌ Examples must not contain escaped forward slashes (`\/`)
+- ❌ This causes Java backend parser error: "double-quoted scalar found unknown escape character"
+- ✅ Use unescaped `/` instead of `\/`
+- ✅ Validates all examples in request bodies, responses, and parameters
+
+#### 3.8 Markdown Conversion
 
 - ✅ Description fields in request body and responses are converted to HTML
 - ✅ Uses Showdown converter with GitHub-compatible settings
